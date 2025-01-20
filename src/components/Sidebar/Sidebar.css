@@ -1,0 +1,62 @@
+/* Style général */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9; /* Arrière-plan doux pour contraster avec le menu */
+}
+
+.content {
+    margin-left: 120px; /* Laisse un peu plus d'espace pour le volet fixe */
+    padding: 20px;
+    width: 80%;
+}
+
+/* Style du menu latéral avec dégradé et ombre */
+.side-menu {
+    height: 100%;
+    width: 70px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #2c3e50, #3498db); /* Dégradé moderne */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Ombre latérale */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0;
+    z-index: 1;
+}
+
+/* Style des liens dans le menu avec coins arrondis et ombre */
+.side-menu button {
+    width: 50px;
+    height: 50px;
+    margin: 10px 0; /* Espacement entre les icônes */
+    text-decoration: none;
+    font-size: 24px;
+    color: white !important;
+    background-color: #34495e; /* Couleur de fond pour chaque lien */
+    border-radius: 15px; /* Coins arrondis */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s ease; /* Transition fluide pour les effets */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Légère ombre pour chaque lien */
+    padding: 0;
+    border: none;
+}
+
+/* Effet au survol avec agrandissement et changement de couleur */
+.side-menu button:hover {
+    background-color: #1abc9c; /* Changement de couleur au survol */
+    transform: scale(1.1); /* Lien légèrement agrandi au survol */
+    color: #535bf2 !important;
+}
+
+/* Style de l'icône dans les liens */
+.side-menu button i {
+    margin-right: 0; /* Pas d'espace à droite de l'icône */
+    transition: transform 0.3s ease;
+}

@@ -1,0 +1,201 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Police moderne */
+    background-color: #f4f4f9; /* Couleur de fond douce */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.content-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 24px;
+    color: #333; /* Couleur de texte sombre */
+}
+
+.content-header h2 {
+    text-align: center; /* Centre le texte */
+    margin: 0; /* Supprime les marges par défaut */
+    padding: 0; /* Supprime le padding par défaut */
+}
+
+.availability-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 30px;
+    margin: auto;
+}
+
+.player-input {
+    width: 100%; /* Ajuste selon vos besoins */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transition douce */
+    outline: none; /* Enlève l'effet de focus par défaut */
+    font-size: 16px;
+}
+
+.player-input:focus {
+    border-color: #66afe9; /* Changer la couleur de la bordure au focus */
+    box-shadow: 0 4px 12px rgba(0, 106, 255, 0.3); /* Ombre plus prononcée au focus */
+}
+
+.availability-list {
+    width: 60%;
+    margin: auto;
+    max-width: 1300px; /* Largeur maximum */
+    margin-top: 0px;
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    border: 1px solid #ccc; /* Bordure autour du tableau */
+    border-radius: 8px; /* Coins arrondis */
+    overflow: hidden; /* Empêche le débordement */
+    background-color: #fff; /* Fond blanc pour le tableau */
+}
+
+.availability-list select {
+    appearance: none; /* Supprime l'apparence par défaut du select */
+    -webkit-appearance: none; /* Pour Safari */
+    -moz-appearance: none; /* Pour Firefox */
+    border: none; /* Supprime la bordure */
+    background: transparent; /* Supprime le fond */
+    font-size: inherit; /* Hérite de la taille de la police du parent */
+    padding: 0; /* Ajoute du padding pour un meilleur espacement */
+    margin: 0; /* Supprime la marge */
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    width: 100%; /* S'assure que le select prend toute la largeur disponible */
+    height: 40px; /* Hauteur fixe pour un meilleur alignement */
+    text-align: center; /* Centre le texte */
+    transition: border-color 0.3s ease; /* Transition pour la bordure */
+}
+
+.availability-list select:focus {
+    outline: none; /* Supprime le contour par défaut */
+    box-shadow: none; /* Supprime l'ombre si présente */
+}
+
+.availability-list select option {
+    background-color: white; /* Fond blanc pour les options */
+    color: #333; /* Couleur de texte sombre */
+    padding: 10px; /* Espacement interne pour les options */
+}
+
+#availabilityTable {
+    list-style: none; /* Enlève les puces */
+    padding: 0; /* Enlève le padding par défaut */
+    margin: 0; /* Enlève la marge par défaut */
+}
+
+.calendar-container {
+    padding-top: 25px;
+}
+
+.availability-list li {
+    display: flex; /* Utilise Flexbox pour le layout */
+    border-bottom: 1px solid #ccc; /* Ligne de séparation entre les lignes */
+    justify-content: space-between; /* Espace entre les colonnes */
+    align-items: center; /* Centre verticalement les éléments de chaque ligne */
+    line-height: 1.5; /* Ajuste la valeur pour une meilleure lisibilité */
+    padding: 10px 15px; /* Ajoute du padding */
+    transition: background-color 0.3s; /* Transition pour le survol */
+}
+/*
+.availability-list li:hover {
+    background-color: #f9f9f9; /* Couleur de fond au survol /
+}
+*/
+.availability-list li span {
+    /*display: inline-block; /* Utilise un affichage en bloc */
+    margin: 0; /* Supprime la marge entre les spans */
+    padding: 0; /* Supprime le padding entre les spans */
+}
+
+/* Ajuster la largeur des colonnes */
+.availability-list li span:nth-child(1) {
+    width: 4%; /* Croix */
+}
+
+.availability-list li span:nth-child(n+2) {
+    width: 24%; /* Joueur */
+}
+
+.availability-list li span:nth-child(6) {
+    width: 1%; /* Joueur 2 */
+}
+
+/* Optionnel : Style pour les lignes paires */
+.availability-list li:nth-child(even) {
+    background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
+}
+
+.suggestion-list {
+    position: absolute; /* Superpose la liste au-dessus des autres éléments */
+    width: 15%; /* S'ajuste à la largeur de l'input */
+    background-color: white; /* Couleur de fond */
+    border-radius: 8px; /* Arrondir les angles */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    max-height: 150px; /* Limiter la hauteur avec un défilement */
+    overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
+    z-index: 1000; /* Assure que la liste apparaisse au-dessus des autres éléments */
+    margin-top: 50px;
+}
+
+.suggestion-list div {
+    padding: 10px; /* Espacement interne pour chaque élément */
+    cursor: pointer; /* Changer le curseur pour indiquer qu'il est cliquable */
+    transition: background-color 0.3s; /* Transition pour le survol */
+}
+
+.suggestion-list div:hover {
+    background-color: #f0f0f0; /* Couleur de survol */
+    border-radius: 8px; /* Arrondir les angles au survol */
+}
+
+.remove-player {
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    color: red; /* Couleur de la croix */
+    font-size: 20px; /* Taille de la croix */
+    transition: color 0.3s ease, transform 0.3s ease; /* Transition douce pour la couleur et la taille */
+}
+
+.remove-player:hover,
+.remove-player:focus {
+    transform: scale(1.2); /* Augmente la taille de la croix au survol */
+}
+
+.availability-actions {
+    display: flex;
+    flex-direction: column; /* Aligne les éléments verticalement */
+    align-items: center; /* Centre les éléments horizontalement */
+}
+
+.available-player {
+    color: green; /* Couleur verte pour le bouton */
+    font-size: 20px; /* Taille du bouton */
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    transition: transform 0.3s; /* Transition douce pour le survol */
+}
+
+.available-player:hover {
+    transform: scale(1.2); /* Agrandit le bouton au survol */
+}
+
+.unavailable-player {
+    color: red; /* Couleur rouge pour la croix */
+    font-size: 12px; /* Taille de la croix */
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    transition: transform 0.3s; /* Transition douce pour le survol */
+}
+
+.unavailable-player:hover {
+    transform: scale(1.2); /* Agrandit la croix au survol */
+}
