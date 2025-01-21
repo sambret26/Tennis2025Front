@@ -1,6 +1,6 @@
 import { API_URL } from './apiConfig.js';
 
-const PLAYER_AVAILABILITY_API_URL = API_URL + '/playerAvailabilities';
+const PLAYER_AVAILABILITY_API_URL = `${API_URL}/playerAvailabilities`;
 
 //REMOVE ?
 export async function getPlayerAvailabilities(playerId) {

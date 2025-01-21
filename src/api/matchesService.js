@@ -1,6 +1,6 @@
 import { API_URL } from './apiConfig.js';
 
-const MATCHES_API_URL = API_URL + '/matches';
+const MATCHES_API_URL = `${API_URL}/matches`;
 
 export async function getMatches(date) {
     try {

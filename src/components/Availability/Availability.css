@@ -124,12 +124,16 @@ body {
     width: 4%; /* Croix */
 }
 
-.availability-list li span:nth-child(n+2) {
-    width: 24%; /* Joueur */
+.availability-list li span:nth-child(2) {
+    width: 4%; /* Enveloppe */
 }
 
-.availability-list li span:nth-child(6) {
-    width: 1%; /* Joueur 2 */
+.availability-list li span:nth-child(n+3) {
+    width: 23%; /* Joueur */
+}
+
+.availability-list li span:nth-child(7) {
+    width: 1%; /* Check/Croix */
 }
 
 /* Optionnel : Style pour les lignes paires */

@@ -3,6 +3,8 @@ import { getStartAndEndDate } from "../../api/settingsService";
 import { getAllAvailabilities } from "../../api/availabilityService";
 import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
+import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
+import PlayerComment from "../PlayerComment/PlayerComment";
 import './Availability.css';
 
 const Availability = () => {
@@ -15,6 +17,7 @@ const Availability = () => {
     const [allAvailabilities, setAllAvailabilities] = useState([]);
     const [allPlayers, setAllPlayers] = useState([]);
     const [playersAvailabilities, setPlayersAvailabilities] = useState([]);
+    const [playerComments, setPlayerComments] = useState({});
     const [isWeekend, setIsWeekend] = useState(false);
     const [playerInput, setPlayerInput] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -57,6 +60,24 @@ const Availability = () => {
 
         initializeAll();
     }, []);
+
+    useEffect(() => {
+        const loadComments = async () => {
+            if (currentDate) {
+                try {
+                    const comments = await getAllCommentsForDay(formattedDate(currentDate));
+                    const commentsByPlayer = comments.reduce((acc, comment) => {
+                        acc[comment.playerId] = comment;
+                        return acc;
+                    }, {});
+                    setPlayerComments(commentsByPlayer);
+                } catch (error) {
+                    console.error('Error fetching comments:', error);
+                }
+            }
+        };
+        loadComments();
+    }, [currentDate]);
 
     useEffect(() => {
         if(currentDate) {
@@ -200,6 +221,19 @@ const Availability = () => {
         for (let i = 0; i < 3; i++) await updatePlayerAvailability(playerId, formattedDate(currentDate), i, number);
     }
 
+    const handleCommentChange = async () => {
+        try {
+            const comments = await getAllCommentsForDay(formattedDate(currentDate));
+            const commentsByPlayer = comments.reduce((acc, comment) => {
+                acc[comment.playerId] = comment;
+                return acc;
+            }, {});
+            setPlayerComments(commentsByPlayer);
+        } catch (error) {
+            console.error('Error refreshing comments:', error);
+        }
+    };
+
     return (
         <div className="availability-container">
             <div className="content-header">
@@ -236,8 +270,9 @@ const Availability = () => {
             <div className="availability-list">
                 <ul id="availabilityTable">
                     <li className="header">
-                        <span></span>
-                        <span>Joueur</span>
+                    <span></span>
+                    <span></span>
+                    <span>Joueur</span>
                         {isWeekend ? (
                             <>
                                 <span>Matin</span>
@@ -262,7 +297,15 @@ const Availability = () => {
                         return (
                             <li key={playerId}>
                                 <span className="remove-player" onClick={() => handleRemovePlayer(playerId)}>&#10060;</span>
-                                <span>{player ? player.fullName : ''}</span>
+                                <span>
+                                    <PlayerComment
+                                        playerId={playerId}
+                                        day={formattedDate(currentDate)}
+                                        comment={playerComments[playerId]}
+                                        onCommentChange={handleCommentChange}
+                                    />
+                                </span>
+                                <span>{player ? player.fullName : ''}</span> 
                                 {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                     const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                     const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
@@ -278,7 +321,7 @@ const Availability = () => {
                                                         {availability.value}
                                                     </option>
                                                 ))}
-                                                </select>
+                                            </select>
                                         </span>
                                     );
                                 })}

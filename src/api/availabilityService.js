@@ -1,6 +1,6 @@
 import { API_URL } from './apiConfig.js';
 
-const AVAILABILITY_API_URL = API_URL + '/availabilities';
+const AVAILABILITY_API_URL = `${API_URL}/availabilities`;
 
 export async function getAllAvailabilities() {
     try {

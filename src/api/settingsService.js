@@ -1,6 +1,6 @@
 import { API_URL } from './apiConfig.js';
 
-const SETTINGS_API_URL = API_URL + '/settings';
+const SETTINGS_API_URL = `${API_URL}/settings`;
 
 export async function getStartAndEndDate() {
     try {

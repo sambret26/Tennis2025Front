@@ -1,6 +1,6 @@
 import { API_URL } from './apiConfig.js';
 
-const PLAYERS_API_URL = API_URL + '/players';
+const PLAYERS_API_URL = `${API_URL}/players`;
 
 export async function getAllPlayers() {
     try {
