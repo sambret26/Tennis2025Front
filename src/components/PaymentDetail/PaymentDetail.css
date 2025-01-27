@@ -1,0 +1,183 @@
+.payment-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.payment-detail-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.payment-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-button-payment-detail {
+    color: #333 !important;
+    background: transparent !important;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: -15px;
+}
+
+.payment-summary {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between; /* Espacement uniforme entre les éléments */
+    align-items: center; /* Aligne les éléments verticalement au centre */
+}
+
+.payment-summary div {
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+.reductions-section,
+.payments-section {
+    margin: 20px 0;
+}
+
+.payments-section td button,
+.reductions-section td button {
+    min-width: 100px;
+    width: 100%;
+}
+
+.payment-table, .reduction-table {
+    width: 100%; /* S'assurer que le tableau prend toute la largeur */
+    border-collapse: collapse; /* Pour éviter les espaces entre les cellules */
+}
+
+.payment-table th, .payment-table td, .reduction-table th, .reduction-table td {
+    text-align: center; /* Centre le texte dans les cellules */
+    padding: 10px; /* Ajoute un peu d'espace autour du texte */
+}
+
+.payment-detail-modal th {
+    background-color: #f5f5f5;
+}
+
+.payment-detail-modal input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.payment-detail-modal button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.payment-detail-modal button:hover {
+    opacity: 0.8;
+}
+
+.payment-detail-modal button:disabled {
+    background-color: #cccccc !important;
+    cursor: not-allowed;
+}
+
+.payment-detail-modal button.cancel {
+    background-color: #f44336;
+}
+
+.red-button {
+    background-color: #e74c3c !important;
+    border-color: #c0392b !important;
+}
+
+.green-button {
+    background-color: #28a745 !important;
+    border-color: #1e7e34 !important;
+}
+
+.red-button:hover {
+    background-color: #c0392b !important;
+    border-color: #9d2c23 !important;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+}
+
+.confirmation-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.payment-detail-title {
+    text-align: center; /* Centre le texte */
+    margin-bottom: 20px; /* Ajoute un espace en bas si nécessaire */
+}
+
+.section-title {
+    text-align: center; /* Centre le texte */
+    margin: 20px 0; /* Ajoute un espace au-dessus et en dessous si nécessaire */
+}
+
+.reduction-checkbox-container {
+    display: flex;
+    flex-wrap: wrap; /* Permet d'avoir plusieurs lignes */
+    gap: 10px; /* Espace entre les couples */
+}
+
+.reduction-checkbox-container div {
+    width: 30%;
+    display: flex;
+    align-items: center; /* Aligne la case à cocher et le label */
+    margin-right: 0px; /* Espace entre les couples */
+}
+
+.reduction-label {
+    width: 95%;
+}

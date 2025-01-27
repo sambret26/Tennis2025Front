@@ -130,6 +130,8 @@ body {
 
 .availability-list li span:nth-child(n+3) {
     width: 23%; /* Joueur */
+    text-align: left;
+    margin-left: 10px;
 }
 
 .availability-list li span:nth-child(7) {
