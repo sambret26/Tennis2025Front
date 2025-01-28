@@ -295,9 +295,9 @@ h2 {
     transition: transform 0.3s ease;
     padding: 20px;
     width: 550px; /* Ajustez la largeur selon vos besoins */
-    height: 280px;
+    height: 270px;
     background-color: #fefefe;
-    margin: 10% 14% auto; /* 15% du haut et centré */
+    margin: 10% 25% auto; /* 15% du haut et centré */
     border: 1px solid #888;
     position: relative; /* Position relative pour le positionnement du bouton de fermeture */
     display: flex; /* Utiliser flexbox pour l'alignement */
@@ -324,7 +324,7 @@ h2 {
 .radio-label {
     display: flex;
     align-items: center;
-    margin: 30px 0;
+    margin: 10px 0;
 }
 
 .radio-label input {
@@ -332,16 +332,13 @@ h2 {
     margin-left: 10px;
 }
 
-.radio-label span {
-    margin: 0 10px; /* Ajoutez une marge horizontale pour espacer le "VS" des boutons radio */
-}
-
 input[type="text"] {
     width: 250px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     font-size: 16px;
     text-align: center;
 }
@@ -380,16 +377,25 @@ input[type="text"] {
     cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
     opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
 }
-/* button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+
+.score-input {
+    align-items: center;
+    justify-content: flex-start;
 }
 
-button:hover {
-    background-color: #0056b3;
-} */
+.score-input input {
+    margin-right: 10px;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.error-message {
+    color: #fff;
+    height: 25px;
+    padding-top: 0px;
+    margin-top: -10px;
+}
+
+h2 {
+    flex-grow: 0;
+}

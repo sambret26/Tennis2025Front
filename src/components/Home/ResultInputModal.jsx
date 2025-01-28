@@ -5,12 +5,30 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
     const [displayScore, setDisplayScore] = useState('');
     const [score, setScore] = useState(match.score);
+    const [errorMessage, setErrorMessage] = useState('Error');
+    const [errorColor, setErrorColor] = useState('');
 
     const selectedPlayerRef = useRef(selectedPlayer);
     const displayScoreRef = useRef(displayScore);
     const scoreRef = useRef(score);
 
     const handleSave = useCallback(() => {
+        if (!formatScoreOk(scoreRef.current)) {
+            setErrorMessage("Format incorrect");
+            setErrorColor('red');
+            setTimeout(() => {
+                setErrorColor('');
+            }, 5000);
+            return;
+        }
+        if (!scoreOk(scoreRef.current)) {
+            setErrorMessage("Score incohérent");
+            setErrorColor('red');
+            setTimeout(() => {
+                setErrorColor('');
+            }, 5000);
+            return;
+        }
         onSave(match.id, selectedPlayerRef.current, scoreRef.current);
     }, [match.id, onSave]);
 
@@ -67,7 +85,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                         onClick={() => handleRadioChange(match.player1Id)}
                         onChange={()=> {}}
                     />
-                    <span>VS</span>
+                    <label>VS</label>
                     <input
                         type="radio"
                         checked={selectedPlayer === match.player2Id}
@@ -83,6 +101,9 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                     placeholder={selectedPlayer ? "Entrez le score" : "Sélectionnez un vainqueur"}
                     disabled={!selectedPlayer}
                 />
+                <div className="error-message" style={{ color: errorColor }}>
+                    {errorMessage}
+                </div>
                 <div>
                     <button className="save-button" onClick={handleSave}>Enregistrer</button>
                     <button className="cancel-button" onClick={onClose}>Annuler</button>
@@ -93,3 +114,59 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
 };
 
 export default ResultInputModal;
+
+const formatScoreOk = (score) => {
+    const regex = /^\d\/\d(\(\d{1,2}\))?\s\d\/\d(\(\d{1,2}\))?(\s\d\/\d(\(\d{1,2}\))?)?$/;
+    return regex.test(score) || score === '';
+}
+
+const scoreOk = (score) => {
+    if(score === '') return true;
+    let sets = score.split(' ');
+    let winnerSet1 = checkScore(sets[0]);
+    if (!winnerSet1) return false;
+    let winnerSet2 = checkScore(sets[1]);
+    if (!winnerSet2) return false;
+    if (winnerSet1 === winnerSet2) {
+        if (sets.length === 2) return true;
+        return false;
+    }
+    if (sets.length !== 3) return false;
+    return checkScore(sets[2]) !== 0;
+}
+
+const checkScore = (score) => {
+    let scoreSet;
+    let tieBreak;
+    if (score.includes('(')) {
+        scoreSet = score.split('(')[0].split('/');
+        tieBreak = true;
+    } else {
+        scoreSet = score.split('/');
+        tieBreak = false;
+    }
+    if (scoreSet[0] === '7') {
+        if (scoreSet[1] === '5') {
+            if (tieBreak) return 0;
+            return 1;
+        }
+        if(scoreSet[1] === '6') return 1;
+        return 0;
+    }
+    if (scoreSet[1] === '7') {
+        if (scoreSet[0] === '5') {
+            if (tieBreak) return 0;
+            return 2;
+        }
+        if(scoreSet[0] === '6') return 2;
+        return 0;
+    }
+    if(tieBreak) return 0;
+    if(scoreSet[0] !== '6' && scoreSet[1] !== '6') return 0;
+    if(scoreSet[0] === '6') {
+        if (scoreSet[1] < '0' || scoreSet[1] > '5') return 0;
+        return 1;
+    }
+    if (scoreSet[0] < '0' || scoreSet[0] > '5') return 0;
+    return 2;
+}
