@@ -17,7 +17,7 @@ export async function getTransactions() {
 
 export const updateTransactions = async (transactions) => {
     try {
-        const response = await fetch(`${TRANSACTION_API_URL}/a`, {
+        const response = await fetch(`${TRANSACTION_API_URL}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
