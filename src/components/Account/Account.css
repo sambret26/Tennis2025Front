@@ -1,0 +1,48 @@
+.account-tab {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.account-tab h2, .account-tab h3 {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.day-list {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.day-item {
+    width: 25%;
+    padding: 3px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    margin: 5px auto;
+    transition: background-color 0.3s;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.day-item:hover {
+    background-color: #e0e0e0;
+}
+
+.button-account{
+    margin: 5px;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 20%;
+}
+
+.button-account:hover {
+    background-color: #45a049;
+}

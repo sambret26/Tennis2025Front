@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { getStartAndEndDate } from "../../api/settingsService";
 import { getAllAvailabilities } from "../../api/availabilityService";
 import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
-import PlayerComment from "../PlayerComment/PlayerComment";
+import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import './Availability.css';
 
-const Availability = () => {
+const Availability = ({ startDate, endDate }) => {
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
     const UNAVAILABLE = 4;
@@ -26,13 +25,12 @@ const Availability = () => {
     useEffect(() => {
         const loadDates = async () => {
             try {
-                const data = await getStartAndEndDate();
-                const startDate = noHourDate(data.startDate);
-                const endDate = noHourDate(data.endDate);
+                const startDay = noHourDate(startDate);
+                const endDay = noHourDate(endDate);
                 const today = noHourDate();
-                setTournamentDate({'startDate' : startDate, 'endDate' : endDate});
-                if(today < startDate) setCurrentDate(startDate);
-                else if (today > endDate) setCurrentDate(endDate);
+                setTournamentDate({'startDate' : startDay, 'endDate' : endDay});
+                if(today < startDay) setCurrentDate(startDay);
+                else if (today > endDay) setCurrentDate(endDay);
                 else setCurrentDate(today);
             } catch (error) {
                 console.error('Error fetching dates:', error);
@@ -59,7 +57,7 @@ const Availability = () => {
         };
 
         initializeAll();
-    }, []);
+    }, [startDate, endDate]);
 
     useEffect(() => {
         const loadComments = async () => {
@@ -235,7 +233,7 @@ const Availability = () => {
     };
 
     return (
-        <div className="availability-container">
+        <div>
             <div className="content-header">
                 <h2>Gestion de la disponibilité des joueurs</h2>
             </div>
@@ -268,7 +266,7 @@ const Availability = () => {
             </div>
 
             <div className="availability-list">
-                <ul id="availabilityTable">
+                <ul className="availability-table">
                     <li className="header">
                     <span></span>
                     <span></span>
@@ -303,6 +301,7 @@ const Availability = () => {
                                         day={formattedDate(currentDate)}
                                         comment={playerComments[playerId]}
                                         onCommentChange={handleCommentChange}
+                                        playerName={player ? player.fullName : ''}
                                     />
                                 </span>
                                 <span>{player ? player.fullName : ''}</span> 

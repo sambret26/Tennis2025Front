@@ -1,0 +1,110 @@
+.detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.detail-modal th {
+    background-color: #f5f5f5;
+}
+
+
+.detail-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-button-detail {
+    color: #333 !important;
+    background: transparent !important;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: -15px;
+}
+
+.detail-table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+
+.detail-table {
+    width: 100%; /* S'assurer que le tableau prend toute la largeur */
+    border-collapse: collapse; /* Pour éviter les espaces entre les cellules */
+}
+
+.detail-table th, .detail-table td {
+    text-align: center; /* Centre le texte dans les cellules */
+    padding: 10px; /* Ajoute un peu d'espace autour du texte */
+}
+
+.detail-th, .detail-td {
+    border: 1px solid #888; 
+    text-align: center; 
+}
+
+.detail-td {
+    padding: 5px;
+}
+
+.detail-th {
+    background-color: #f2f2f2; 
+    padding: 10px;
+}
+
+.detail-title {
+    text-align: center; /* Centre le texte */
+    margin-bottom: 20px; /* Ajoute un espace en bas si nécessaire */
+    width: 100%;
+}
+
+.detail-subtitle {
+    text-align: center; /* Centre le texte */
+    margin: 20px 0; /* Ajoute un espace au-dessus et en dessous si nécessaire */
+}
+
+.detail-summary {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between; /* Espacement uniforme entre les éléments */
+    align-items: center; /* Aligne les éléments verticalement au centre */
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+.detail-payments-section {
+    margin: 20px 0;
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    width: 75%;
+    height: 30px;
+}

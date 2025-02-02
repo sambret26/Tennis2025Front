@@ -22,6 +22,17 @@
     border-radius: 8px;
 }
 
+.filters-section label {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.filters-section input[type="checkbox"],
+.filters-section input[type="radio"] {
+    margin-right: 8px;
+}
+
 .ranking-filters,
 .category-filters,
 .payment-status-filters {
@@ -33,17 +44,6 @@
 .payment-status-filters h3 {
     margin-bottom: 10px;
     color: #333;
-}
-
-.filters-section label {
-    display: block;
-    margin: 5px 0;
-    cursor: pointer;
-}
-
-.filters-section input[type="checkbox"],
-.filters-section input[type="radio"] {
-    margin-right: 8px;
 }
 
 .players-table-container {
@@ -78,15 +78,6 @@
     background-color: #e0e0e0;
 }
 
-.col-player {
-    text-align: left !important;
-    width: 20%;
-    padding-left: 15px !important;
-}
-
-.col-payment-detail {
-    width: 30%;
-}
 
 .players-table td:not(.col-player):not(.col-payment-detail) {
     width: 10%;
@@ -129,6 +120,16 @@
 
 .players-table button:hover {
     background-color: #45a049;
+}
+
+.col-player {
+    text-align: left !important;
+    width: 20%;
+    padding-left: 15px !important;
+}
+
+.col-payment-detail {
+    width: 30%;
 }
 
 /* Styles pour les statuts de payment */

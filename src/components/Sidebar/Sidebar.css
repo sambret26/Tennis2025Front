@@ -1,17 +1,3 @@
-/* Style général */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9; /* Arrière-plan doux pour contraster avec le menu */
-}
-
-.content {
-    margin-left: 120px; /* Laisse un peu plus d'espace pour le volet fixe */
-    padding: 20px;
-    width: 80%;
-}
-
 /* Style du menu latéral avec dégradé et ombre */
 .side-menu {
     height: 100%;

@@ -82,6 +82,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 100%;
+    text-align: center;
 }
 
 .payment-detail-modal button {
@@ -158,6 +159,7 @@
 .payment-detail-title {
     text-align: center; /* Centre le texte */
     margin-bottom: 20px; /* Ajoute un espace en bas si nécessaire */
+    width: 100%;    
 }
 
 .section-title {

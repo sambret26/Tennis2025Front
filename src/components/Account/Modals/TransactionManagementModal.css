@@ -1,0 +1,140 @@
+.transaction-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.transaction-modal th {
+    background-color: #f5f5f5;
+}
+
+.transaction-modal button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.transaction-modal button:hover {
+    opacity: 0.8;
+}
+
+.transaction-modal button:disabled {
+    background-color: #cccccc !important;
+    cursor: not-allowed;
+}
+
+.transaction-modal input,
+.transaction-modal select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+.transaction-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-button-transaction {
+    color: #333 !important;
+    background: transparent !important;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: -15px;
+}
+
+
+.transaction-title {
+    text-align: center; /* Centre le texte */
+    margin-bottom: 20px; /* Ajoute un espace en bas si nécessaire */
+    width: 100%;
+}
+
+.transaction-section {
+    margin: 20px 0;
+}
+
+.transaction-section td button {
+    min-width: 100px;
+    width: 70%;
+}
+
+.transaction-table {
+    width: 100%; /* S'assurer que le tableau prend toute la largeur */
+    border-collapse: collapse; /* Pour éviter les espaces entre les cellules */
+}
+
+.transaction-th, .transaction-td {
+    text-align: center; /* Centre le texte dans les cellules */
+    padding: 10px; /* Ajoute un peu d'espace autour du texte */
+}
+
+.transaction-red-button {
+    background-color: #e74c3c !important;
+    border-color: #c0392b !important;
+}
+
+.transaction-green-button {
+    background-color: #28a745 !important;
+    border-color: #1e7e34 !important;
+}
+
+.transaction-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.transaction-confirmation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+}
+
+.transaction-confirmation-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.transaction-confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}

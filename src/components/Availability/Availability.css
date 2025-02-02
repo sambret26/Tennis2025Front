@@ -89,16 +89,6 @@ body {
     padding: 10px; /* Espacement interne pour les options */
 }
 
-#availabilityTable {
-    list-style: none; /* Enlève les puces */
-    padding: 0; /* Enlève le padding par défaut */
-    margin: 0; /* Enlève la marge par défaut */
-}
-
-.calendar-container {
-    padding-top: 25px;
-}
-
 .availability-list li {
     display: flex; /* Utilise Flexbox pour le layout */
     border-bottom: 1px solid #ccc; /* Ligne de séparation entre les lignes */
@@ -108,11 +98,7 @@ body {
     padding: 10px 15px; /* Ajoute du padding */
     transition: background-color 0.3s; /* Transition pour le survol */
 }
-/*
-.availability-list li:hover {
-    background-color: #f9f9f9; /* Couleur de fond au survol /
-}
-*/
+
 .availability-list li span {
     /*display: inline-block; /* Utilise un affichage en bloc */
     margin: 0; /* Supprime la marge entre les spans */
@@ -141,6 +127,16 @@ body {
 /* Optionnel : Style pour les lignes paires */
 .availability-list li:nth-child(even) {
     background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
+}
+
+.availability-table {
+    list-style: none; /* Enlève les puces */
+    padding: 0; /* Enlève le padding par défaut */
+    margin: 0; /* Enlève la marge par défaut */
+}
+
+.calendar-container {
+    padding-top: 25px;
 }
 
 .suggestion-list {
@@ -204,4 +200,38 @@ body {
 
 .unavailable-player:hover {
     transform: scale(1.2); /* Agrandit la croix au survol */
+}
+
+/* Style pour les flèches */
+.arrow-button {
+    background-color: transparent; /* Pas de fond */
+    color: gray; /* Couleur de la flèche */
+    border: none; /* Pas de bordure */
+    padding: 10px;
+    font-size: 30px; /* Augmenter la taille de la police des flèches */
+    cursor: pointer;
+    border-radius: 8px; /* Optionnel, si tu veux des coins arrondis */
+    transition: color 0.3s; /* Animation pour le changement de couleur */
+}
+
+/* Changer la couleur lors du survol */
+.arrow-button:hover {
+    color: #333; /* Couleur plus foncée lors du survol */
+}
+
+.arrow-button:disabled {
+    color: #666; /* Couleur du texte grise */
+    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
+    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
+}
+
+.header {
+    background-color: #f0f0f0; /* Couleur de fond pour l'en-tête */
+    font-weight: bold; /* Met le texte en gras */
+}
+
+.header span {
+    display: inline-block; /* Utilise un affichage en bloc */
+    width: 15%; /* Largeur des colonnes pour l'en-tête */
+    padding: 10px; /* Ajoute du padding */
 }

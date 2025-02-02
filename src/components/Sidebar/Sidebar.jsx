@@ -16,7 +16,7 @@ const Sidebar = ({ setActiveComponent }) => {
             <button onClick={() => setActiveComponent('players')}>
                 <i className="bi bi-people"></i>
             </button>
-            <button onClick={() => setActiveComponent('accounts')}>
+            <button onClick={() => setActiveComponent('account')}>
                 <i className="bi bi-currency-euro"></i>
             </button>
             <button onClick={() => setActiveComponent('settings')}>

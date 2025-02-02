@@ -1,5 +1,6 @@
 // src/components/Home/ResultInputModal.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import './ResultInputModal.css'; 
 
 const ResultInputModal = ({ match, onClose, onSave }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
@@ -45,22 +46,34 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
             setScore(match.score);
         }
 
-        // Gestionnaire d'événements pour la touche "Entrée"
         const handleKeyPress = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault(); // Empêche l'action par défaut de l'élément actif
-                handleSave(); // Appelle la fonction de sauvegarde
+                handleSave();
             }
         };
-
-        // Ajoutez l'écouteur d'événements
         window.addEventListener('keydown', handleKeyPress);
-
-        // Nettoyage de l'écouteur d'événements lors du démontage
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [match, handleSave]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                onClose();
+            }
+        };
+    
+        // Ajoutez l'écouteur d'événements
+        window.addEventListener('keydown', handleKeyPress);
+    
+        // Nettoyez l'écouteur d'événements à la désinstallation du composant
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [onClose]); // Dépendances vides pour que cela ne s'exécute qu'une seule fois
 
     const handleRadioChange = (playerId) => {
         setSelectedPlayer(selectedPlayer === playerId ? null : playerId);

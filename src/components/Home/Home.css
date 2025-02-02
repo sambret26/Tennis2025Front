@@ -1,11 +1,3 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 25px;
-}
-
 .calendar-container {
     display: flex;
     align-items: center;
@@ -30,10 +22,10 @@ body {
     color: #333; /* Couleur plus foncée lors du survol */
 }
 
-/* Style pour la date sélectionnée */
-#selectedDate {
-    font-size: 30px; /* Augmenter la taille de la police de la date */
-    margin: 0 10px;
+.arrow-button:disabled {
+    color: #666; /* Couleur du texte grise */
+    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
+    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
 }
 
 /* Style pour le date picker */
@@ -74,14 +66,8 @@ body {
     overflow: hidden; /* Empêche le débordement */
     background-color: #fff; /* Fond blanc pour le tableau */
 }
-
-.home-container {
-    width: 100%; /* Assurez-vous que cela est défini */
-    display: flex;
-    flex-direction: column; /* Aligne les éléments verticalement */
-}
     
-#scheduleTable {
+.schedule-table {
     list-style: none; /* Enlève les puces */
     padding: 0; /* Enlève le padding par défaut */
     margin: 0; /* Enlève la marge par défaut */
@@ -144,114 +130,7 @@ body {
     background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
 }
 
-/* .schedule-list li:hover {
-    background-color: #f9f9f9; /* Couleur de fond au survol 
-} TODO */
-
-h2 {
-    flex-grow: 1; /* Prendre l'espace restant */
-    margin: 0; /* Enlever les marges par défaut */
-}
-
-.close {
-    color: #aaa;
-    position: absolute; /* Positionner le bouton de fermeture */
-    top: 10px; /* Espacement du haut */
-    right: 20px; /* Espacement de droite */
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.button-container {
-    display: flex; /* Utiliser flexbox pour aligner les boutons sur la même ligne */
-    justify-content: space-between; /* Espace entre les boutons */
-    margin-top: 20px; /* Marge au-dessus des boutons */
-}
-
-.btn {
-    flex: 1; /* Prendre la même largeur */
-    padding: 0px 8px; /* Espacement à l'intérieur du bouton */
-    margin: 0 5px; /* Espace entre les boutons */
-    border: none; /* Pas de bordure par défaut */
-    border-radius: 8px; /* Coins arrondis */
-    cursor: pointer; /* Curseur pointer au survol */
-    font-size: 14px; /* Taille de police */
-    height: 30px;
-}
-
-.result,
-.result-update {
-    background-color: var(--gray-button); /* Couleur de fond pour le bouton Renseigner un résultat */
-}
-
-.result:hover {
-    background-color: var(--gray-button-hover); /* Couleur au survol */
-}
-
-.result-update {
-    float: right;
-}
-
-.validate {
-    background-color: var(--green-button); /* Couleur de fond pour le bouton "Enregistrer" */
-    color: white; /* Couleur du texte */
-}
-
-.validate:hover {
-    background-color: var(--green-button-hover); /* Couleur au survol */
-    color: white; /* Couleur du texte */
-}
-
-.cancel {
-    background-color: var(--red-button); /* Couleur de fond pour le bouton "Annuler" */
-    color: white; /* Couleur du texte */
-}
-
-.cancel:hover {
-    background-color: var(--red-button-hover); /* Couleur au survol */
-    color: white; /* Couleur du texte */
-}
-
-.result-container {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centrer le contenu horizontalement */
-    margin: 20px 0; /* Ajoute un espacement vertical */
-}
-
-.player-selection {
-    display: flex;
-    align-items: center; /* Aligne verticalement les éléments */
-}
-
-.player-selection span {
-    margin: 0 10px; /* Espacement horizontal entre les éléments */
-}
-
-.radio-button {
-    margin: 0 10px; /* Ajoute un espace à droite et à gauche des boutons radio */
-}
-
-/* Overlay gris pour l'arrière-plan */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Transparence gris */
-    z-index: 899; /* Sous la pop-up mais au-dessus du reste */
-    display: none; /* Masqué par défaut */
-}
-
-.edit-button, .add-result-button {
+.gray-button {
     background-color: #ccc; /* Couleur de fond grise */
     border: none;
     border-radius: 8px;
@@ -261,141 +140,11 @@ h2 {
     font-size: 14px;
 }
 
-.edit-button:hover, .add-result-button:hover {
+.gray-button:hover {
     background-color: #bbb; /* Couleur de fond plus foncée au survol */
 }
 
-.edit-button:disabled, .add-result-button:disabled {
+.gray-button:disabled {
     background-color: #eee; /* Couleur de fond pour le bouton désactivé */
     cursor: not-allowed; /* Change le curseur pour indiquer que le bouton est désactivé */
-}
-
-
-
-/* MODAL */
-/* src/components/Home/Home.css */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* src/components/Home/Home.css */
-
-.modal-content {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    padding: 20px;
-    width: 550px; /* Ajustez la largeur selon vos besoins */
-    height: 270px;
-    background-color: #fefefe;
-    margin: 10% 25% auto; /* 15% du haut et centré */
-    border: 1px solid #888;
-    position: relative; /* Position relative pour le positionnement du bouton de fermeture */
-    display: flex; /* Utiliser flexbox pour l'alignement */
-    align-items: center; /* Centrer verticalement le contenu */
-    z-index: 900;
-}
-
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    border: none;
-    background: transparent;
-    font-size: 20px; /* Augmentez la taille du bouton de fermeture */
-    cursor: pointer;
-}
-
-h2 {
-    flex-grow: 1;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-
-.radio-label input {
-    margin-right: 10px;
-    margin-left: 10px;
-}
-
-input[type="text"] {
-    width: 250px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 16px;
-    text-align: center;
-}
-
-.modal-content button {
-    padding: 10px; /* Ajustez le padding si nécessaire */
-    border: none; /* Supprimez la bordure par défaut */
-    border-radius: 8px;
-    cursor: pointer; /* Change le curseur au survol */
-    transition: background-color 0.3s; /* Ajoute une transition pour un effet doux */
-}
-
-.modal-content .save-button { /* Bouton Enregistrer */
-    width: 110px; /* Largeur du bouton Enregistrer */
-    background-color: #28a745; /* Couleur verte pour le bouton Enregistrer */
-    color: white; /* Couleur du texte */
-}
-
-.modal-content .save-button:hover {
-    background-color: #218838; /* Couleur plus foncée au survol */
-}
-
-.modal-content .cancel-button { /* Bouton Annuler */
-    width: 100px;
-    background-color: #dc3545; /* Couleur rouge pour le bouton Annuler */
-    color: white; /* Couleur du texte */
-    margin-left: 40px; /* Espace de 40px à gauche du bouton Annuler */
-}
-
-.modal-content .cancel-button:hover {
-    background-color: #c82333; /* Couleur plus foncée au survol */
-}
-
-.arrow-button:disabled {
-    color: #666; /* Couleur du texte grise */
-    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
-    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
-}
-
-.score-input {
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.score-input input {
-    margin-right: 10px;
-    flex-grow: 1;
-    text-align: center;
-}
-
-.error-message {
-    color: #fff;
-    height: 25px;
-    padding-top: 0px;
-    margin-top: -10px;
-}
-
-h2 {
-    flex-grow: 0;
 }

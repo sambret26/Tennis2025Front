@@ -2,10 +2,6 @@
     display: flex; /* Utilisez flexbox pour aligner le sidebar et le contenu */
 }
 
-.sidebar {
-    width: 70px; /* Largeur du menu latéral */
-}
-
 .content {
     margin-left: 70px; /* Laissez de l'espace pour le menu latéral */
     padding: 20px; /* Ajoutez un peu de remplissage pour le contenu */

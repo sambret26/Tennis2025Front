@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
-import { createOrUpdateComment } from '../../api/playerAvailabilityCommentService';
+import React, { useState, useEffect } from 'react';
+import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import './PlayerComment.css';
+import { useCallback } from 'react';
 
 const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
+    
+    const handleCancel = useCallback(() => {
+        setCommentText(comment?.comments || '');
+        setIsModalOpen(false);
+    }, [comment?.comments]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCancel();
+            }
+        };
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleCancel]);
 
     const handleSave = async () => {
         try {
@@ -23,10 +42,15 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) 
         }
     };
 
-    const handleCancel = () => {
-        setCommentText(comment?.comments || '');
-        setIsModalOpen(false);
-    };
+    const getFormattedDay = () => {
+        try {
+            const data = day.split('-');
+            return data[2] + '/' + data[1];
+        } catch (error) {
+            console.error('Error formatting day:', error);
+            return '';
+        }
+    }
 
     return (
         <>
@@ -46,7 +70,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) 
                 }}>
                     <div className="comment-modal-content">
                         <div className="comment-modal-header">
-                            <h2>Message pour {playerName}</h2>
+                            <h2>Message pour {playerName} le {getFormattedDay()}</h2>
                             <button 
                                 className="comment-modal-close"
                                 onClick={handleCancel}

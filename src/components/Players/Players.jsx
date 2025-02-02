@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import PaymentDetail from '../PaymentDetail/PaymentDetail';
+import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import { getAllPlayers } from '../../api/playersService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import './Players.css';
 
-const Players = () => {
+const Players = ({ startDate, endDate, defaultDate }) => {
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
         rankings: [],
@@ -16,11 +16,52 @@ const Players = () => {
     });
     const [sortConfig, setSortConfig] = useState({ key: 'lastName', direction: 'asc' });
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [globalReductions, setGlobalReductions] = useState([]);
 
     useEffect(() => {
+        const fetchPlayers = async () => {
+            try {
+                setLoading(true);
+                const data = await getAllPlayers();
+                
+                if (!Array.isArray(data)) {
+                    console.error('Expected array of players, got:', typeof data);
+                    return;
+                }
+                
+                // Extraire les classements uniques et les sélectionner par défaut
+                const uniqueRankings = [...new Set(data.map(player => 
+                    player.ranking?.simple || player.ranking.simple || 'NC'
+                ))].filter(Boolean);
+                
+                // Extraire les catégories uniques et les sélectionner par défaut
+                const uniqueCategories = [...new Set(data.flatMap(player => player.categories || []))];
+                
+                setPlayers(data);
+                setFilters(prev => ({
+                    ...prev,
+                    rankings: uniqueRankings,
+                    selectedRankings: new Set(uniqueRankings),
+                    categories: uniqueCategories,
+                    selectedCategories: new Set(uniqueCategories)
+                }));
+            } catch (error) {
+                console.error('Erreur lors du chargement des joueurs:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        const fetchGlobalRecuctions = async () => {
+            try {
+                const data = await getPredefinedReductions();
+                setGlobalReductions(data);
+            } catch (error) {
+                console.error('Erreur lors du chargement des réductions:', error);
+            }
+        };
+        
         fetchPlayers();
         fetchGlobalRecuctions();
     }, []);
@@ -30,51 +71,6 @@ const Players = () => {
 
     useEffect(() => {
     }, [filters]);
-
-    const fetchPlayers = async () => {
-        try {
-            setLoading(true);
-            const data = await getAllPlayers();
-            
-            if (!Array.isArray(data)) {
-                console.error('Expected array of players, got:', typeof data);
-                setError('Invalid data format received from server');
-                return;
-            }
-            
-            // Extraire les classements uniques et les sélectionner par défaut
-            const uniqueRankings = [...new Set(data.map(player => 
-                player.ranking?.simple || player.ranking.simple || 'NC'
-            ))].filter(Boolean);
-            
-            // Extraire les catégories uniques et les sélectionner par défaut
-            const uniqueCategories = [...new Set(data.flatMap(player => player.categories || []))];
-            
-            setPlayers(data);
-            setFilters(prev => ({
-                ...prev,
-                rankings: uniqueRankings,
-                selectedRankings: new Set(uniqueRankings),
-                categories: uniqueCategories,
-                selectedCategories: new Set(uniqueCategories)
-            }));
-            setError(null);
-        } catch (error) {
-            console.error('Erreur lors du chargement des joueurs:', error);
-            setError('Erreur lors du chargement des joueurs');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchGlobalRecuctions = async () => {
-        try {
-            const data = await getPredefinedReductions();
-            setGlobalReductions(data);
-        } catch (error) {
-            console.error('Erreur lors du chargement des réductions:', error);
-        }
-    };
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -327,11 +323,10 @@ const Players = () => {
                     </div>
                 </div>
 
-                <div className="table-container">
+                <div>
                     <div className="players-table-container">
                         {loading && <div>Chargement...</div>}
-                        {error && <div className="error">{error}</div>}
-                        {!loading && !error && (
+                        {!loading && (
                             <table className="players-table">
                                 <thead>
                                     <tr>
@@ -416,8 +411,10 @@ const Players = () => {
                 <PaymentDetail
                     player={selectedPlayer}
                     onClose={() => setSelectedPlayer(null)}
-                    onUpdate={fetchPlayers}
                     globalReductions={globalReductions}
+                    startDate={startDate}
+                    endDate={endDate}
+                    defaultDate={defaultDate}
                 />
             )}
         </div>

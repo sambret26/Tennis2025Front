@@ -1,49 +1,16 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import ResultInputModal from './ResultInputModal';
+import ResultInputModal from './Modals/ResultInputModal';
 import { getMatches, updateMatchResult } from '../../api/matchesService';
-import { getStartAndEndDate } from '../../api/settingsService';
 import './Home.css'; 
 
-const Home = () => {
-    const [currentDate, setCurrentDate] = useState(null); // Initialisez à null
+const Home = ({ startDate, endDate, defaultDate }) => {
+    const [currentDate, setCurrentDate] = useState(defaultDate);
     const [planningText, setPlanningText] = useState('Planning du --/--');
     const [schedule, setSchedule] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentMatch, setCurrentMatch] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [datesLoaded, setDatesLoaded] = useState(false);
     const [previousDate, setPreviousDate] = useState(null);
     const currentDateRef = useRef(currentDate);
-
-
-    useEffect(() => {
-        const loadDates = async () => {
-            try {
-                const data = await getStartAndEndDate();
-                const startDateObj = new Date(data.startDate);
-                const endDateObj = new Date(data.endDate);
-                
-                setStartDate(startDateObj);
-                setEndDate(endDateObj);
-
-                const today = new Date();
-                if (today < startDateObj) {
-                    setCurrentDate(startDateObj);
-                } else if (today > endDateObj) {
-                    setCurrentDate(endDateObj);
-                } else {
-                    setCurrentDate(today);
-                }
-
-                setDatesLoaded(true); // Indique que les dates ont été chargées
-            } catch (error) {
-                console.error('Error fetching dates:', error);
-            }
-        };
-
-        loadDates();
-    }, []); // Exécutez une seule fois au chargement du composant
     
     const formatDate = useCallback((date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -51,17 +18,14 @@ const Home = () => {
         return `${day}/${month}`;
       }, []);
 
-
     const updateDate = useCallback((date) => {
         const formattedDate = formatDate(date);
         setPlanningText(`Planning du ${formattedDate}`);
     }, [formatDate]);
 
     useEffect(() => {
-        if (datesLoaded) {
-            updateDate(currentDate);
-        }
-    }, [currentDate, datesLoaded, updateDate]);
+        updateDate(currentDate);
+    }, [currentDate, updateDate]);
 
     useEffect(() => {
         const fetchMatches = async () => {
@@ -76,12 +40,12 @@ const Home = () => {
             }
         };
         
-        if (datesLoaded && currentDate !== previousDate) {
+        if (currentDate !== previousDate) {
             fetchMatches();
             setPreviousDate(currentDate);
             currentDateRef.current = currentDate;
         }
-    }, [currentDate, datesLoaded, previousDate]);
+    }, [currentDate, previousDate]);
     
     const handlePrevDay = useCallback(() => {
         const newDate = new Date(currentDate);
@@ -149,8 +113,7 @@ const Home = () => {
     };
 
     return (
-        <div className="home-content">
-
+        <div>
             <div className="calendar-container">
                 <button id="prevDay" className="arrow-button" 
                     onClick={handlePrevDay}
@@ -169,11 +132,11 @@ const Home = () => {
             </div>
 
             <div className="planning-text">
-                <p id="planningText">{planningText}</p>
+                <p>{planningText}</p>
             </div>
             
             <div className="schedule-list">
-                <ul id="scheduleTable">
+                <ul className="schedule-table">
                     <li className="header">
                         <span>Horaire</span>
                         <span>Court</span>
@@ -191,11 +154,11 @@ const Home = () => {
                             {match.winner ? (
                                 <>
                                     <span>{getResultValue(match)}</span>
-                                    <span> <button className="edit-button" onClick={() => handleEditResult(match)}>Modifier</button></span>
+                                    <span> <button className="gray-button" onClick={() => handleEditResult(match)}>Modifier</button></span>
                                 </>
                             ) : (
                                 <>
-                                    <span><button className="add-result-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></span>
+                                    <span><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></span>
                                     <span></span>
                                 </>
                             )}

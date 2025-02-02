@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './PaymentDetail.css';
-import { updatePlayerReductions } from '../../api/reductionService';
-import { updatePlayerPayments } from '../../api/paymentsService';
+import { updatePlayerReductions } from '../../../../api/reductionService';
+import { updatePlayerPayments } from '../../../../api/paymentsService';
 
-const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
+const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate }) => {
+    const getDefaultDate = () => {
+        return new Date(defaultDate).toISOString().split('T')[0]
+    }
+    
     const [initialAmount, setInitialAmount] = useState(0);
     const [finalAmount, setFinalAmount] = useState(0);
     const [remainingAmount, setRemainingAmount] = useState(0);
     const [reductions, setReductions] = useState([]);
     const [payments, setPayments] = useState([]);
     const [newReduction, setNewReduction] = useState({ reason: '', amount: '' });
-    const [newPayment, setNewPayment] = useState({ amount: '', date: new Date().toISOString().split('T')[0] });
+    const [newPayment, setNewPayment] = useState({ amount: '', date: getDefaultDate() });
     const [hasReductionsChanges, setHasReductionsChanges] = useState(false);
     const [hasPaymentsChanges, setHasPaymentsChanges] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -123,7 +127,7 @@ const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
         setPayments(updatedPayments);
 
         // Réinitialiser le champ de paiement
-        setNewPayment({ amount: '', date: new Date().toISOString().split('T')[0] });
+        setNewPayment({ amount: '', date: getDefaultDate() });
 
         // Mettre à jour le montant restant
         let newRemainingAmount = Math.max(0, remainingAmount - amount);
@@ -180,7 +184,6 @@ const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
             setHasReductionsChanges(false);
             setHasPaymentsChanges(false);
             onClose();
-            onSave(); 
         } catch (error) {
             console.error('Error saving changes:', error);
         } finally {
@@ -239,7 +242,6 @@ const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
                                         value={newPayment.amount}
                                         onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
                                         placeholder="Montant"
-                                        style={{ textAlign: 'center' }}
                                     />
                                 </td>
                                 <td>
@@ -247,6 +249,8 @@ const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
                                         type="date"
                                         value={newPayment.date}
                                         onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
+                                        min={startDate ? startDate.toISOString().split('T')[0] : undefined} 
+                                        max={endDate ? endDate.toISOString().split('T')[0] : undefined} 
                                     />
                                 </td>
                                 <td>
@@ -353,7 +357,7 @@ const PaymentDetail = ({ player, onClose, onSave, globalReductions }) => {
                 <div className="confirmation-modal">
                     <div className="confirmation-content">
                         <h3>Confirmation</h3>
-                        <p>Êtes-vous sûr de vouloir fermer ? Toutes les modifications non enregistrées seront perdues.</p>
+                        <p>Êtes-vous sûr de vouloir fermer ? <br></br>Toutes les modifications seront perdues.</p>
                         <div className="confirmation-buttons">
                             <button className="green-button" onClick={handleConfirmClose}>Confirmer</button>
                             <button className="red-button" onClick={() => setShowConfirmation(false)}>Annuler</button>
