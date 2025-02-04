@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getAccountDataForADay } from '../../../api/accountService';
 import './DetailModal.css';
 
-const DetailModal = ({ day, onClose }) => {
+const DetailModal = ({ days, day, onClose }) => {
     const [payments, setPayments] = useState([]);
     const [amountDayBefore, setAmountDayBefore] = useState(0);
     const [amountDay, setAmountDay] = useState(0);
     const [amountWithdrawn, setAmountWithdrawn] = useState(0);
     const [profit, setProfit] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedDay, setSelectedDay] = useState(day);
 
     useEffect(() => {
         const loadAccountData = async () => {
             try {
-                const data = await getAccountDataForADay(formatDate(day));
+                setIsLoading(true);
+                const data = await getAccountDataForADay(formatDate(selectedDay));
                 setAmountDayBefore(data.amountDayBefore);
                 setAmountWithdrawn(data.withdraws);
                 const totalPayments = Array.isArray(data.payments) ? data.payments.reduce((sum, payment) => sum + payment.amount, 0) : 0;
@@ -28,7 +30,7 @@ const DetailModal = ({ day, onClose }) => {
         };
 
         loadAccountData();
-    }, [day]);
+    }, [selectedDay]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -54,6 +56,34 @@ const DetailModal = ({ day, onClose }) => {
             console.error("Error parsing date :", error);
         }
     };
+
+    const handlePrevDay = useCallback(() => {
+        if (isLoading) return;
+        const index = days.indexOf(selectedDay);
+        if (index > 0) {
+            setSelectedDay(days[index - 1]);
+        }
+    }, [days, isLoading, selectedDay]);
+
+    const handleNextDay = useCallback(() => {
+        if (isLoading) return;
+        const index = days.indexOf(selectedDay);
+        if (index < days.length - 1) {
+            setSelectedDay(days[index + 1]);
+        }
+    }, [days, isLoading, selectedDay]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if(event.key === 'ArrowLeft') handlePrevDay();
+            else if (event.key === 'ArrowRight') handleNextDay();
+        };
+        window.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleNextDay, handlePrevDay]);
 
     const paymentListSection = () => {
         if (isLoading) return;
@@ -82,7 +112,7 @@ const DetailModal = ({ day, onClose }) => {
         }
         return (
             <div className="detail-payments-section">
-                <h3 className="detail-subtitle">Aucun paiment le {day}</h3>
+                <h3 className="detail-subtitle">Aucun paiment le {selectedDay}</h3>
             </div>
         );
     };
@@ -91,8 +121,16 @@ const DetailModal = ({ day, onClose }) => {
         <div className="detail-modal">
             <div className="detail-content">
                 <div className="detail-header">
-                    <h2 className="detail-title">Bilan comptable du {day}</h2>
-                    <button className="close-button-detail" onClick={onClose}>✖</button>
+                    <button id="prevDayDetail" className="arrow-button-detail"
+                        onClick={handlePrevDay}
+                        disabled={selectedDay === days[0]}
+                    >&#8249;</button>
+                    <h2 className="detail-title">Bilan comptable du {selectedDay}</h2>
+                    <button id="nextDayDetail" className="arrow-button-detail"
+                    onClick={handleNextDay}
+                    disabled={selectedDay === days[days.length - 1]}
+                >&#8250;</button>
+                <button className="close-button-detail" onClick={onClose}>✖</button>
                 </div>
                 {isLoading ? (
                     <div className="detail-summary">

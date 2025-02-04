@@ -90,7 +90,7 @@ const Account = ({ startDate, endDate }) => {
                 <button className="button-account" onClick={handleManageTransactions}>Gérer les transactions</button>
             </div>
             {isTransparentLoaderVisible && <TransparentLoader message="Mise à jour des données..." />}
-            {isDetailModalOpen && <DetailModal day={selectedDay} onClose={closeDetailModal} />}
+            {isDetailModalOpen && <DetailModal days={days} day={selectedDay} onClose={closeDetailModal} />}
             {isTransactionManagementModalOpen && <TransactionManagementModal onClose={closeTransactionManagementModal} onChange={() => setReload(!reload)} setIsTransparentLoaderVisible={setIsTransparentLoaderVisible} />}
         </div>
     );
