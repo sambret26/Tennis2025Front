@@ -34,7 +34,7 @@ function App() {
         const data = jwtDecode(token);
         setUsername(data.name);
         setUserId(data.id);
-        setRole(data.profileValue);
+        setRole(parseInt(data.profileValue));
     }
 
     const loadDates = async () => {
@@ -85,7 +85,7 @@ function App() {
         case 'profil':
             return <UserProfile username={username} setUsername={setUsername} userId={userId} setUserId={setUserId} role={role} setRole={setRole} profils={profils} />;
         case 'home':
-            return <Home startDate={startDate} endDate={endDate} defaultDate={defaultDate} />;
+            return <Home startDate={startDate} endDate={endDate} defaultDate={defaultDate} role={role} />;
         case 'calendar':
             return <Calendar />;
         case 'availability':

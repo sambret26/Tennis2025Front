@@ -23,7 +23,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
             if(!data.token) {
                 throw new Error('Failed to connect user');
             }
-            setRole(role);
+            setRole(parseInt(role));
             localStorage.setItem('token', data.token);
             onClose();
         }).catch(error => {

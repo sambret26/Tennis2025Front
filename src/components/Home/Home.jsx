@@ -5,7 +5,7 @@ import PlayerTooltip from '../PlayerTooltip/PlayerTooltip';
 
 import './Home.css'; 
 
-const Home = ({ startDate, endDate, defaultDate }) => {
+const Home = ({ startDate, endDate, defaultDate, role }) => {
     const [currentDate, setCurrentDate] = useState(defaultDate);
     const [planningText, setPlanningText] = useState('Planning du --/--');
     const [dateText, setDateText] = useState('--/--');
@@ -14,6 +14,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const [currentMatch, setCurrentMatch] = useState(null);
     const [previousDate, setPreviousDate] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [viewProfile, setViewProfile] = useState(role);
     const currentDateRef = useRef(currentDate);
     
     const formatDate = useCallback((date) => {
@@ -119,6 +120,24 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return value;
     };
 
+    const switchViewProfile = () => {
+        if (viewProfile === 0) setViewProfile(role);
+        else setViewProfile(0);
+    };
+
+    const showSwitch = () => {
+        if (role === 0) return;
+        return (
+            <div className="switch-container">
+                <label className="switch">
+                    <input type="checkbox" checked={viewProfile > 0 } onChange={() => switchViewProfile(!viewProfile)} />
+                    <span className="slider round"></span>
+                </label>
+                <span className="switch-label">{viewProfile === 2 ? "Admin" : viewProfile === 1 ? "Staff" : "Visiteur"}</span>
+            </div>
+        )
+    }
+
     const matchResult = (match) => {
         if(match.winner) {
             return (
@@ -202,6 +221,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     return (
         <div>
+            {showSwitch()}
             <div className="calendar-container">
                 <button id="prevDay" className="arrow-button" 
                     onClick={handlePrevDay}

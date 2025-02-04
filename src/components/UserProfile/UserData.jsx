@@ -25,7 +25,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
             if(!response.token) {
                 throw new Error('Failed to connect user');
             }
-            setRole(newRole);
+            setRole(parseInt(newRole));
             localStorage.setItem('token', response.token);
         } catch (error) {
             console.error(error);

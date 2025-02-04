@@ -35,7 +35,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
         const data = jwtDecode(token);
         setUsername(data.name);
         setIsLoggedIn(true);
-        setRole(data.profileValue);
+        setRole(parseInt(data.profileValue));
         setUserId(data.id);
     }
 
