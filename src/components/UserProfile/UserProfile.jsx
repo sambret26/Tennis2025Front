@@ -57,7 +57,6 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
         }).finally(() => {
             setIsLoading(false);
         });
-        // Logique de connexion
     };
 
     const handleCreateAccount = () => {
@@ -98,10 +97,10 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
         localStorage.removeItem('token');
         setUsername(null);
         setIsLoggedIn(false);
+        setUserId(null);
         setRole(0);
         setUserNameValue('');
         setPassword('');
-        // Logique de déconnexion
     };
 
     const renderComponent = () => {
