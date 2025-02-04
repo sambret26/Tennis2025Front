@@ -22,6 +22,7 @@ const Availability = ({ startDate, endDate }) => {
     const [playerInput, setPlayerInput] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isPlayerCommentModalOpen, setPlayerCommentModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -120,14 +121,14 @@ const Availability = ({ startDate, endDate }) => {
 
     useEffect(() => {
         const handlekeyPress = (event) => {
-            if(event.key === 'ArrowLeft') handlePrevDay();
-            else if (event.key === 'ArrowRight') handleNextDay();
+            if(event.key === 'ArrowLeft' && !isPlayerCommentModalOpen) handlePrevDay();
+            else if (event.key === 'ArrowRight' && !isPlayerCommentModalOpen) handleNextDay();
         };
         window.addEventListener('keydown', handlekeyPress);
         return () => {
             window.removeEventListener('keydown', handlekeyPress);
         };
-    }, [handleNextDay, handlePrevDay]);
+    }, [handleNextDay, handlePrevDay, isPlayerCommentModalOpen]);
 
     const handleInputChange = (e) => {
         setPlayerInput(e.target.value);
@@ -328,6 +329,8 @@ const Availability = ({ startDate, endDate }) => {
                                             comment={playerComments[playerId]}
                                             onCommentChange={handleCommentChange}
                                             playerName={player ? player.fullName : ''}
+                                            isModalOpen={isPlayerCommentModalOpen}
+                                            setIsModalOpen={setPlayerCommentModalOpen}
                                             isLoading={isLoading}
                                         />
                                     </td>

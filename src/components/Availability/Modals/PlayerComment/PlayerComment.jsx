@@ -2,15 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import './PlayerComment.css';
 
-const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isLoading }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
     
     const handleCancel = useCallback(() => {
         setCommentText(comment?.comments || '');
         setIsModalOpen(false);
-    }, [comment?.comments]);
+    }, [comment?.comments, setIsModalOpen]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {

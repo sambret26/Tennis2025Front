@@ -75,18 +75,15 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     
     useEffect(() => {
         const handleKeyPress = (event) => {
-            if(event.key === 'ArrowLeft') {
-                handlePrevDay();
-            } else if (event.key === 'ArrowRight') {
-                handleNextDay();
-            }
+            if(event.key === 'ArrowLeft' && !showModal) handlePrevDay();
+            else if (event.key === 'ArrowRight' && !showModal) handleNextDay();
         };
         window.addEventListener('keydown', handleKeyPress);
 
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [handleNextDay, handlePrevDay]);
+    }, [handleNextDay, handlePrevDay, showModal]);
 
     const handleEditResult = (match) => {
         setCurrentMatch(match);
