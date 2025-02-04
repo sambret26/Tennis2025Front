@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getAccountDataForADay } from '../../../api/accountService';
 import './DetailModal.css';
 
@@ -15,6 +15,8 @@ const DetailModal = ({ days, day, onClose }) => {
     const [difference, setDifference] = useState(0);
     const [hasToCount, setHasToCount] = useState(false)
     const [inputValues, setInputValues] = useState();
+    const [previousDate, setPreviousDate] = useState(null);
+    const currentDateRef = useRef(selectedDay);
 
     const setInputValuesToZero = () => {
         setInputValues({
@@ -34,6 +36,7 @@ const DetailModal = ({ days, day, onClose }) => {
             try {
                 setIsLoading(true);
                 const data = await getAccountDataForADay(formatDate(selectedDay));
+                if (currentDateRef.current !== selectedDay) return;
                 setAmountDayBefore(data.amountDayBefore);
                 setAmountWithdrawn(data.withdraws);
                 const totalPayments = Array.isArray(data.payments) ? data.payments.reduce((sum, payment) => sum + payment.amount, 0) : 0;
@@ -45,12 +48,17 @@ const DetailModal = ({ days, day, onClose }) => {
             } catch (error) {
                 console.error("Error fetching account data:", error);
             } finally {
+                if (currentDateRef.current !== selectedDay) return;
                 setIsLoading(false);
             }
         };
 
-        loadAccountData();
-    }, [selectedDay]);
+        if(selectedDay !== previousDate) {
+            loadAccountData();
+            setPreviousDate(selectedDay);
+            currentDateRef.current = selectedDay;
+        }
+    }, [selectedDay, previousDate]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -81,20 +89,20 @@ const DetailModal = ({ days, day, onClose }) => {
     };
 
     const handlePrevDay = useCallback(() => {
-        if (isLoading || countRegister) return;
+        if (countRegister) return;
         const index = days.indexOf(selectedDay);
         if (index > 0) {
             setSelectedDay(days[index - 1]);
         }
-    }, [days, isLoading, selectedDay, countRegister]);
+    }, [days, selectedDay, countRegister]);
 
     const handleNextDay = useCallback(() => {
-        if (isLoading || countRegister) return;
+        if (countRegister) return;
         const index = days.indexOf(selectedDay);
         if (index < days.length - 1) {
             setSelectedDay(days[index + 1]);
         }
-    }, [days, isLoading, selectedDay, countRegister]);
+    }, [days, selectedDay, countRegister]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {

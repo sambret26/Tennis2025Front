@@ -45,9 +45,8 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
             } catch (error) {
                 console.error('Error fetching matches:', error);
             } finally {
-                if (currentDateRef.current === currentDate) {
-                    setIsLoading(false);
-                }
+                if (currentDateRef.current !== currentDate) return;
+                setIsLoading(false)
             }
         };
         
