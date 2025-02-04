@@ -236,6 +236,40 @@ const Availability = ({ startDate, endDate }) => {
         }
     };
 
+    const playersHeaders = () => {
+        if (selectedPlayers.length === 0) {
+            return (
+                <li className="header">
+                    <span className="full-width">Séléctionnez au moins un joueur pour afficher ses disponibilités</span>
+                </li>
+            )
+        }
+        if (isWeekend) {
+            return (
+                <li className="header">
+                    <span></span>
+                    <span></span>
+                    <span>Joueur</span>
+                    <span>Matin</span>
+                    <span>Après-midi</span>
+                    <span>Soirée</span>
+                    <span></span>
+                </li>
+            )
+        }
+        return (
+            <li className="header">
+                <span></span>
+                <span></span>
+                <span>Joueur</span>
+                <span>18h</span>
+                <span>19h30</span>
+                <span>21h</span>
+                <span></span>
+            </li>
+        )
+    };
+
     return (
         <div>
             <div className="content-header">
@@ -271,25 +305,7 @@ const Availability = ({ startDate, endDate }) => {
 
             <div className="availability-list">
                 <ul className="availability-table">
-                    <li className="header">
-                    <span></span>
-                    <span></span>
-                    <span>Joueur</span>
-                        {isWeekend ? (
-                            <>
-                                <span>Matin</span>
-                                <span>Après-midi</span>
-                                <span>Soirée</span>
-                            </>
-                        ) : (
-                            <>
-                                <span>18h</span>
-                                <span>19h30</span>
-                                <span>21h</span>
-                            </>
-                        )}
-                        <span></span>
-                    </li>
+                    {playersHeaders()}
                     {selectedPlayers.map((playerId) => {
                         const player = allPlayers.find(player => player.id === playerId);
                         const playerAvailabilities = playersAvailabilities.filter(availability => 
@@ -309,7 +325,7 @@ const Availability = ({ startDate, endDate }) => {
                                         isLoading={isLoading}
                                     />
                                 </span>
-                                <span>{player ? player.fullName : ''}</span> 
+                                <span className="left-align">{player ? player.fullName : ''}</span> 
                                 {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                     const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                     const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;

@@ -95,6 +95,10 @@
     padding: 10px; /* Ajoute un peu d'espace autour du texte */
 }
 
+.void-th {
+    width: 0px;
+}
+
 .transaction-red-button {
     background-color: #e74c3c !important;
     border-color: #c0392b !important;

@@ -204,6 +204,37 @@ const Players = ({ startDate, endDate, defaultDate }) => {
         return null;
     };
 
+    const playersHeaders = () => {
+        if(getFilteredPlayers().length > 0){
+            return (
+                <tr>
+                    <th onClick={() => handleSort('lastName')}>
+                        Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th onClick={() => handleSort('ranking')}>
+                        Classement {sortConfig.key === 'ranking' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th>Catégories</th>
+                    <th onClick={() => handleSort('amount')}>
+                        Montant {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th onClick={() => handleSort('paid')}>
+                        Payé {sortConfig.key === 'paid' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th onClick={() => handleSort('paymentDate')}>
+                        Date de paiement {sortConfig.key === 'paymentDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th>Détails</th>
+                </tr>
+            );
+        }
+        return (
+            <tr>
+                <th colSpan={7}>Aucun joueur ne correspond aux filtres</th>
+            </tr>
+        )
+    };
+
     return (
         <div className="players-container">
             <h1>Gestion des joueurs</h1>
@@ -324,31 +355,13 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                     </div>
                 </div>
 
-                <div>
+                <div className="players-table-content">
                     {loading && <TransparentLoader message="Chargement des joueurs..." />}
                     <div className="players-table-container">
                         {!loading && (
                             <table className="players-table">
                                 <thead>
-                                    <tr>
-                                        <th onClick={() => handleSort('lastName')}>
-                                            Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                                        </th>
-                                        <th onClick={() => handleSort('ranking')}>
-                                            Classement {sortConfig.key === 'ranking' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                                        </th>
-                                        <th>Catégories</th>
-                                        <th onClick={() => handleSort('amount')}>
-                                            Montant {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                                        </th>
-                                        <th onClick={() => handleSort('paid')}>
-                                            Payé {sortConfig.key === 'paid' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                                        </th>
-                                        <th onClick={() => handleSort('paymentDate')}>
-                                            Date de paiement {sortConfig.key === 'paymentDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                                        </th>
-                                        <th>Détails</th>
-                                    </tr>
+                                    {playersHeaders()}
                                 </thead>
                                 <tbody>
                                     {getFilteredPlayers().map(player => (

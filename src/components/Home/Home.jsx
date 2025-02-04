@@ -120,10 +120,9 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return value;
     };
 
-    const scheduleList = () => {
-        return (
-        <div className="schedule-list">
-            <ul className="schedule-table">
+    const scheduleHeaders = () => {
+        if(schedule.length > 0) {
+            return (
                 <li className="header">
                     <span>Horaire</span>
                     <span>Court</span>
@@ -132,6 +131,21 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                     <span>Résultat</span>
                     <span></span>
                 </li>
+            );
+        }
+        return (
+            <li className="header">
+                <span className="full-width">Aucun match programmé le {dateText}</span>
+                <span></span>
+            </li>
+        );
+    };
+
+    const scheduleList = () => {
+        return (
+        <div className="schedule-list">
+            <ul className="schedule-table">
+                {scheduleHeaders()}
                 {schedule.map((match, index) => (
                     <li key={index}>
                         <span>{match.hour}</span>

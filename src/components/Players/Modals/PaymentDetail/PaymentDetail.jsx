@@ -215,6 +215,41 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         };
     }, [handleClose, showConfirmation]);
 
+    const paymentHeaders = () => {
+        if(payments.length > 0) {
+            return (
+                <tr>
+                    <th>Type</th>
+                    <th>Montant</th>
+                    <th>Date de paiement</th>
+                    <th></th>
+                </tr>
+            )
+        }
+        return (
+            <tr>
+                <th colSpan={4}>Aucun paiement</th>
+            </tr>
+        )
+    }
+
+    const reductionHeaders = () => {
+        if(reductions.length > 0) {
+            return (
+                <tr>
+                    <th>Motif</th>
+                    <th>Montant de la réduction</th>
+                    <th></th>
+                </tr>
+            )
+        }
+        return (
+            <tr>
+                <th colSpan={3}>Aucune réduction spécifique</th>
+            </tr>
+        )
+    }
+
     return (
         <div className="payment-detail-modal">
             <div className="payment-detail-content">
@@ -233,12 +268,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     <h3 className="section-title">Paiements</h3>
                     <table className="payment-table">
                         <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Montant</th>
-                                <th>Date de paiement</th>
-                                <th></th>
-                            </tr>
+                            {paymentHeaders()}
                         </thead>
                         <tbody>
                             {payments.map((payment, index) => (
@@ -313,11 +343,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     </div>
                     <table className="reduction-table">
                         <thead>
-                            <tr>
-                                <th>Motif</th>
-                                <th>Montant de la réduction</th>
-                                <th></th>
-                            </tr>
+                            {reductionHeaders()}
                         </thead>
                         <tbody>
                             {reductions

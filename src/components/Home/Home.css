@@ -125,6 +125,10 @@
     width: 10%; /* Modifier */
 }
 
+.schedule-list li .full-width:nth-child(1) {
+    width: 100%;
+}
+
 /* Optionnel : Style pour les lignes paires */
 .schedule-list li:nth-child(even) {
     background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */

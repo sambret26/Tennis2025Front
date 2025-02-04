@@ -94,6 +94,24 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
         onClose();
     };
 
+    const headers = () => {
+        if(transactions.length > 0) {
+            return (
+                <tr>
+                    <th className="transaction-th">Type</th>
+                    <th className="transaction-th">Date</th>
+                    <th className="transaction-th">Montant</th>
+                    <th className="transaction-th"></th>
+                </tr>
+            )
+        }
+        return (
+            <tr>
+                <th className="transaction-th" colSpan={4}>Aucune transaction</th>
+            </tr>
+        )
+    }
+
     const transactionSection = () => {
 
         if (isLoading) {
@@ -107,12 +125,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
             <div className="transaction-section">
             <table className="transaction-table">
                 <thead>
-                    <tr>
-                        <th className="transaction-th">Type</th>
-                        <th className="transaction-th">Date</th>
-                        <th className="transaction-th">Montant</th>
-                        <th className="transaction-th"></th>
-                    </tr>
+                    {headers()}
                 </thead>
                 <tbody>
                     {transactions.map((transaction, index) => (

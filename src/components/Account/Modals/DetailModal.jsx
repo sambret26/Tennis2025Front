@@ -55,6 +55,38 @@ const DetailModal = ({ day, onClose }) => {
         }
     };
 
+    const paymentListSection = () => {
+        if (isLoading) return;
+        if (payments.length > 0) {
+            return (
+                <div className="detail-payments-section">
+                    <h3 className="detail-subtitle">Liste des paiements :</h3>
+                    <table className="detail-table">
+                        <thead>
+                            <tr>
+                                <th className="detail-th">Joueur</th>
+                                <th className="detail-th">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {payments.map((payment, index) => (
+                                <tr key={index}>
+                                    <td className="detail-td">{payment.playerFullName}</td>
+                                    <td className="detail-td">{payment.amount}€</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+        return (
+            <div className="detail-payments-section">
+                <h3 className="detail-subtitle">Aucun paiment le {day}</h3>
+            </div>
+        );
+    };
+
     return (
         <div className="detail-modal">
             <div className="detail-content">
@@ -78,27 +110,7 @@ const DetailModal = ({ day, onClose }) => {
                         </span>
                     </div>
                 )}
-                {!isLoading && (        
-                    <div className="detail-payments-section">
-                        <h3 className="detail-subtitle">Liste des paiements :</h3>
-                        <table className="detail-table">
-                            <thead>
-                                <tr>
-                                    <th className="detail-th">Joueur</th>
-                                    <th className="detail-th">Montant</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {payments.map((payment, index) => (
-                                    <tr key={index}>
-                                        <td className="detail-td">{payment.playerFullName}</td>
-                                        <td className="detail-td">{payment.amount}€</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                {paymentListSection()}
             </div>
         </div>
     );

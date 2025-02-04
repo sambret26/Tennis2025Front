@@ -119,13 +119,22 @@ body {
 
 .availability-list li span:nth-child(n+3) {
     width: 23%; /* Joueur */
-    text-align: left;
     margin-left: 10px;
+}
+
+.left-align {
+    text-align: left;
+    padding-left: 20px !important;
 }
 
 .availability-list li span:nth-child(7) {
     width: 1%; /* Check/Croix */
 }
+
+.availability-list li .full-width:nth-child(1) {
+    width: 100%;
+}
+
 
 /* Optionnel : Style pour les lignes paires */
 .availability-list li:nth-child(even) {
@@ -237,4 +246,5 @@ body {
     display: inline-block; /* Utilise un affichage en bloc */
     width: 15%; /* Largeur des colonnes pour l'en-tête */
     padding: 10px; /* Ajoute du padding */
+    text-align: center; /* Centre le texte */
 }
