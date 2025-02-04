@@ -1,0 +1,9 @@
+.tooltip-phone-content,
+.tooltip-mail-content {
+    display: flex;
+    align-items: center;
+}
+
+.tooltip-icon {
+    margin-right: 5px;
+}

@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import ResultInputModal from './Modals/ResultInputModal';
 import { getMatches, updateMatchResult } from '../../api/matchesService';
+import PlayerTooltip from '../PlayerTooltip/PlayerTooltip';
+
 import './Home.css'; 
 
 const Home = ({ startDate, endDate, defaultDate }) => {
@@ -120,52 +122,66 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return value;
     };
 
+    const matchResult = (match) => {
+        if(match.winner) {
+            return (
+                <>
+                    <td className="schedule-col-result">{getResultValue(match)}</td>
+                    <td className="schedule-col-edit"> <button className="gray-button" onClick={() => handleEditResult(match)}>Modifier</button></td>
+                </>
+            )
+        }
+        return (
+            <>
+                <td className="schedule-col-result"><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></td>
+                <td className="schedule-col-edit"></td>
+            </>
+        )
+    }
+
     const scheduleHeaders = () => {
         if(schedule.length > 0) {
             return (
-                <li className="header">
-                    <span>Horaire</span>
-                    <span>Court</span>
-                    <span>Joueur 1</span>
-                    <span>Joueur 2</span>
-                    <span>Résultat</span>
-                    <span></span>
-                </li>
+                <thead className="header">
+                    <tr>
+                        <th>Horaire</th>
+                        <th>Court</th>
+                        <th colSpan={2}>Joueur 1</th>
+                        <th colSpan={2}>Joueur 2</th>
+                        <th>Résultat</th>
+                        <th></th>
+                    </tr>
+                </thead>
             );
         }
         return (
-            <li className="header">
-                <span className="full-width">Aucun match programmé le {dateText}</span>
-                <span></span>
-            </li>
+            <thead className="header">
+                <tr>
+                    <th colSpan={8} className="full-width">Aucun match programmé le {dateText}</th>
+                </tr>
+            </thead>
         );
     };
 
     const scheduleList = () => {
         return (
-        <div className="schedule-list">
-            <ul className="schedule-table">
+        <div className="schedule-table-container">
+            <table className="schedule-table">
                 {scheduleHeaders()}
-                {schedule.map((match, index) => (
-                    <li key={index}>
-                        <span>{match.hour}</span>
-                        <span>{match.court.name}</span>
-                        <span>{match.player1.fullName} ({match.player1.ranking})</span>
-                        <span>{match.player2.fullName} ({match.player2.ranking})</span>
-                        {match.winner ? (
-                            <>
-                                <span>{getResultValue(match)}</span>
-                                <span> <button className="gray-button" onClick={() => handleEditResult(match)}>Modifier</button></span>
-                            </>
-                        ) : (
-                            <>
-                                <span><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></span>
-                                <span></span>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
+                <tbody>
+                    {schedule.map((match, index) => (
+                        <tr key={index}>
+                            <td className="schedule-col-hour">{match.hour}</td>
+                            <td className="schedule-col-court">{match.court.name}</td>
+                            <td className="schedule-col-player">{match.player1.fullName} ({match.player1.ranking})</td>
+                            <PlayerTooltip player={match.player1} />
+                            <td className="schedule-col-player">{match.player2.fullName} ({match.player2.ranking})</td>
+                            <PlayerTooltip player={match.player2} />
+                            {matchResult(match)}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
         )
     }

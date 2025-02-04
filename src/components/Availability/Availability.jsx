@@ -4,6 +4,7 @@ import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
+import PlayerTooltip from "../PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
 const Availability = ({ startDate, endDate }) => {
@@ -239,34 +240,38 @@ const Availability = ({ startDate, endDate }) => {
     const playersHeaders = () => {
         if (selectedPlayers.length === 0) {
             return (
-                <li className="header">
-                    <span className="full-width">Séléctionnez au moins un joueur pour afficher ses disponibilités</span>
-                </li>
+                <thead className="header">
+                    <tr>
+                        <th colSpan={8} className="full-width">Séléctionnez au moins un joueur pour afficher ses disponibilités</th>
+                    </tr>
+                </thead>
             )
         }
         if (isWeekend) {
             return (
-                <li className="header">
-                    <span></span>
-                    <span></span>
-                    <span>Joueur</span>
-                    <span>Matin</span>
-                    <span>Après-midi</span>
-                    <span>Soirée</span>
-                    <span></span>
-                </li>
+                <thead>
+                    <tr className="header">
+                        <th colSpan={2}></th>
+                        <th colSpan={2}>Joueur</th>
+                        <th>Matin</th>
+                        <th>Après-midi</th>
+                        <th>Soirée</th>
+                        <th></th>
+                    </tr>
+                </thead>
             )
         }
         return (
-            <li className="header">
-                <span></span>
-                <span></span>
-                <span>Joueur</span>
-                <span>18h</span>
-                <span>19h30</span>
-                <span>21h</span>
-                <span></span>
-            </li>
+            <thead>
+                <tr className="header">
+                    <th colSpan={2}></th>
+                    <th colSpan={2}>Joueur</th>
+                    <td>18h</td>
+                    <td>19h30</td>
+                    <td>21h</td>
+                    <td></td>
+                </tr>
+            </thead>
         )
     };
 
@@ -303,56 +308,59 @@ const Availability = ({ startDate, endDate }) => {
                 {showSuggestions && renderSuggestion()}
             </div>
 
-            <div className="availability-list">
-                <ul className="availability-table">
+            <div className="player-table-container">
+                <table className="player-table">
                     {playersHeaders()}
-                    {selectedPlayers.map((playerId) => {
-                        const player = allPlayers.find(player => player.id === playerId);
-                        const playerAvailabilities = playersAvailabilities.filter(availability => 
-                            availability.playerId === playerId && 
-                            availability.day === formattedDate(currentDate)
-                        );
-                        return (
-                            <li key={playerId}>
-                                <span className="remove-player" onClick={() => handleRemovePlayer(playerId)}>&#10060;</span>
-                                <span>
-                                    <PlayerComment
-                                        playerId={playerId}
-                                        day={formattedDate(currentDate)}
-                                        comment={playerComments[playerId]}
-                                        onCommentChange={handleCommentChange}
-                                        playerName={player ? player.fullName : ''}
-                                        isLoading={isLoading}
-                                    />
-                                </span>
-                                <span className="left-align">{player ? player.fullName : ''}</span> 
-                                {Array.from({length: 3}).map((_, timeSlotIndex) => {
-                                    const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
-                                    const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
-                                    const availability = playerAvailabilityNumber ? allAvailabilities.find(availability => availability.number === playerAvailabilityNumber) : '';
-                                    const displayValue = availability ? availability.value : '';
-                                    return (
-                                        <span key={timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
-                                            <select value={displayValue}
-                                                onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
-                                            >
-                                                {allAvailabilities.map((availability) => (
-                                                    <option key={availability.number} value={availability.value}>
-                                                        {availability.value}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </span>
-                                    );
-                                })}
-                                <span className="availability-actions">
-                                    <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
-                                    <span className="unavailable-player" onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}>&#10060;</span>
-                                </span>
-                            </li>
-                        );
-                    })}
-                </ul>
+                    <tbody>
+                        {selectedPlayers.map((playerId) => {
+                            const player = allPlayers.find(player => player.id === playerId);
+                            const playerAvailabilities = playersAvailabilities.filter(availability =>
+                                availability.playerId === playerId &&
+                                availability.day === formattedDate(currentDate)
+                            );
+                            return (
+                                <tr key={playerId}>
+                                    <td className="player-remove" onClick={() => handleRemovePlayer(playerId)}>&#10060;</td>
+                                    <td className="player-comment">
+                                        <PlayerComment
+                                            playerId={playerId}
+                                            day={formattedDate(currentDate)}
+                                            comment={playerComments[playerId]}
+                                            onCommentChange={handleCommentChange}
+                                            playerName={player ? player.fullName : ''}
+                                            isLoading={isLoading}
+                                        />
+                                    </td>
+                                    <td className="player-name">{player ? player.fullName : ''}</td>
+                                    <PlayerTooltip player={player} />
+                                    {Array.from({length: 3}).map((_, timeSlotIndex) => {
+                                        const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
+                                        const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
+                                        const availability = playerAvailabilityNumber ? allAvailabilities.find(availability => availability.number === playerAvailabilityNumber) : '';
+                                        const displayValue = availability ? availability.value : '';
+                                        return (
+                                            <td className="player-availability" key={timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
+                                                <select value={displayValue}
+                                                    onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
+                                                >
+                                                    {allAvailabilities.map((availability) => (
+                                                        <option key={availability.number} value={availability.value}>
+                                                            {availability.value}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                        );
+                                    })}
+                                    <td className="availability-actions">
+                                        <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
+                                        <span className="unavailable-player" onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}>&#10060;</span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import { getAllPlayers } from '../../api/playersService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import TransparentLoader from '../Loader/TransparentLoader';
+import PlayerTooltip from "../PlayerTooltip/PlayerTooltip";
 import './Players.css';
 
 const Players = ({ startDate, endDate, defaultDate }) => {
@@ -207,25 +208,27 @@ const Players = ({ startDate, endDate, defaultDate }) => {
     const playersHeaders = () => {
         if(getFilteredPlayers().length > 0){
             return (
-                <tr>
-                    <th onClick={() => handleSort('lastName')}>
-                        Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th onClick={() => handleSort('ranking')}>
-                        Classement {sortConfig.key === 'ranking' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th>Catégories</th>
-                    <th onClick={() => handleSort('amount')}>
-                        Montant {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th onClick={() => handleSort('paid')}>
-                        Payé {sortConfig.key === 'paid' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th onClick={() => handleSort('paymentDate')}>
-                        Date de paiement {sortConfig.key === 'paymentDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th>Détails</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th colSpan={2} onClick={() => handleSort('lastName')}>
+                            Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('ranking')}>
+                            Classement {sortConfig.key === 'ranking' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th>Catégories</th>
+                        <th onClick={() => handleSort('amount')}>
+                            Montant {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('paid')}>
+                            Payé {sortConfig.key === 'paid' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th onClick={() => handleSort('paymentDate')}>
+                            Date de paiement {sortConfig.key === 'paymentDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                        </th>
+                        <th>Détails</th>
+                    </tr>
+                </thead>
             );
         }
         return (
@@ -360,13 +363,12 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                     <div className="players-table-container">
                         {!loading && (
                             <table className="players-table">
-                                <thead>
-                                    {playersHeaders()}
-                                </thead>
+                                {playersHeaders()}
                                 <tbody>
                                     {getFilteredPlayers().map(player => (
                                         <tr key={player.id} className={getRowClassName(player)}>
                                             <td className="col-player">{player.lastName} {player.firstName}</td>
+                                            <PlayerTooltip player={player} />
                                             <td>{player.ranking?.simple || player.ranking.simple || 'NC'}</td>
                                             <td>{player.categories.join(', ')}</td>
                                             <td>{player.balance.finalAmount}€</td>
@@ -383,21 +385,12 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                                                                 date: new Date().toISOString().split('T')[0], // Date courante au format ISO
                                                                 isFullPayment: true
                                                             };
-
-                                                            // Ajouter le paiement à la liste des paiements du joueur
                                                             player.payments.push(newPayment);
-
-                                                            // Mettre à jour le montant restant à 0
                                                             player.balance.remainingAmount = 0;
-
-                                                            // Mettre à jour les paiements
                                                             updatePlayerPayments(player.id, player.payments, player.balance);
-
-                                                            // Mettre à jour la liste des joueurs
                                                             setPlayers((prevPlayers) =>
                                                                 prevPlayers.map((p) => (p.id === player.id ? { ...p, payments: player.payments } : p))
                                                             );
-
                                                         } catch (error) {
                                                             console.error("Erreur lors de la création du paiement :", error);
                                                         }

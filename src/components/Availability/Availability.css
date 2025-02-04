@@ -51,21 +51,66 @@ body {
     box-shadow: 0 4px 12px rgba(0, 106, 255, 0.3); /* Ombre plus prononcée au focus */
 }
 
-.availability-list {
-    width: 60%;
+.player-table-container {
+    width: 70%;
     margin: auto;
-    max-width: 1300px; /* Largeur maximum */
-    margin-top: 0px;
     display: flex;
-    text-align: center;
     flex-direction: column;
-    border: 1px solid #ccc; /* Bordure autour du tableau */
-    border-radius: 8px; /* Coins arrondis */
-    overflow: hidden; /* Empêche le débordement */
-    background-color: #fff; /* Fond blanc pour le tableau */
+    text-align: center;
+    flex: 1;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ccc;
 }
 
-.availability-list select {
+.player-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.player-table th,
+.player-table td {
+    padding-left: 0px;
+    padding-right: 0px;
+    height: 50px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.player-table th {
+    font-weight: 600;
+}
+
+.player-table tbody tr:hover {
+    background-color: #f8f8f8;
+}
+
+.player-remove,
+.player-comment,
+.player-info {
+    width: 4%;
+}
+
+.player-name {
+    width: 27%; /* Nom du joueur */
+    margin-left: 10px;
+    text-align: left !important;
+    padding-left: 20px !important;
+}
+
+.player-availability {
+    width: 20%;
+    margin-left: 10px;
+}
+
+.availability-actions {
+    width: 1%; /* Check/Croix */
+}
+
+.player-table-container select {
     appearance: none; /* Supprime l'apparence par défaut du select */
     -webkit-appearance: none; /* Pour Safari */
     -moz-appearance: none; /* Pour Firefox */
@@ -76,75 +121,20 @@ body {
     margin: 0; /* Supprime la marge */
     cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
     width: 100%; /* S'assure que le select prend toute la largeur disponible */
-    height: 40px; /* Hauteur fixe pour un meilleur alignement */
+    /*height: 40px; /* Hauteur fixe pour un meilleur alignement */
     text-align: center; /* Centre le texte */
     transition: border-color 0.3s ease; /* Transition pour la bordure */
 }
 
-.availability-list select:focus {
+.player-table-container select:focus {
     outline: none; /* Supprime le contour par défaut */
     box-shadow: none; /* Supprime l'ombre si présente */
 }
 
-.availability-list select option {
+.player-table-container select option {
     background-color: white; /* Fond blanc pour les options */
     color: #333; /* Couleur de texte sombre */
     padding: 10px; /* Espacement interne pour les options */
-}
-
-.availability-list li {
-    display: flex; /* Utilise Flexbox pour le layout */
-    border-bottom: 1px solid #ccc; /* Ligne de séparation entre les lignes */
-    justify-content: space-between; /* Espace entre les colonnes */
-    align-items: center; /* Centre verticalement les éléments de chaque ligne */
-    line-height: 1.5; /* Ajuste la valeur pour une meilleure lisibilité */
-    padding: 10px 15px; /* Ajoute du padding */
-    transition: background-color 0.3s; /* Transition pour le survol */
-}
-
-.availability-list li span {
-    /*display: inline-block; /* Utilise un affichage en bloc */
-    margin: 0; /* Supprime la marge entre les spans */
-    padding: 0; /* Supprime le padding entre les spans */
-}
-
-/* Ajuster la largeur des colonnes */
-.availability-list li span:nth-child(1) {
-    width: 4%; /* Croix */
-}
-
-.availability-list li span:nth-child(2) {
-    width: 4%; /* Enveloppe */
-}
-
-.availability-list li span:nth-child(n+3) {
-    width: 23%; /* Joueur */
-    margin-left: 10px;
-}
-
-.left-align {
-    text-align: left;
-    padding-left: 20px !important;
-}
-
-.availability-list li span:nth-child(7) {
-    width: 1%; /* Check/Croix */
-}
-
-.availability-list li .full-width:nth-child(1) {
-    width: 100%;
-}
-
-
-/* Optionnel : Style pour les lignes paires */
-.availability-list li:nth-child(even) {
-    background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
-}
-
-.availability-table {
-    list-style: none; /* Enlève les puces */
-    padding: 0; /* Enlève le padding par défaut */
-    margin: 0; /* Enlève la marge par défaut */
 }
 
 .calendar-container {
@@ -240,11 +230,4 @@ body {
 .header {
     background-color: #f0f0f0; /* Couleur de fond pour l'en-tête */
     font-weight: bold; /* Met le texte en gras */
-}
-
-.header span {
-    display: inline-block; /* Utilise un affichage en bloc */
-    width: 15%; /* Largeur des colonnes pour l'en-tête */
-    padding: 10px; /* Ajoute du padding */
-    text-align: center; /* Centre le texte */
 }

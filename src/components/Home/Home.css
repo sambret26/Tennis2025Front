@@ -54,23 +54,65 @@
     font-size: 24px;
 }
 
-.schedule-list {
-    width: 60%;
+.schedule-table-container {
+    width: 70%;
     margin: auto;
-    margin-top: 20px;
     display: flex;
-    text-align: center;
     flex-direction: column;
-    border: 1px solid #ccc; /* Bordure autour du tableau */
-    border-radius: 8px; /* Coins arrondis */
-    overflow: hidden; /* Empêche le débordement */
-    background-color: #fff; /* Fond blanc pour le tableau */
+    text-align: center;
+    flex: 1;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ccc;
 }
-    
+
 .schedule-table {
-    list-style: none; /* Enlève les puces */
-    padding: 0; /* Enlève le padding par défaut */
-    margin: 0; /* Enlève la marge par défaut */
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding-left: 0px;
+    padding-right: 0px;
+    height: 50px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.schedule-table th {
+    font-weight: 600;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #f8f8f8;
+}
+
+.schedule-col-hour {
+    width: 17%
+}
+
+.schdule-col-court {
+    width: 8%
+}
+
+.schedule-col-player {
+    width: 18%
+}
+
+.info-circle {
+    width: 2%
+}
+
+.schedule-col-result {
+    width: 25%
+}
+
+.schedule-col-edit {
+    width: 10%
 }
 
 .header {
@@ -84,64 +126,14 @@
     padding: 10px; /* Ajoute du padding */
 }
 
-.schedule-list li {
-    display: flex; /* Utilise Flexbox pour le layout */
-    border-bottom: 1px solid #ccc; /* Ligne de séparation entre les lignes */
-    justify-content: space-between; /* Espace entre les colonnes */
-    align-items: center; /* Centre verticalement les éléments de chaque ligne */
-    line-height: 2; /* Ajuste la valeur pour augmenter ou diminuer la hauteur */
-    padding: 10px 0;
-    /*transition: background-color 0.3s; /* Transition pour le survol TODO*/ 
-}
-
-.schedule-list li span {
-    display: inline-block; /* Utilise un affichage en bloc */
-    margin: 0; /* Supprime la marge entre les spans */
-    padding: 0; /* Supprime le padding entre les spans */
-}
-
-/* Ajuster la largeur des colonnes */
-.schedule-list li span:nth-child(1) {
-    width: 17%; /* Horaire */
-}
-
-.schedule-list li span:nth-child(2) {
-    width: 8%; /* Court */
-}
-
-.schedule-list li span:nth-child(3) {
-    width: 20%; /* Joueur 1 - largeur augmentée */
-}
-
-.schedule-list li span:nth-child(4) {
-    width: 20%; /* Joueur 2 - largeur augmentée */
-}
-
-.schedule-list li span:nth-child(5) {
-    width: 25%; /* Résultat */
-}
-
-.schedule-list li span:nth-child(6) {
-    width: 10%; /* Modifier */
-}
-
-.schedule-list li .full-width:nth-child(1) {
-    width: 100%;
-}
-
-/* Optionnel : Style pour les lignes paires */
-.schedule-list li:nth-child(even) {
-    background-color: #f9f9f9; /* Couleur de fond pour les lignes paires */
-}
-
 .gray-button {
     background-color: #ccc; /* Couleur de fond grise */
     border: none;
     border-radius: 8px;
-    padding: 2px 10px;
     cursor: pointer;
     margin-left: 10px; /* Espace entre le texte et le bouton */
     font-size: 14px;
+    height: 35px;
 }
 
 .gray-button:hover {
