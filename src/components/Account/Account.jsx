@@ -3,6 +3,8 @@ import DetailModal from './Modals/DetailModal';
 import TransactionManagementModal from './Modals/TransactionManagementModal';
 import { getAccountData } from '../../api/accountService';
 import './Account.css';
+import Loader from '../Loader/Loader';
+import TransparentLoader from '../Loader/TransparentLoader';
 
 const Account = ({ startDate, endDate }) => {
     const [amountInCash, setAmountInCash] = useState(0);
@@ -13,16 +15,22 @@ const Account = ({ startDate, endDate }) => {
     const [selectedDay, setSelectedDay] = useState('');
     const [reload, setReload] = useState(false);
     const [days, setDays] = useState([])
+    const [isLoading, setIsLoading] = useState(true);
+    const [isTransparentLoaderVisible, setIsTransparentLoaderVisible] = useState(false);
 
-    useEffect(() => {
+    useEffect(() => {   
         const loadAccountData = async () => {
             try {
+                setIsTransparentLoaderVisible(true);
                 const data = await getAccountData();
                 setAmountInCash(data.totalDeposit + data.totalPayments - data.totalWithdrawal);
                 setProfit(data.totalPayments);
                 setWithdrawn(data.totalWithdrawal);
             } catch (error) {
                 console.error("Error fetching account data:", error);
+            } finally {
+                setIsTransparentLoaderVisible(false);
+                setIsLoading(false);
             }
         };
 
@@ -62,6 +70,10 @@ const Account = ({ startDate, endDate }) => {
     const closeDetailModal = () => setDetailModalOpen(false);
     const closeTransactionManagementModal = () => setTransactionManagementModalOpen(false);
 
+    if (isLoading) {
+        return <Loader message="Chargement des données..." />;
+    }
+
     return (
         <div className="account-tab">
             <h2>Montant dans la caisse : {amountInCash}€</h2>
@@ -77,8 +89,9 @@ const Account = ({ startDate, endDate }) => {
             <div>
                 <button className="button-account" onClick={handleManageTransactions}>Gérer les transactions</button>
             </div>
+            {isTransparentLoaderVisible && <TransparentLoader message="Mise à jour des données..." />}
             {isDetailModalOpen && <DetailModal day={selectedDay} onClose={closeDetailModal} />}
-            {isTransactionManagementModalOpen && <TransactionManagementModal onClose={closeTransactionManagementModal} onChange={() => setReload(!reload)} />}
+            {isTransactionManagementModalOpen && <TransactionManagementModal onClose={closeTransactionManagementModal} onChange={() => setReload(!reload)} setIsTransparentLoaderVisible={setIsTransparentLoaderVisible} />}
         </div>
     );
 };

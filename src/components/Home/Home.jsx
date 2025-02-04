@@ -6,10 +6,12 @@ import './Home.css';
 const Home = ({ startDate, endDate, defaultDate }) => {
     const [currentDate, setCurrentDate] = useState(defaultDate);
     const [planningText, setPlanningText] = useState('Planning du --/--');
+    const [dateText, setDateText] = useState('--/--');
     const [schedule, setSchedule] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentMatch, setCurrentMatch] = useState(null);
     const [previousDate, setPreviousDate] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const currentDateRef = useRef(currentDate);
     
     const formatDate = useCallback((date) => {
@@ -21,6 +23,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const updateDate = useCallback((date) => {
         const formattedDate = formatDate(date);
         setPlanningText(`Planning du ${formattedDate}`);
+        setDateText(formattedDate);
     }, [formatDate]);
 
     useEffect(() => {
@@ -30,6 +33,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     useEffect(() => {
         const fetchMatches = async () => {
             setSchedule([]);
+            setIsLoading(true);
             try {
                 const matches = await getMatches(currentDate);
                 if (currentDateRef.current === currentDate) {
@@ -37,6 +41,10 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 }
             } catch (error) {
                 console.error('Error fetching matches:', error);
+            } finally {
+                if (currentDateRef.current === currentDate) {
+                    setIsLoading(false);
+                }
             }
         };
         
@@ -112,6 +120,59 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return value;
     };
 
+    const scheduleList = () => {
+        return (
+        <div className="schedule-list">
+            <ul className="schedule-table">
+                <li className="header">
+                    <span>Horaire</span>
+                    <span>Court</span>
+                    <span>Joueur 1</span>
+                    <span>Joueur 2</span>
+                    <span>Résultat</span>
+                    <span></span>
+                </li>
+                {schedule.map((match, index) => (
+                    <li key={index}>
+                        <span>{match.hour}</span>
+                        <span>{match.court.name}</span>
+                        <span>{match.player1.fullName} ({match.player1.ranking})</span>
+                        <span>{match.player2.fullName} ({match.player2.ranking})</span>
+                        {match.winner ? (
+                            <>
+                                <span>{getResultValue(match)}</span>
+                                <span> <button className="gray-button" onClick={() => handleEditResult(match)}>Modifier</button></span>
+                            </>
+                        ) : (
+                            <>
+                                <span><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></span>
+                                <span></span>
+                            </>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </div>
+        )
+    }
+
+    const planning = () => {
+
+        if(isLoading) {
+            return (
+                <div className="planning-text">
+                    <p>Chargement du planning du {dateText}...</p>
+                </div>
+            )
+        }
+
+        return (
+            <div className="planning-text">
+                <p>{planningText}</p>
+            </div>
+        )
+    }
+
     return (
         <div>
             <div className="calendar-container">
@@ -130,42 +191,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                     disabled={currentDate >= endDate}
                 >&#8250;</button>
             </div>
-
-            <div className="planning-text">
-                <p>{planningText}</p>
-            </div>
-            
-            <div className="schedule-list">
-                <ul className="schedule-table">
-                    <li className="header">
-                        <span>Horaire</span>
-                        <span>Court</span>
-                        <span>Joueur 1</span>
-                        <span>Joueur 2</span>
-                        <span>Résultat</span>
-                        <span></span>
-                    </li>
-                    {schedule.map((match, index) => (
-                        <li key={index}>
-                            <span>{match.hour}</span>
-                            <span>{match.court.name}</span>
-                            <span>{match.player1.fullName} ({match.player1.ranking})</span>
-                            <span>{match.player2.fullName} ({match.player2.ranking})</span>
-                            {match.winner ? (
-                                <>
-                                    <span>{getResultValue(match)}</span>
-                                    <span> <button className="gray-button" onClick={() => handleEditResult(match)}>Modifier</button></span>
-                                </>
-                            ) : (
-                                <>
-                                    <span><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></span>
-                                    <span></span>
-                                </>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {planning()}
+            {!isLoading && scheduleList()}
             {showModal && (
                 <ResultInputModal
                     match={currentMatch}

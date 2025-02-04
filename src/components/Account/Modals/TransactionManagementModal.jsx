@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getTransactions, updateTransactions } from '../../../api/transactionService';
 import './TransactionManagementModal.css';
 
-const TransactionManagementModal = ({ onClose, onChange }) => {
+const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderVisible }) => {
     // Exemple de données de retraits/dépots
     const [transactions, setTransactions] = useState([]);
     const [newTransaction, setNewTransaction] = useState({ type: 0, date: new Date().toISOString().split('T')[0], amount: '' });
-    const [isSaving, setIsSaving] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
 
@@ -18,6 +18,8 @@ const TransactionManagementModal = ({ onClose, onChange }) => {
                 setTransactions(data);
             } catch (error) {
                 console.error("Error loading transactions:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -36,14 +38,18 @@ const TransactionManagementModal = ({ onClose, onChange }) => {
         const handleKeyPress = (event) => {
             if (event.key === 'Escape') {
                 event.preventDefault();
-                handleClose();
+                if(showConfirmation) {
+                    setShowConfirmation(false);
+                } else {
+                    handleClose();
+                }
             }
         };
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [handleClose]);
+    }, [handleClose, showConfirmation]);
 
     const handleDeleteTransaction = (index) => {
         const newTransactions = [...transactions];
@@ -70,16 +76,16 @@ const TransactionManagementModal = ({ onClose, onChange }) => {
 
     const handleSave = async () => {
         try {
-            setIsSaving(true);
+            onClose();
             if(hasChanges) {
+                setIsTransparentLoaderVisible(true);
                 await updateTransactions(transactions);
             }
-            onClose(); //TODO : Loader
         } catch (error) {
             console.error('Error saving changes:', error);
         } finally {
-            setIsSaving(false);
-            onChange(); //TODO : Loader
+            onChange();
+            setIsTransparentLoaderVisible(false);
         }
     };
 
@@ -88,6 +94,88 @@ const TransactionManagementModal = ({ onClose, onChange }) => {
         onClose();
     };
 
+    const transactionSection = () => {
+
+        if (isLoading) {
+            return (
+                <div className="transaction-summary">
+                    <div>Chargement des transactions...</div>
+                </div>
+            )
+        }
+        return (
+            <div className="transaction-section">
+            <table className="transaction-table">
+                <thead>
+                    <tr>
+                        <th className="transaction-th">Type</th>
+                        <th className="transaction-th">Date</th>
+                        <th className="transaction-th">Montant</th>
+                        <th className="transaction-th"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {transactions.map((transaction, index) => (
+                        <tr key={index}>
+                            <td className="transaction-td">{transaction.type === 1 ? 'Depot' : 'Retrait'}</td>
+                            <td className="transaction-td">{transaction.date}</td>
+                            <td className="transaction-td">{transaction.amount}€</td>
+                            <td className="transaction-td">
+                                <button className="transaction-red-button" onClick={() => handleDeleteTransaction(index)}>Supprimer</button>
+                            </td>
+                        </tr>
+                    ))}
+                    <tr>
+                        <td className="transaction-td"> 
+                            <select
+                                value={newTransaction.type}
+                                onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
+                            >
+                                <option value="0">Retrait</option>
+                                <option value="1">Depot</option>
+                            </select>
+                        </td>
+                        <td className="transaction-td">
+                            <input
+                                type="date"
+                                value={newTransaction.date}
+                                onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
+                            />
+                        </td>
+                        <td className="transaction-td">
+                            <input
+                                type="number"
+                                value={newTransaction.amount}
+                                onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
+                                placeholder="Montant"
+                            />
+                        </td>
+                        <td className="transaction-td">
+                            <button 
+                                className="transaction-green-button" 
+                                onClick={handleAddTransaction}
+                                disabled={!newTransaction.amount}
+                            >
+                                Ajouter
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        )
+    }
+
+    const footerSection = () => {
+        if (isLoading) return;
+        return (
+            <div className="transaction-footer">
+                <button className="transaction-green-button" onClick={handleSave} >Valider</button>
+                <button className="transaction-red-button" onClick={handleClose}>Fermer</button>
+            </div>
+        )
+    }
+
     return (
         <div className="transaction-modal">
             <div className="transaction-content">
@@ -95,77 +183,16 @@ const TransactionManagementModal = ({ onClose, onChange }) => {
                     <h2 className="transaction-title">Gestion des dépôts/retraits</h2>
                     <button className="close-button-transaction" onClick={handleClose}>✖</button>
                 </div>
-                
-                <div className="transaction-section">
-                    <table className="transaction-table">
-                        <thead>
-                            <tr>
-                                <th className="transaction-th">Type</th>
-                                <th className="transaction-th">Date</th>
-                                <th className="transaction-th">Montant</th>
-                                <th className="transaction-th"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.map((transaction, index) => (
-                                <tr key={index}>
-                                    <td className="transaction-td">{transaction.type === 1 ? 'Depot' : 'Retrait'}</td>
-                                    <td className="transaction-td">{transaction.date}</td>
-                                    <td className="transaction-td">{transaction.amount}€</td>
-                                    <td className="transaction-td">
-                                        <button className="transaction-red-button" onClick={() => handleDeleteTransaction(index)}>Supprimer</button>
-                                    </td>
-                                </tr>
-                            ))}
-                            <tr>
-                                <td className="transaction-td"> 
-                                    <select
-                                        value={newTransaction.type}
-                                        onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
-                                    >
-                                        <option value="0">Retrait</option>
-                                        <option value="1">Depot</option>
-                                    </select>
-                                </td>
-                                <td className="transaction-td">
-                                    <input
-                                        type="date"
-                                        value={newTransaction.date}
-                                        onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
-                                    />
-                                </td>
-                                <td className="transaction-td">
-                                    <input
-                                        type="number"
-                                        value={newTransaction.amount}
-                                        onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-                                        placeholder="Montant"
-                                    />
-                                </td>
-                                <td className="transaction-td">
-                                    <button 
-                                        className="transaction-green-button" 
-                                        onClick={handleAddTransaction}
-                                        disabled={!newTransaction.amount}
-                                    >
-                                        Ajouter
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="transaction-footer">
-                    <button className="transaction-green-button" onClick={handleSave} disabled={isSaving}>Valider</button>
-                    <button className="transaction-red-button" onClick={handleClose}>Fermer</button>
-                </div>
+                {transactionSection()}
+                {footerSection()}
             </div>
-
             {showConfirmation && (
                 <div className="transaction-confirmation">
                     <div className="transaction-confirmation-content">
-                        <h3>Confirmation</h3>
+                        <div className="transaction-confirmation-header">
+                            <h3 className="transaction-confirmation-title">Confirmation</h3>
+                            <button className="close-button-transaction-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
+                        </div>
                         <p>Êtes-vous sûr de vouloir fermer ? <br></br>Toutes les modifications seront perdues.</p>
                         <div className="transaction-confirmation-buttons">
                             <button className="transaction-green-button" onClick={handleConfirmClose}>Confirmer</button>

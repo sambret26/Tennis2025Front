@@ -33,14 +33,17 @@ body {
 }
 
 .player-input {
-    width: 100%; /* Ajuste selon vos besoins */
-    padding: 12px;
+    width: 250px; /* Ajuste selon vos besoins */
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px; /* Coins arrondis */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre légère */
     transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transition douce */
     outline: none; /* Enlève l'effet de focus par défaut */
     font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
 }
 
 .player-input:focus {

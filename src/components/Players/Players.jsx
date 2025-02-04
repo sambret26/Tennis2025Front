@@ -3,6 +3,7 @@ import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import { getAllPlayers } from '../../api/playersService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
+import TransparentLoader from '../Loader/TransparentLoader';
 import './Players.css';
 
 const Players = ({ startDate, endDate, defaultDate }) => {
@@ -324,8 +325,8 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                 </div>
 
                 <div>
+                    {loading && <TransparentLoader message="Chargement des joueurs..." />}
                     <div className="players-table-container">
-                        {loading && <div>Chargement...</div>}
                         {!loading && (
                             <table className="players-table">
                                 <thead>

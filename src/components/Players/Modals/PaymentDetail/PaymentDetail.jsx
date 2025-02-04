@@ -151,13 +151,13 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         setHasPaymentsChanges(true);
     };
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         if (hasReductionsChanges || hasPaymentsChanges) {
             setShowConfirmation(true);
         } else {
             onClose();
         }
-    };
+    }, [hasReductionsChanges, hasPaymentsChanges, onClose]);
 
     const handleConfirmClose = () => {
         setShowConfirmation(false);
@@ -170,6 +170,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             player.balance.initialAmount = initialAmount;
             player.balance.finalAmount = finalAmount;
             player.balance.remainingAmount = remainingAmount;
+            onClose();
             if(hasReductionsChanges) {
                 await updatePlayerReductions(player.id, reductions, player.balance);
                 player.reductions = reductions
@@ -183,7 +184,6 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             player.balance.remainingAmount = remainingAmount;
             setHasReductionsChanges(false);
             setHasPaymentsChanges(false);
-            onClose();
         } catch (error) {
             console.error('Error saving changes:', error);
         } finally {
@@ -197,6 +197,23 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Obtenir le mois (0-11)
         return `${day}/${month}`; // Retourner le format jj/mm
     };
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                if(showConfirmation) {
+                    setShowConfirmation(false);
+                } else {
+                    handleClose();
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleClose, showConfirmation]);
 
     return (
         <div className="payment-detail-modal">
@@ -356,7 +373,10 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             {showConfirmation && (
                 <div className="confirmation-modal">
                     <div className="confirmation-content">
-                        <h3>Confirmation</h3>
+                        <div className="confirmation-header">
+                            <h3 className="confirmation-title">Confirmation</h3>
+                            <button className="close-button-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
+                        </div>
                         <p>Êtes-vous sûr de vouloir fermer ? <br></br>Toutes les modifications seront perdues.</p>
                         <div className="confirmation-buttons">
                             <button className="green-button" onClick={handleConfirmClose}>Confirmer</button>

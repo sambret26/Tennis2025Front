@@ -1,2 +1,2 @@
-export const ENV = 'development'
-//export const ENV = 'production'
+//export const ENV = 'development'
+export const ENV = 'production'

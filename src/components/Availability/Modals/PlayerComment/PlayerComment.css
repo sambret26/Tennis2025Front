@@ -136,6 +136,8 @@
 }
 
 .comment-modal-header {
+    position: relative;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -151,11 +153,18 @@
 }
 
 .comment-modal-close {
+    position: absolute;
+    right: 0;
     background: none;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
     color: #666;
+}
+
+.comment-modal-title {
+    text-align: center;
+    width: 100%;
 }
 
 .comment-modal-close:hover {

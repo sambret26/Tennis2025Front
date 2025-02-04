@@ -46,3 +46,7 @@
     margin-right: 0; /* Pas d'espace à droite de l'icône */
     transition: transform 0.3s ease;
 }
+
+.hidden {
+    visibility: hidden;
+}

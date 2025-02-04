@@ -22,6 +22,8 @@
 }
 
 .payment-detail-header {
+    position: relative;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -29,6 +31,8 @@
 }
 
 .close-button-payment-detail {
+    position: absolute;
+    right: 0px;
     color: #333 !important;
     background: transparent !important;
     border: none;
@@ -182,4 +186,27 @@
 
 .reduction-label {
     width: 95%;
+}
+
+.confirmation-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.confirmation-title {
+    text-align: center; /* Centre le texte */
+    width: 100%;
+}
+
+.close-button-confirmation {
+    position: absolute;
+    right: 0px;
+    color: #333 !important;
+    background: transparent !important;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: -15px;
 }

@@ -21,6 +21,7 @@ const Availability = ({ startDate, endDate }) => {
     const [playerInput, setPlayerInput] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const loadDates = async () => {
@@ -63,6 +64,7 @@ const Availability = ({ startDate, endDate }) => {
         const loadComments = async () => {
             if (currentDate) {
                 try {
+                    setIsLoading(true);
                     const comments = await getAllCommentsForDay(formattedDate(currentDate));
                     const commentsByPlayer = comments.reduce((acc, comment) => {
                         acc[comment.playerId] = comment;
@@ -71,6 +73,8 @@ const Availability = ({ startDate, endDate }) => {
                     setPlayerComments(commentsByPlayer);
                 } catch (error) {
                     console.error('Error fetching comments:', error);
+                } finally {
+                    setIsLoading(false);
                 }
             }
         };
@@ -302,6 +306,7 @@ const Availability = ({ startDate, endDate }) => {
                                         comment={playerComments[playerId]}
                                         onCommentChange={handleCommentChange}
                                         playerName={player ? player.fullName : ''}
+                                        isLoading={isLoading}
                                     />
                                 </span>
                                 <span>{player ? player.fullName : ''}</span> 

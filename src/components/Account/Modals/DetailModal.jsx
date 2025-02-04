@@ -8,6 +8,7 @@ const DetailModal = ({ day, onClose }) => {
     const [amountDay, setAmountDay] = useState(0);
     const [amountWithdrawn, setAmountWithdrawn] = useState(0);
     const [profit, setProfit] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadAccountData = async () => {
@@ -21,6 +22,8 @@ const DetailModal = ({ day, onClose }) => {
                 setPayments(data.payments);
             } catch (error) {
                 console.error("Error fetching account data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -59,37 +62,43 @@ const DetailModal = ({ day, onClose }) => {
                     <h2 className="detail-title">Bilan comptable du {day}</h2>
                     <button className="close-button-detail" onClick={onClose}>✖</button>
                 </div>
-
-                <div className="detail-summary">
-                    <span className="flex-row">
-                        <p>Montant de la veille : {amountDayBefore}€</p>
-                        <p>Montant du soir : {amountDay}€</p>
-                    </span>
-                    <span className="flex-row">
-                        <p>Retraits : {amountWithdrawn}€</p>
-                        <p>Bénéfice : {profit}€</p>
-                    </span>
-                </div>
-                
-                <div className="detail-payments-section">
-                    <h3 className="detail-subtitle">Liste des paiements :</h3>
-                    <table className="detail-table">
-                        <thead>
-                            <tr>
-                                <th className="detail-th">Joueur</th>
-                                <th className="detail-th">Montant</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payments.map((payment, index) => (
-                                <tr key={index}>
-                                    <td className="detail-td">{payment.playerFullName}</td>
-                                    <td className="detail-td">{payment.amount}€</td>
+                {isLoading ? (
+                    <div className="detail-summary">
+                        <div>Chargement des données du jour...</div>
+                    </div>
+                ) : (
+                    <div className="detail-summary">
+                        <span className="flex-row">
+                            <p>Montant de la veille : {amountDayBefore}€</p>
+                            <p>Montant du soir : {amountDay}€</p>
+                        </span>
+                        <span className="flex-row">
+                            <p>Retraits : {amountWithdrawn}€</p>
+                            <p>Bénéfice : {profit}€</p>
+                        </span>
+                    </div>
+                )}
+                {!isLoading && (        
+                    <div className="detail-payments-section">
+                        <h3 className="detail-subtitle">Liste des paiements :</h3>
+                        <table className="detail-table">
+                            <thead>
+                                <tr>
+                                    <th className="detail-th">Joueur</th>
+                                    <th className="detail-th">Montant</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {payments.map((payment, index) => (
+                                    <tr key={index}>
+                                        <td className="detail-td">{payment.playerFullName}</td>
+                                        <td className="detail-td">{payment.amount}€</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

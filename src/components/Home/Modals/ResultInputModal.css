@@ -59,7 +59,7 @@ h2 {
     margin-left: 10px;
 }
 
-input[type="text"] {
+.score-input {
     width: 250px;
     padding: 10px;
     border: 1px solid #ccc;

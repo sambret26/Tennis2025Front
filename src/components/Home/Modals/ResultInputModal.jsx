@@ -5,7 +5,7 @@ import './ResultInputModal.css';
 const ResultInputModal = ({ match, onClose, onSave }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
     const [displayScore, setDisplayScore] = useState('');
-    const [score, setScore] = useState(match.score);
+    const [score, setScore] = useState(match.score || '');
     const [errorMessage, setErrorMessage] = useState('Error');
     const [errorColor, setErrorColor] = useState('');
 
@@ -14,21 +14,25 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     const scoreRef = useRef(score);
 
     const handleSave = useCallback(() => {
-        if (!formatScoreOk(scoreRef.current)) {
-            setErrorMessage("Format incorrect");
-            setErrorColor('red');
-            setTimeout(() => {
-                setErrorColor('');
-            }, 5000);
-            return;
-        }
-        if (!scoreOk(scoreRef.current)) {
-            setErrorMessage("Score incohérent");
-            setErrorColor('red');
-            setTimeout(() => {
-                setErrorColor('');
-            }, 5000);
-            return;
+        if (selectedPlayerRef.current) {
+            if (!formatScoreOk(scoreRef.current)) {
+                setErrorMessage("Format incorrect");
+                setErrorColor('red');
+                setTimeout(() => {
+                    setErrorColor('');
+                }, 5000);
+                return;
+            }
+            if (!scoreOk(scoreRef.current)) {
+                setErrorMessage("Score incohérent");
+                setErrorColor('red');
+                setTimeout(() => {
+                    setErrorColor('');
+                }, 5000);
+                return;
+            }
+        } else {
+            scoreRef.current = '';
         }
         onSave(match.id, selectedPlayerRef.current, scoreRef.current);
     }, [match.id, onSave]);
@@ -113,6 +117,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                     onChange={(e) => {setBothScore(e.target.value)}}
                     placeholder={selectedPlayer ? "Entrez le score" : "Sélectionnez un vainqueur"}
                     disabled={!selectedPlayer}
+                    className="score-input"
                 />
                 <div className="error-message" style={{ color: errorColor }}>
                     {errorMessage}
@@ -130,11 +135,11 @@ export default ResultInputModal;
 
 const formatScoreOk = (score) => {
     const regex = /^\d\/\d(\(\d{1,2}\))?\s\d\/\d(\(\d{1,2}\))?(\s\d\/\d(\(\d{1,2}\))?)?$/;
-    return regex.test(score) || score === '';
+    return regex.test(score) || score === null || score === '';
 }
 
 const scoreOk = (score) => {
-    if(score === '') return true;
+    if(score === null || score === '') return true;
     let sets = score.split(' ');
     let winnerSet1 = checkScore(sets[0]);
     if (!winnerSet1) return false;

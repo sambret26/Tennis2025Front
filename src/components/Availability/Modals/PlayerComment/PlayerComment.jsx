@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import './PlayerComment.css';
-import { useCallback } from 'react';
 
-const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) => {
+const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isLoading }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
@@ -28,12 +27,12 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) 
 
     const handleSave = async () => {
         try {
+            setIsModalOpen(false);
             await createOrUpdateComment({
                 playerId,
                 day,
                 comments: commentText.trim()
             });
-            setIsModalOpen(false);
             if (onCommentChange) {
                 onCommentChange();
             }
@@ -55,11 +54,11 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) 
     return (
         <>
             <span 
-                className={`message-icon ${hasComment ? 'has-comment' : ''}`}
+                className={`message-icon ${isLoading ? '' : hasComment ? 'has-comment' : ''}`}
                 onClick={() => setIsModalOpen(true)}
                 title={hasComment ? "Voir/modifier le message" : "Ajouter un message"}
             >
-                {hasComment ? '💬' : '✉️'}
+                {isLoading ? '' : hasComment ? '💬' : '✉️'}
             </span>
 
             {isModalOpen && (
@@ -70,7 +69,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName }) 
                 }}>
                     <div className="comment-modal-content">
                         <div className="comment-modal-header">
-                            <h2>Message pour {playerName} le {getFormattedDay()}</h2>
+                            <h2 className="comment-modal-title">Message pour {playerName} le {getFormattedDay()}</h2>
                             <button 
                                 className="comment-modal-close"
                                 onClick={handleCancel}
