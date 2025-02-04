@@ -21,8 +21,10 @@
     border-radius: 8px;
     width: 80%;
     max-width: 800px;
-    max-height: 90vh;
+    height: 90vh;
     overflow-y: auto;
+    -ms-overflow-style: none; /* IE et Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 .detail-header {
@@ -91,7 +93,6 @@
     align-items: center; /* Aligne les éléments verticalement au centre */
     width: 100%;
     flex-direction: column;
-    align-items: center;
     margin-top: 20px;
 }
 
@@ -128,4 +129,107 @@
     color: #666; /* Couleur du texte grise */
     cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
     opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
+}
+
+.switch-container-detail {
+    text-align: center;
+    align-items: center; /* Aligne les éléments verticalement au centre */
+    width: 100%;
+}
+
+.switch-detail {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch-detail input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-detail {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 28px;
+}
+
+.slider-detail:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-detail {
+    background-color: #2196F3;
+}
+
+input:checked + .slider-detail:before {
+    transform: translateX(22px);
+}
+
+.switch-label-before-detail {
+    margin-right: 8px;
+}
+
+.switch-label-after-detail {
+    margin-left: 8px;
+}
+
+.count-registration-section {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.count-registration-label {
+    width: 25%;
+    text-align: left;
+}
+
+.count-registration-total-label {
+    width: 25%;
+    text-align: left;
+    font-weight: bold;
+    margin-top: 50px;
+}
+
+.count-input {
+    width: 5%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.count-input::-webkit-inner-spin-button,
+.count-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.green-label {
+    color: green;
+    font-weight: bold;
+}
+
+.red-label {
+    color: red;
+    font-weight: bold;
+}
+
+.blue-label {
+    color: blue;
+    font-weight: bold;
 }
