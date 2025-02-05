@@ -16,20 +16,38 @@ export async function getMatches(date) {
     }
 }
 
-export async function updateMatchResult(matchId, playerId, score) {
+export async function updateMatchResult(matchId, playerId, score, finish) {
     try {
         const response = await fetch(`${MATCHES_API_URL}/result`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ matchId, playerId, score }),
+            body: JSON.stringify({ matchId, playerId, score, finish }),
         });
         if (!response.ok) {
             throw new Error('Failed to set match result');
         }
     } catch (error) {
         console.error('Error setting match result:', error);
+        throw error;
+    }
+}
+
+export async function updatePlayerAvailability(matchId, available, playerNumber) {
+    try {
+        const response = await fetch(`${MATCHES_API_URL}/playerAvailability`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ matchId, available, playerNumber }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update player availability');
+        }
+    } catch (error) {
+        console.error('Error updating player availability:', error);
         throw error;
     }
 }

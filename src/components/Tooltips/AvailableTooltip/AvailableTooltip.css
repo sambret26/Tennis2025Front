@@ -1,0 +1,28 @@
+.schedule-question-player {
+    color: blue; /* Change color as needed */
+    font-size: 20px; /* Adjust size as needed */
+    cursor: pointer; /* Change cursor to pointer */
+    margin: 0 5px; /* Add some spacing between icons */
+}
+
+.schedule-available-player {
+    color: green; /* Couleur verte pour le bouton */
+    font-size: 20px; /* Taille du bouton */
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    transition: transform 0.3s; /* Transition douce pour le survol */
+}
+
+.schedule-available-player:hover {
+    transform: scale(1.2); /* Agrandit le bouton au survol */
+}
+
+.schedule-unavailable-player {
+    color: red; /* Couleur rouge pour la croix */
+    font-size: 12px; /* Taille de la croix */
+    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+    transition: transform 0.3s; /* Transition douce pour le survol */
+}
+
+.schedule-unavailable-player:hover {
+    transform: scale(1.2); /* Agrandit la croix au survol */
+}

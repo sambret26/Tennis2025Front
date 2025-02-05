@@ -29,6 +29,21 @@ export async function getAllPlayersAvailabilities() {
     }
 }
 
+export async function getAllPlayersAvailabilitiesForDay(date) {
+    let formattedDate = '[no formatted date]';
+    try {
+        formattedDate = date.toISOString().split('T')[0]; // Convertit la date en format ISO
+        const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/date?date=${formattedDate}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch availabilities for day ' + formattedDate);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching availabilities for day ' + formattedDate + ':', error);
+        throw error;
+    }
+}
+
 export async function updatePlayerAvailability(playerId, day, timeSlot, available) {
     try {
         const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/update`, {

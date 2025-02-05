@@ -4,7 +4,7 @@ import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
-import PlayerTooltip from "../PlayerTooltip/PlayerTooltip";
+import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
 const Availability = ({ startDate, endDate }) => {
@@ -335,7 +335,7 @@ const Availability = ({ startDate, endDate }) => {
                                         />
                                     </td>
                                     <td className="player-name">{player ? player.fullName : ''}</td>
-                                    <PlayerTooltip player={player} />
+                                    <PlayerTooltip className="" player={player} />
                                     {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                         const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                         const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;

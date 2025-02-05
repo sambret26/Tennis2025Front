@@ -4,7 +4,7 @@ import { getAllPlayers } from '../../api/playersService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import TransparentLoader from '../Loader/TransparentLoader';
-import PlayerTooltip from "../PlayerTooltip/PlayerTooltip";
+import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Players.css';
 
 const Players = ({ startDate, endDate, defaultDate }) => {
@@ -368,7 +368,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                                     {getFilteredPlayers().map(player => (
                                         <tr key={player.id} className={getRowClassName(player)}>
                                             <td className="col-player">{player.lastName} {player.firstName}</td>
-                                            <PlayerTooltip player={player} />
+                                            <PlayerTooltip className="" player={player} />
                                             <td>{player.ranking?.simple || player.ranking.simple || 'NC'}</td>
                                             <td>{player.categories.join(', ')}</td>
                                             <td>{player.balance.finalAmount}€</td>
@@ -378,7 +378,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                                                     checked={player.balance.remainingAmount === 0}
                                                     onChange={async (e) => {
                                                         try {
-                                                            if (player.balance.remainingAmount === 0) return; //TODO que faire si c'est déjà cochy
+                                                            if (player.balance.remainingAmount === 0) return; //TODO que faire si c'est déjà coché
                                                             // Créer un nouvel objet de paiement
                                                             const newPayment = {
                                                                 amount: player.balance.remainingAmount,
