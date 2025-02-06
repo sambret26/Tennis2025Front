@@ -7,7 +7,7 @@ import TransparentLoader from '../Loader/TransparentLoader';
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Players.css';
 
-const Players = ({ startDate, endDate, defaultDate }) => {
+const Players = ({ startDate, endDate, defaultDate, role }) => {
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
         rankings: [],
@@ -205,12 +205,64 @@ const Players = ({ startDate, endDate, defaultDate }) => {
         return null;
     };
 
+    const handleRankingChange = (checked) => {
+        if (checked) {
+            setFilters(prev => ({
+                ...prev,
+                selectedRankings: new Set(filters.rankings)
+            }));
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                selectedRankings: new Set()
+            }));
+        }
+    };
+
+    const handleCategoryChange = (checked) => {
+        if (checked) {
+            setFilters(prev => ({
+                ...prev,
+                selectedCategories: new Set(filters.categories)
+            }));
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                selectedCategories: new Set()
+            }));
+        }
+    };
+
+    const handlePaymentChange = async (player) => {
+        try {
+            if (player.balance.remainingAmount === 0) return; //TODO que faire si c'est déjà coché
+
+            // Créer un nouvel objet de paiement
+            const newPayment = {
+                amount: player.balance.remainingAmount,
+                date: new Date().toISOString().split('T')[0], // Date courante au format ISO
+                isFullPayment: true
+            };
+
+            player.payments.push(newPayment);
+            player.balance.remainingAmount = 0;
+
+            updatePlayerPayments(player.id, player.payments, player.balance);
+
+            setPlayers((prevPlayers) =>
+                prevPlayers.map((p) => (p.id === player.id ? { ...p, payments: player.payments } : p))
+            );
+        } catch (error) {
+            console.error("Erreur lors de la création du paiement :", error);
+        }
+    };
+
     const playersHeaders = () => {
         if(getFilteredPlayers().length > 0){
             return (
                 <thead>
                     <tr>
-                        <th colSpan={2} onClick={() => handleSort('lastName')}>
+                        <th colSpan={role === 2 ? 2 : 1} onClick={() => handleSort('lastName')}>
                             Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                         </th>
                         <th onClick={() => handleSort('ranking')}>
@@ -249,19 +301,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                             <input
                                 type="checkbox"
                                 checked={filters.selectedRankings.size === filters.rankings.length}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            selectedRankings: new Set(filters.rankings)
-                                        }));
-                                    } else {
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            selectedRankings: new Set()
-                                        }));
-                                    }
-                                }}
+                                onChange={(e) => handleRankingChange(e.target.checked)}
                             />
                             Tous les classements
                         </label>
@@ -285,19 +325,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                             <input
                                 type="checkbox"
                                 checked={filters.selectedCategories.size === filters.categories.length}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            selectedCategories: new Set(filters.categories)
-                                        }));
-                                    } else {
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            selectedCategories: new Set()
-                                        }));
-                                    }
-                                }}
+                                onChange={(e) => handleCategoryChange(e.target.checked)}
                             />
                             Toutes les catégories
                         </label>
@@ -368,7 +396,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                                     {getFilteredPlayers().map(player => (
                                         <tr key={player.id} className={getRowClassName(player)}>
                                             <td className="col-player">{player.lastName} {player.firstName}</td>
-                                            <PlayerTooltip className="" player={player} />
+                                            {role === 2 && <PlayerTooltip className="" player={player} />}
                                             <td>{player.ranking?.simple || player.ranking.simple || 'NC'}</td>
                                             <td>{player.categories.join(', ')}</td>
                                             <td>{player.balance.finalAmount}€</td>
@@ -376,25 +404,8 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                                                 <input
                                                     type="checkbox"
                                                     checked={player.balance.remainingAmount === 0}
-                                                    onChange={async (e) => {
-                                                        try {
-                                                            if (player.balance.remainingAmount === 0) return; //TODO que faire si c'est déjà coché
-                                                            // Créer un nouvel objet de paiement
-                                                            const newPayment = {
-                                                                amount: player.balance.remainingAmount,
-                                                                date: new Date().toISOString().split('T')[0], // Date courante au format ISO
-                                                                isFullPayment: true
-                                                            };
-                                                            player.payments.push(newPayment);
-                                                            player.balance.remainingAmount = 0;
-                                                            updatePlayerPayments(player.id, player.payments, player.balance);
-                                                            setPlayers((prevPlayers) =>
-                                                                prevPlayers.map((p) => (p.id === player.id ? { ...p, payments: player.payments } : p))
-                                                            );
-                                                        } catch (error) {
-                                                            console.error("Erreur lors de la création du paiement :", error);
-                                                        }
-                                                    }}
+                                                    onChange={() => handlePaymentChange(player)}
+                                                    disabled = {role !== 2}
                                                 />
                                             </td>
                                             <td>
@@ -422,6 +433,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                     startDate={startDate}
                     endDate={endDate}
                     defaultDate={defaultDate}
+                    role={role}
                 />
             )}
         </div>

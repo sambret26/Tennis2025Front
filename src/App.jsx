@@ -89,9 +89,9 @@ function App() {
         case 'calendar':
             return <Calendar />;
         case 'availability':
-            return <Availability startDate={startDate} endDate={endDate} />;
+            return <Availability startDate={startDate} endDate={endDate} role={role} />;
         case 'players':
-            return <Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} />;
+            return <Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} role={role} />;
         case 'account':
             return <Account startDate={startDate} endDate={endDate} />;
         case 'settings':
@@ -103,7 +103,7 @@ function App() {
 
   return (
       <div className="app-container">
-          <Sidebar setActiveComponent={setActiveComponent} />
+          <Sidebar setActiveComponent={setActiveComponent} role={role} />
           <div className="content">
               {renderComponent()} {/* Affiche le composant actif */}
           </div>

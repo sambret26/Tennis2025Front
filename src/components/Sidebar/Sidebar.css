@@ -41,6 +41,13 @@
     color: #535bf2 !important;
 }
 
+.side-menu button:disabled {
+    background-color: #34495e; /* Couleur de fond pour le bouton désactivé, identique à celle des boutons actifs */
+    color: #bdc3c7; /* Couleur du texte pour le bouton désactivé */
+    cursor: not-allowed; /* Curseur pour indiquer que le bouton est désactivé */
+    opacity: 0.6; /* Opacité pour donner un effet de désactivation */
+}
+
 /* Style de l'icône dans les liens */
 .side-menu button i {
     margin-right: 0; /* Pas d'espace à droite de l'icône */

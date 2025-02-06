@@ -137,6 +137,11 @@ body {
     padding: 10px; /* Espacement interne pour les options */
 }
 
+.player-table-container select:disabled {
+    color: #333; /* Couleur de texte sombre */
+    cursor: default;
+}
+
 .calendar-container {
     padding-top: 25px;
 }

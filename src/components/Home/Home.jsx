@@ -76,6 +76,18 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
             currentDateRef.current = currentDate;
         }
     }, [currentDate, previousDate]);
+
+    const getNextDay = (date) => {
+        const nextDay = new Date(date);
+        nextDay.setDate(date.getDate() + 1);
+        return nextDay;
+    };
+
+    const canViewDate = useCallback((date) => {
+        if (role === 0) return date <= defaultDate;
+        if (role === 1) return date <= getNextDay(defaultDate);
+        return true;
+    }, [role, defaultDate]);
     
     const handlePrevDay = useCallback(() => {
         const newDate = new Date(currentDate);
@@ -88,10 +100,10 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
     const handleNextDay = useCallback(() => {
         const newDate = new Date(currentDate);
         newDate.setDate(currentDate.getDate() + 1);
-        if (newDate <= endDate) {
+        if (newDate <= endDate && canViewDate(newDate)) {
             setCurrentDate(newDate);
         }
-    }, [currentDate, endDate]);
+    }, [currentDate, endDate, canViewDate]);
     
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -149,6 +161,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
     };
 
     const getMatchClassName = (match) => {
+        if (viewProfile !== 2) return 'black-row';
         if (match.finish) return 'black-row';
         if (match.player1Availability === UNAVAILABLE || match.player2Availability === UNAVAILABLE) return 'red-row';
         if (match.player1Availability === AVAILABLE && match.player2Availability === AVAILABLE) return 'green-row';
@@ -193,6 +206,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
     }
 
     const getPlayerClassName = (finish, playerAvailability, playerId, hour) => {
+        if (viewProfile !== 2) return 'black-row';
         if (finish) return 'black-row'; //Match terminé, pas de couleur
         if (playerAvailability === UNAVAILABLE) return 'red-row'; //Match refusé : rouge
         if (playerAvailability === AVAILABLE) return 'green-row'; //Match accepté : vert
@@ -216,6 +230,17 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
         await updatePlayerAvailability(match.id, available, 2);
     }
 
+    const putAvailableTooltip = (match, handlePlayerAvailability) => {
+        if(viewProfile !== 2  || match.finish) return (<td className="schedule-actions"></td>)
+        return (<AvailableTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+    }
+
+    const putPlayerTooltip = (match, player) => {
+        if(viewProfile !== 2) return (<td className="schedule-actions"></td>);
+        if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} />);
+        return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} />);
+    }
+
     const showSwitch = () => {
         if (role === 0) return;
         return (
@@ -231,6 +256,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
 
     const matchResult = (match) => {
         if(match.winner) {
+            if (viewProfile === 0) return (<td className="schedule-col-result">{getResultValue(match)}</td>);
             return (
                 <>
                     <td className="schedule-col-result">{getResultValue(match)}</td>
@@ -238,6 +264,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                 </>
             )
         }
+        if (viewProfile === 0) return (<td className="schedule-col-result"> Aucun résultat disponible</td>);
         return (
             <>
                 <td className="schedule-col-result"><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></td>
@@ -281,13 +308,11 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                             <td className="schedule-col-hour">{match.hour}</td>
                             <td className="schedule-col-court">{match.court.name}</td>
                             <td className={`schedule-col-player ${getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`}>{match.player1.fullName} ({match.player1.ranking})</td>
-                            {(!match.finish || match.finish === 0) && (<AvailableTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayer1Availability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>)}
-                            {match.finish === 1 && (<td className="schedule-actions"></td>)}
-                            <PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} />
+                            {putAvailableTooltip(match, handlePlayer1Availability)}
+                            {putPlayerTooltip(match, 1)}
                             <td className={`schedule-col-player ${getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)}`}>{match.player2.fullName} ({match.player2.ranking})</td>
-                            {(!match.finish || match.finish === 0) && (<AvailableTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} match={match} handlePlayerAvailability={handlePlayer2Availability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>)}
-                            {match.finish === 1 && (<td className="schedule-actions"></td>)}
-                            <PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} />
+                            {putAvailableTooltip(match, handlePlayer2Availability)}
+                            {putPlayerTooltip(match, 2)}
                             {matchResult(match)}
                         </tr>
                     ))}
@@ -325,8 +350,8 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                 <input type="date" id="datePicker" 
                     value={currentDate ? currentDate.toISOString().split('T')[0] : ''} // Affiche rien tant que currentDate est null
                     onChange={(e) => setCurrentDate(new Date(e.target.value))} 
-                    min={startDate ? startDate.toISOString().split('T')[0] : undefined} 
-                    max={endDate ? endDate.toISOString().split('T')[0] : undefined} 
+                    min={startDate ? startDate.toISOString().split('T')[0] : undefined}
+                    max={endDate ? endDate.toISOString().split('T')[0] : undefined}
                 />
                 <button id="nextDay" className="arrow-button" 
                     onClick={handleNextDay}

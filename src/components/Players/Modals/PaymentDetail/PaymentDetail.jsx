@@ -3,7 +3,7 @@ import './PaymentDetail.css';
 import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
 
-const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate }) => {
+const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate, role }) => {
     const getDefaultDate = () => {
         return new Date(defaultDate).toISOString().split('T')[0]
     }
@@ -222,7 +222,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     <th>Type</th>
                     <th>Montant</th>
                     <th>Date de paiement</th>
-                    <th></th>
+                    {(role === 2 && <th></th>)}
                 </tr>
             )
         }
@@ -239,7 +239,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                 <tr>
                     <th>Motif</th>
                     <th>Montant de la réduction</th>
-                    <th></th>
+                    {(role === 2 && <th></th>)}
                 </tr>
             )
         }
@@ -247,6 +247,104 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             <tr>
                 <th colSpan={3}>Aucune réduction spécifique</th>
             </tr>
+        )
+    }
+
+    const deletePaymentButton = (index) => {
+        if(role !== 2) return;
+        return (
+            <td>
+                <button className="red-button" onClick={() => handleDeletePayment(index)}>Supprimer</button>
+            </td>
+        )
+    }
+
+    const deleteReductionButton = (index) => {
+        if(role !== 2) return;
+        return (
+            <td>
+                <button  className="red-button" onClick={() => handleDeleteReduction(index)}>Supprimer</button>
+            </td>
+        )
+    }
+
+    const newPaymentSection = () => {
+        if(role !== 2) return;
+        return (
+            <tr>
+            <td>Nouveau paiement</td>
+            <td>
+                <input
+                    type="number"
+                    value={newPayment.amount}
+                    onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
+                    placeholder="Montant"
+                />
+            </td>
+            <td>
+                <input
+                    type="date"
+                    value={newPayment.date}
+                    onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
+                    min={startDate ? startDate.toISOString().split('T')[0] : undefined}
+                    max={endDate ? endDate.toISOString().split('T')[0] : undefined}
+                />
+            </td>
+            <td>
+                <button
+                    className="green-button"
+                    onClick={handleAddPayment}
+                    disabled={!newPayment.amount}
+                >
+                    Ajouter
+                </button>
+            </td>
+        </tr>
+        )
+    }
+
+    const newReductionSection = () => {
+        if(role !== 2) return;
+        return (
+            <tr>
+            <td>
+                <input
+                    type="text"
+                    value={newReduction.reason}
+                    onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
+                    style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
+                    placeholder="Motif de la réduction"
+                />
+            </td>
+            <td>
+                <input
+                    type="number"
+                    value={newReduction.amount}
+                    onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
+                    style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
+                    placeholder="Montant"
+                />
+            </td>
+            <td>
+                <button
+                    className="green-button"
+                    onClick={handleAddReduction}
+                    disabled={!newReduction.reason || !newReduction.amount}
+                >
+                    Ajouter
+                </button>
+            </td>
+        </tr>
+        )
+    }
+
+    const footerSection = () => {
+        if(role !== 2) return;
+        return (
+            <div className="modal-footer">
+                <button className="green-button" onClick={handleSave} disabled={isSaving}>Valider</button>
+                <button className="red-button" onClick={handleClose}>Fermer</button>
+            </div>
         )
     }
 
@@ -276,40 +374,10 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                     <td>{payment.isFullPayment ? 'Paiement final' : 'Paiement partiel'}</td>
                                     <td>{payment.amount}€</td>
                                     <td>{formatDate(payment.date)}</td>
-                                    <td>
-                                        <button className="red-button" onClick={() => handleDeletePayment(index)}>Supprimer</button>
-                                    </td>
+                                    {deletePaymentButton(index)}
                                 </tr>
                             ))}
-                            <tr>
-                                <td>Nouveau paiement</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        value={newPayment.amount}
-                                        onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
-                                        placeholder="Montant"
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="date"
-                                        value={newPayment.date}
-                                        onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
-                                        min={startDate ? startDate.toISOString().split('T')[0] : undefined} 
-                                        max={endDate ? endDate.toISOString().split('T')[0] : undefined} 
-                                    />
-                                </td>
-                                <td>
-                                    <button 
-                                        className="green-button"
-                                        onClick={handleAddPayment}
-                                        disabled={!newPayment.amount}
-                                    >
-                                        Ajouter
-                                    </button>
-                                </td>
-                            </tr>
+                            {newPaymentSection()}
                         </tbody>
                     </table>
                 </div>
@@ -334,6 +402,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                                     handleDeleteDefaultReduction(globalReduction);
                                                 }
                                             }}
+                                            disabled={role !== 2}
                                         />
                                         <label className="reduction-label">{globalReduction.reason}</label>
                                     </div>
@@ -352,48 +421,14 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                 <tr key={index}>
                                     <td>{reduction.reason}</td>
                                     <td>{reduction.amount}€</td>
-                                    <td>
-                                        <button  className="red-button" onClick={() => handleDeleteReduction(index)}>Supprimer</button>
-                                    </td>
+                                    {deleteReductionButton(index)}
                                 </tr>
                             ))}
-                            <tr>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={newReduction.reason}
-                                        onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
-                                        style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
-                                        placeholder="Motif de la réduction"
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        value={newReduction.amount}
-                                        onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
-                                        style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
-                                        placeholder="Montant"
-                                    />
-                                </td>
-                                <td>
-                                    <button 
-                                        className="green-button"
-                                        onClick={handleAddReduction}
-                                        disabled={!newReduction.reason || !newReduction.amount}
-                                    >
-                                        Ajouter
-                                    </button>
-                                </td>
-                            </tr>
+                            {newReductionSection()}
                         </tbody>
                     </table>
                 </div>
-
-                <div className="modal-footer">
-                    <button className="green-button" onClick={handleSave} disabled={isSaving}>Valider</button>
-                    <button className="red-button" onClick={handleClose}>Fermer</button>
-                </div>
+                {footerSection()}
             </div>
 
             {showConfirmation && (

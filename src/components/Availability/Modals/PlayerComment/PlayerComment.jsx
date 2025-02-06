@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import './PlayerComment.css';
 
-const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
+const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading, role }) => {
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
     
@@ -50,6 +50,26 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
         }
     }
 
+    const commentFooter = () => {
+        if (role !== 2) return null;
+        return (
+            <div className="comment-modal-footer">
+                <button
+                    onClick={handleSave}
+                    className="comment-button save"
+                >
+                    Sauvegarder
+                </button>
+                <button
+                    onClick={handleCancel}
+                    className="comment-button cancel"
+                >
+                    Annuler
+                </button>
+            </div>
+        );
+    }
+
     return (
         <>
             <span 
@@ -81,21 +101,9 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="Ajouter un message..."
                             className="comment-textarea"
+                            disabled={role !== 2}
                         />
-                        <div className="comment-modal-footer">
-                            <button 
-                                onClick={handleSave}
-                                className="comment-button save"
-                            >
-                                Sauvegarder
-                            </button>
-                            <button 
-                                onClick={handleCancel}
-                                className="comment-button cancel"
-                            >
-                                Annuler
-                            </button>
-                        </div>
+                        {commentFooter()}
                     </div>
                 </div>
             )}

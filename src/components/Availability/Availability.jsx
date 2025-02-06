@@ -7,7 +7,7 @@ import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
-const Availability = ({ startDate, endDate }) => {
+const Availability = ({ startDate, endDate, role }) => {
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
     const UNAVAILABLE = 4;
@@ -253,7 +253,7 @@ const Availability = ({ startDate, endDate }) => {
                 <thead>
                     <tr className="header">
                         <th colSpan={2}></th>
-                        <th colSpan={2}>Joueur</th>
+                        <th colSpan={role === 2 ? 2 : 1}>Joueur</th>
                         <th>Matin</th>
                         <th>Après-midi</th>
                         <th>Soirée</th>
@@ -266,7 +266,7 @@ const Availability = ({ startDate, endDate }) => {
             <thead>
                 <tr className="header">
                     <th colSpan={2}></th>
-                    <th colSpan={2}>Joueur</th>
+                    <th colSpan={role === 2 ? 2 : 1}>Joueur</th>
                     <td>18h</td>
                     <td>19h30</td>
                     <td>21h</td>
@@ -275,6 +275,16 @@ const Availability = ({ startDate, endDate }) => {
             </thead>
         )
     };
+
+    const availabilityActions = (playerId) => {
+        if (role !== 2) return <td></td>
+        return (
+            <td className="availability-actions">
+                <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
+                <span className="unavailable-player" onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}>&#10060;</span>
+            </td>
+        )
+    }
 
     return (
         <div>
@@ -332,10 +342,11 @@ const Availability = ({ startDate, endDate }) => {
                                             isModalOpen={isPlayerCommentModalOpen}
                                             setIsModalOpen={setPlayerCommentModalOpen}
                                             isLoading={isLoading}
+                                            role={role}
                                         />
                                     </td>
                                     <td className="player-name">{player ? player.fullName : ''}</td>
-                                    <PlayerTooltip className="" player={player} />
+                                    {role === 2 && <PlayerTooltip className="" player={player} />}
                                     {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                         const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                         const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
@@ -345,6 +356,7 @@ const Availability = ({ startDate, endDate }) => {
                                             <td className="player-availability" key={timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
                                                 <select value={displayValue}
                                                     onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
+                                                    disabled={role !== 2}
                                                 >
                                                     {allAvailabilities.map((availability) => (
                                                         <option key={availability.number} value={availability.value}>
@@ -355,10 +367,7 @@ const Availability = ({ startDate, endDate }) => {
                                             </td>
                                         );
                                     })}
-                                    <td className="availability-actions">
-                                        <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
-                                        <span className="unavailable-player" onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}>&#10060;</span>
-                                    </td>
+                                    {availabilityActions(playerId)}
                                 </tr>
                             );
                         })}
