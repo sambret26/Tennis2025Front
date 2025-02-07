@@ -83,9 +83,9 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         setHasReductionsChanges(true);
     }
 
-    const handleDeleteReduction = (index) => {
-        const deletedReduction = reductions[index];
-        const updatedReductions = reductions.filter((_, i) => i !== index);
+    const handleDeleteReduction = (reductionToDelete) => {
+        const deletedReduction = reductions.find(reduction => reduction === reductionToDelete);
+        const updatedReductions = reductions.filter(reduction => reduction !== reductionToDelete);
         setReductions(updatedReductions);
         let newFinalAmount = finalAmount + deletedReduction.amount;
         setFinalAmount(newFinalAmount);
@@ -234,7 +234,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
     }
 
     const reductionHeaders = () => {
-        if(reductions.length > 0) {
+        if(reductions.some(reduction => reduction.default === 0)) {
             return (
                 <tr>
                     <th>Motif</th>
@@ -259,11 +259,11 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         )
     }
 
-    const deleteReductionButton = (index) => {
+    const deleteReductionButton = (reduction) => {
         if(role !== 2) return;
         return (
             <td>
-                <button  className="red-button" onClick={() => handleDeleteReduction(index)}>Supprimer</button>
+                <button  className="red-button" onClick={() => handleDeleteReduction(reduction)}>Supprimer</button>
             </td>
         )
     }
@@ -421,7 +421,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                 <tr key={index}>
                                     <td>{reduction.reason}</td>
                                     <td>{reduction.amount}€</td>
-                                    {deleteReductionButton(index)}
+                                    {deleteReductionButton(reduction)}
                                 </tr>
                             ))}
                             {newReductionSection()}
