@@ -9,7 +9,6 @@ body {
     font-size: 3.2em;
     line-height: 1.1;
     color: #333;
-    text-align: center;
 }
 
 .user-profile-input {
@@ -29,7 +28,7 @@ body {
     border-radius: 4px;
     padding: 12px;
     cursor: pointer;
-    width: 100%;
+    width: 25%;
     font-size: 16px;
     transition: background-color 0.3s;
 }
@@ -143,4 +142,29 @@ body {
 
 .user-profile-role select {
     margin-left: 50px;
+}
+
+.password-input-container {
+    width: 25%;
+    position: relative;
+}
+
+.username-input {
+    width: 25%;
+}
+
+.password-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.link {
+    color: blue; /* Couleur du lien */
+    text-decoration: underline; /* Soulignement */
+    cursor: pointer; /* Curseur en forme de main */
+    display: inline;
+    width: auto;
 }

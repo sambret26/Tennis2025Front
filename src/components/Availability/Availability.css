@@ -206,7 +206,7 @@ body {
 }
 
 .unavailable-player:hover {
-    transform: scale(1.2); /* Agrandit la croix au survol */
+    transform: scale(1.1); /* Agrandit la croix au survol */
 }
 
 /* Style pour les flèches */

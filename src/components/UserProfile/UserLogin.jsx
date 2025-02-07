@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, message, gotoCreateAccount }) => {
+
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -15,14 +17,29 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
         };
     }, [handleLogin]);
 
+    useEffect(() => {
+        let timer;
+        if (showPassword) {
+            timer = setTimeout(() => {
+                setShowPassword(false);
+            }, 2000);
+        }
+        return () => clearTimeout(timer);
+    }, [showPassword]);
+
     return (
         <div>
             <h1 className='user-profile-title'>Connexion</h1>
-            <input type='text' placeholder="Nom d'utilisateur" className='user-profile-input' value={userName} onChange={(e) => setUserName(e.target.value)} />
-            <input type='password' placeholder='Mot de passe' className='user-profile-input' value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type='text' placeholder="Nom d'utilisateur" className='user-profile-input username-input' value={userName} onChange={(e) => setUserName(e.target.value)} />
+            <div className = 'password-input-container'>
+                <input type={showPassword ? 'text' : 'password'} placeholder='Mot de passe' className='user-profile-input' value={password} onChange={(e) => setPassword(e.target.value)} />
+                <span className = 'password-icon' onClick={() => setShowPassword(!showPassword)}>{showPassword ? '🙈' : '👁️'}</span>
+            </div>
             <div className='user-profile-message'> {message} </div>
             <button onClick={handleLogin} className='user-profile-login-button'>Se connecter</button>
-            <p onClick={gotoCreateAccount} className='user-profile-register'>Pas de compte? Créez-en un.</p>
+            <div>
+                <p onClick={gotoCreateAccount} className='link'>Pas de compte? Créez-en un.</p>
+            </div>
         </div>
     );
 };

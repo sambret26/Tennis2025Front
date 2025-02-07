@@ -264,7 +264,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                 </>
             )
         }
-        if (viewProfile === 0) return (<td className="schedule-col-result"> Aucun résultat disponible</td>);
+        if (viewProfile === 0) return (<td className="schedule-col-result"></td>);
         return (
             <>
                 <td className="schedule-col-result"><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></td>
