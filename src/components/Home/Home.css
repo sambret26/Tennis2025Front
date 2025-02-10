@@ -95,7 +95,7 @@
     width: 13%
 }
 
-.schdule-col-court {
+.schedule-col-court {
     width: 8%
 }
 
@@ -103,10 +103,16 @@
     width: 1%;
 }
 
-.schedule-col-player {
+.schedule-col-player-admin {
     text-align: left !important;
     padding-left: 10px !important;
     width: 19%
+}
+
+.schedule-col-player-no-admin {
+    text-align: left !important;
+    padding-left: 10px !important;
+    width: 26%
 }
 
 .info-circle {

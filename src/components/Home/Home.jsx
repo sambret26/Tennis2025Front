@@ -205,6 +205,11 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
         return 'black-row';
     }
 
+    const getAdminOrNoClassName = () => {
+        if (viewProfile === 2) return 'schedule-col-player-admin';
+        return 'schedule-col-player-no-admin';
+    }
+
     const getPlayerClassName = (finish, playerAvailability, playerId, hour) => {
         if (viewProfile !== 2) return 'black-row';
         if (finish) return 'black-row'; //Match terminé, pas de couleur
@@ -230,13 +235,15 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
         await updatePlayerAvailability(match.id, available, 2);
     }
 
-    const putAvailableTooltip = (match, handlePlayerAvailability) => {
-        if(viewProfile !== 2  || match.finish) return (<td className="schedule-actions"></td>)
-        return (<AvailableTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+    const putAvailableTooltip = (match, handlePlayerAvailability, player) => {
+        if(viewProfile !== 2) return;
+        if (match.finish) return (<td className="schedule-actions"></td>);
+        if(player === 1) return (<AvailableTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+        return (<AvailableTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
     }
 
     const putPlayerTooltip = (match, player) => {
-        if(viewProfile !== 2) return (<td className="schedule-actions"></td>);
+        if(viewProfile !== 2) return;
         if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} />);
         return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} />);
     }
@@ -307,11 +314,11 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                         <tr className={getMatchClassName(match)} key={index}>
                             <td className="schedule-col-hour">{match.hour}</td>
                             <td className="schedule-col-court">{match.court.name}</td>
-                            <td className={`schedule-col-player ${getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`}>{match.player1.fullName} ({match.player1.ranking})</td>
-                            {putAvailableTooltip(match, handlePlayer1Availability)}
+                            <td className={`${getAdminOrNoClassName()} ${getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`} colSpan={viewProfile === 2 ? 1 : 3}>{match.player1.fullName} ({match.player1.ranking})</td>
+                            {putAvailableTooltip(match, handlePlayer1Availability, 1)}
                             {putPlayerTooltip(match, 1)}
-                            <td className={`schedule-col-player ${getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)}`}>{match.player2.fullName} ({match.player2.ranking})</td>
-                            {putAvailableTooltip(match, handlePlayer2Availability)}
+                            <td className={`${getAdminOrNoClassName()} ${getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)}`} colSpan={viewProfile === 2 ? 1 : 3}>{match.player2.fullName} ({match.player2.ranking})</td>
+                            {putAvailableTooltip(match, handlePlayer2Availability, 2)}
                             {putPlayerTooltip(match, 2)}
                             {matchResult(match)}
                         </tr>
