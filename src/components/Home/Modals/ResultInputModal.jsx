@@ -1,10 +1,12 @@
-// src/components/Home/ResultInputModal.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './ResultInputModal.css'; 
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Modal, Input, Button, Typography } from 'antd';
+import './ResultInputModal.css';
+
+const { Text } = Typography;
 
 const ResultInputModal = ({ match, onClose, onSave }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
-    const [displayScore, setDisplayScore] = useState('');
+    const [displayScore, setDisplayScore] = useState(match.winner ? (match.score ? match.score : '') : 'Sélectionnez un vainqueur');
     const [score, setScore] = useState(match.score || '');
     const [errorMessage, setErrorMessage] = useState('Error');
     const [errorColor, setErrorColor] = useState('');
@@ -62,23 +64,6 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
         };
     }, [match, handleSave]);
 
-    useEffect(() => {
-        const handleKeyPress = (event) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                onClose();
-            }
-        };
-    
-        // Ajoutez l'écouteur d'événements
-        window.addEventListener('keydown', handleKeyPress);
-    
-        // Nettoyez l'écouteur d'événements à la désinstallation du composant
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [onClose]); // Dépendances vides pour que cela ne s'exécute qu'une seule fois
-
     const handleRadioChange = (playerId) => {
         setSelectedPlayer(selectedPlayer === playerId ? null : playerId);
         setDisplayScore(selectedPlayer === playerId ? '' : score ? score : '')
@@ -89,17 +74,31 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
         setScore(value);
     };
 
+    const getErrorClassName = () => {
+        return errorColor === 'red' ? 'error-message red-error-message' : 'error-message';
+    };
+
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h2>Renseigner un résultat</h2>
-                <button className="close-button" onClick={onClose}>✖</button>
-                <div className="radio-label">
-                    <label>{match.player1.fullName}</label>
-                    <input
-                        type="radio"
-                        checked={selectedPlayer === match.player1Id}
-                        onClick={() => handleRadioChange(match.player1Id)}
+        <Modal
+            title="Renseigner un résultat"
+            visible={true}
+            onCancel={onClose}
+            footer={[
+                <Button key="cancel" onClick={onClose}>
+                    Annuler
+                </Button>,
+                <Button key="save" type="primary" onClick={handleSave}>
+                    Enregistrer
+                </Button>,
+            ]}
+            className="result-input-modal"
+        >
+            <div className="radio-label">
+                <label>{match.player1.fullName}</label>
+                <input
+                    type="radio"
+                    checked={selectedPlayer === match.player1Id}
+                    onClick={() => handleRadioChange(match.player1Id)}
                         onChange={()=> {}}
                     />
                     <label>VS</label>
@@ -111,23 +110,18 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                     />
                     <label>{match.player2.fullName}</label>
                 </div>
-                <input
-                    type="text"
-                    value={displayScore}
-                    onChange={(e) => {setBothScore(e.target.value)}}
-                    placeholder={selectedPlayer ? "Entrez le score" : "Sélectionnez un vainqueur"}
-                    disabled={!selectedPlayer}
-                    className="score-input"
-                />
-                <div className="error-message" style={{ color: errorColor }}>
-                    {errorMessage}
-                </div>
-                <div>
-                    <button className="save-button" onClick={handleSave}>Enregistrer</button>
-                    <button className="cancel-button" onClick={onClose}>Annuler</button>
-                </div>
-            </div>
-        </div>
+            <Input
+                type="text"
+                value={displayScore}
+                onChange={(e) => setBothScore(e.target.value)}
+                placeholder={selectedPlayer ? "Entrez le score" : "Sélectionnez un vainqueur"}
+                disabled={!selectedPlayer}
+                className="score-input"
+            />
+            <Text className={getErrorClassName()}>
+                {errorMessage}
+            </Text>
+        </Modal>
     );
 };
 
@@ -136,10 +130,10 @@ export default ResultInputModal;
 const formatScoreOk = (score) => {
     const regex = /^\d\/\d(\(\d{1,2}\))?\s\d\/\d(\(\d{1,2}\))?(\s\d\/\d(\(\d{1,2}\))?)?$/;
     return regex.test(score) || score === null || score === '';
-}
+};
 
 const scoreOk = (score) => {
-    if(score === null || score === '') return true;
+    if (score === null || score === '') return true;
     let sets = score.split(' ');
     let winnerSet1 = checkScore(sets[0]);
     if (!winnerSet1) return false;
@@ -151,7 +145,7 @@ const scoreOk = (score) => {
     }
     if (sets.length !== 3) return false;
     return checkScore(sets[2]) !== 0;
-}
+};
 
 const checkScore = (score) => {
     let scoreSet;
@@ -168,7 +162,7 @@ const checkScore = (score) => {
             if (tieBreak) return 0;
             return 1;
         }
-        if(scoreSet[1] === '6') return 1;
+        if (scoreSet[1] === '6') return 1;
         return 0;
     }
     if (scoreSet[1] === '7') {
@@ -176,15 +170,15 @@ const checkScore = (score) => {
             if (tieBreak) return 0;
             return 2;
         }
-        if(scoreSet[0] === '6') return 2;
+        if (scoreSet[0] === '6') return 2;
         return 0;
     }
-    if(tieBreak) return 0;
-    if(scoreSet[0] !== '6' && scoreSet[1] !== '6') return 0;
-    if(scoreSet[0] === '6') {
+    if (tieBreak) return 0;
+    if (scoreSet[0] !== '6' && scoreSet[1] !== '6') return 0;
+    if (scoreSet[0] === '6') {
         if (scoreSet[1] < '0' || scoreSet[1] > '5') return 0;
         return 1;
     }
     if (scoreSet[0] < '0' || scoreSet[0] > '5') return 0;
     return 2;
-}
+};

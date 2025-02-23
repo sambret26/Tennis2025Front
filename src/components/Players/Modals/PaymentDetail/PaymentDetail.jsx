@@ -312,8 +312,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     type="text"
                     value={newReduction.reason}
                     onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
-                    style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
                     placeholder="Motif de la réduction"
+                    className="custom-input"
                 />
             </td>
             <td>
@@ -321,7 +321,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     type="number"
                     value={newReduction.amount}
                     onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
-                    style={{ textAlign: 'center', width: '200px', height: '40px', margin: '5px 0' }}
+                    className="custom-input"
                     placeholder="Montant"
                 />
             </td>

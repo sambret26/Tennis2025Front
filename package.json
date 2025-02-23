@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://trv2025.vercel.app/",
   "dependencies": {
+    "antd": "^5.24.1",
     "axios": "^1.6.5",
     "bootstrap": "^5.3.3",
     "jwt-decode": "^4.0.0",

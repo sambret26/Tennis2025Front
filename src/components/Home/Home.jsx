@@ -313,7 +313,7 @@ const Home = ({ startDate, endDate, defaultDate, role }) => {
                     {schedule.map((match, index) => (
                         <tr className={getMatchClassName(match)} key={index}>
                             <td className="schedule-col-hour">{match.hour}</td>
-                            <td className="schedule-col-court">{match.court.name}</td>
+                            <td className="schedule-col-court">{match.court ? match.court.number : ''}</td>
                             <td className={`${getAdminOrNoClassName()} ${getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`} colSpan={viewProfile === 2 ? 1 : 3}>{match.player1.fullName} ({match.player1.ranking})</td>
                             {putAvailableTooltip(match, handlePlayer1Availability, 1)}
                             {putPlayerTooltip(match, 1)}

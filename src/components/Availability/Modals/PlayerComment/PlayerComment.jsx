@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Modal, Input, Button, Typography } from 'antd';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import './PlayerComment.css';
+
+const { TextArea } = Input;
+const { Text } = Typography;
 
 const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading, role }) => {
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
-    
+
     const handleCancel = useCallback(() => {
         setCommentText(comment?.comments || '');
         setIsModalOpen(false);
@@ -30,7 +34,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
             await createOrUpdateComment({
                 playerId,
                 day,
-                comments: commentText.trim()
+                comments: commentText.trim(),
             });
             if (onCommentChange) {
                 onCommentChange();
@@ -43,70 +47,50 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
     const getFormattedDay = () => {
         try {
             const data = day.split('-');
-            return data[2] + '/' + data[1];
+            return `${data[2]}/${data[1]}`;
         } catch (error) {
             console.error('Error formatting day:', error);
             return '';
         }
-    }
-
-    const commentFooter = () => {
-        if (role !== 2) return null;
-        return (
-            <div className="comment-modal-footer">
-                <button
-                    onClick={handleSave}
-                    className="comment-button save"
-                >
-                    Sauvegarder
-                </button>
-                <button
-                    onClick={handleCancel}
-                    className="comment-button cancel"
-                >
-                    Annuler
-                </button>
-            </div>
-        );
-    }
+    };
 
     return (
         <>
-            <span 
+            <span
                 className={`message-icon ${isLoading ? '' : hasComment ? 'has-comment' : ''}`}
                 onClick={() => setIsModalOpen(true)}
-                title={hasComment ? "Voir/modifier le message" : "Ajouter un message"}
+                title={hasComment ? 'Voir/modifier le message' : 'Ajouter un message'}
             >
                 {isLoading ? '' : hasComment ? '💬' : '✉️'}
             </span>
 
-            {isModalOpen && (
-                <div className="comment-modal" onClick={(e) => {
-                    if (e.target.className === 'comment-modal') {
-                        handleCancel();
-                    }
-                }}>
-                    <div className="comment-modal-content">
-                        <div className="comment-modal-header">
-                            <h2 className="comment-modal-title">Message pour {playerName} le {getFormattedDay()}</h2>
-                            <button 
-                                className="comment-modal-close"
-                                onClick={handleCancel}
-                            >
-                                ×
-                            </button>
-                        </div>
-                        <textarea
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            placeholder="Ajouter un message..."
-                            className="comment-textarea"
-                            disabled={role !== 2}
-                        />
-                        {commentFooter()}
-                    </div>
-                </div>
-            )}
+            <Modal
+                title={<Text >Message pour {playerName} le {getFormattedDay()}</Text>}
+                visible={isModalOpen}
+                onCancel={handleCancel}
+                footer={
+                    role === 2 ? (
+                        <>
+                            <Button key="cancel" onClick={handleCancel}>
+                                Annuler
+                            </Button>
+                            <Button key="save" type="primary" onClick={handleSave}>
+                                Sauvegarder
+                            </Button>
+                        </>
+                    ) : null
+                }
+                centered
+                className="comment-modal"
+            >
+                <TextArea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Ajouter un message..."
+                    disabled={role !== 2}
+                    autoSize={{ minRows: 4, maxRows: 6 }}
+                />
+            </Modal>
         </>
     );
 };

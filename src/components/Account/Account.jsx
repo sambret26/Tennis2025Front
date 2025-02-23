@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Card, Button, Typography } from 'antd';
 import DetailModal from './Modals/DetailModal';
 import TransactionManagementModal from './Modals/TransactionManagementModal';
 import { getAccountData } from '../../api/accountService';
 import './Account.css';
 import Loader from '../Loader/Loader';
 import TransparentLoader from '../Loader/TransparentLoader';
+
+const { Title, Text } = Typography;
 
 const Account = ({ startDate, endDate }) => {
     const [amountInCash, setAmountInCash] = useState(0);
@@ -14,11 +17,11 @@ const Account = ({ startDate, endDate }) => {
     const [isTransactionManagementModalOpen, setTransactionManagementModalOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState('');
     const [reload, setReload] = useState(false);
-    const [days, setDays] = useState([])
+    const [days, setDays] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isTransparentLoaderVisible, setIsTransparentLoaderVisible] = useState(false);
 
-    useEffect(() => {   
+    useEffect(() => {
         const loadAccountData = async () => {
             try {
                 setIsTransparentLoaderVisible(true);
@@ -27,7 +30,7 @@ const Account = ({ startDate, endDate }) => {
                 setProfit(data.totalPayments);
                 setWithdrawn(data.totalWithdrawal);
             } catch (error) {
-                console.error("Error fetching account data:", error);
+                console.error('Error fetching account data:', error);
             } finally {
                 setIsTransparentLoaderVisible(false);
                 setIsLoading(false);
@@ -46,7 +49,7 @@ const Account = ({ startDate, endDate }) => {
             } catch (error) {
                 console.error('Error fetching dates:', error);
             }
-        }
+        };
 
         loadAccountData();
         loadDays();
@@ -70,28 +73,55 @@ const Account = ({ startDate, endDate }) => {
     const closeDetailModal = () => setDetailModalOpen(false);
     const closeTransactionManagementModal = () => setTransactionManagementModalOpen(false);
 
+    // Calcul du nombre de colonnes nécessaires
+    const getNumberOfColumns = () => {
+        const numberOfDays = days.length;
+        return Math.ceil(numberOfDays / 15);
+    };
+
     if (isLoading) {
         return <Loader message="Chargement des données..." />;
     }
 
     return (
         <div className="account-tab">
-            <h2>Montant dans la caisse : {amountInCash}€</h2>
-            <div>
-                <h3 style={{ float: 'right' }}>Bénéfice : {profit}€</h3>
-                <h3 style={{ float: 'left' }}>Retiré : {withdrawn}€</h3>
+            {/* Titre et montants */}
+            <Card className="account-card no-bottom-padding">
+                <Title level={2}>Montant dans la caisse : {amountInCash}€</Title>
+                <div className="account-card-content-top">
+                    <Text strong className="benefit-text">Bénéfice : {profit}€</Text>
+                    <Text strong className="withdrawn-text">Retiré : {withdrawn}€</Text>
+                </div>
+            </Card>
+
+            {/* Liste des jours */}
+            <Card className="account-card no-top-padding">
+                <div className="days-grid" style={{ gridTemplateColumns: `repeat(${getNumberOfColumns()}, 1fr)` }}>
+                    {days.map((day, index) => (
+                        <div key={index} className="day-item" onClick={() => handleDayClick(day)}>
+                            {day}
+                        </div>
+                    ))}
+                </div>
+            </Card>
+
+            {/* Bouton de gestion des transactions */}
+            <div className="account-card-content-bottom">
+                <Button type="primary" onClick={handleManageTransactions}>
+                    Gérer les transactions
+                </Button>
             </div>
-            <div className="day-list">
-                {days.map((day, index) => (
-                    <div key={index} className="day-item" onClick={() => handleDayClick(day)}>{day}</div>
-                ))}
-            </div>
-            <div>
-                <button className="button-account" onClick={handleManageTransactions}>Gérer les transactions</button>
-            </div>
+
+            {/* Loaders et modales */}
             {isTransparentLoaderVisible && <TransparentLoader message="Mise à jour des données..." />}
             {isDetailModalOpen && <DetailModal days={days} day={selectedDay} onClose={closeDetailModal} />}
-            {isTransactionManagementModalOpen && <TransactionManagementModal onClose={closeTransactionManagementModal} onChange={() => setReload(!reload)} setIsTransparentLoaderVisible={setIsTransparentLoaderVisible} />}
+            {isTransactionManagementModalOpen && (
+                <TransactionManagementModal
+                    onClose={closeTransactionManagementModal}
+                    onChange={() => setReload(!reload)}
+                    setIsTransparentLoaderVisible={setIsTransparentLoaderVisible}
+                />
+            )}
         </div>
     );
 };

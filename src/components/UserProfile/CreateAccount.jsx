@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Card, Input, Button, Space, Typography } from 'antd';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 const CreateAccount = ({ userName, setUserName, password, setPassword, handleCreateAccount, message, setMessage, gotoLogin }) => {
-
     const [password2, setPassword2] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showPassword2, setShowPassword2] = useState(false);
@@ -11,11 +14,10 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, handleCre
     }, [setMessage]);
 
     useEffect(() => {
-
         const handleKeyPress = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                handleCreateAccount ();
+                handleCreateAccount();
             }
         };
         window.addEventListener('keydown', handleKeyPress);
@@ -29,7 +31,7 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, handleCre
     }, [setInitialMessage]);
 
     const checkDatas = () => {
-        if(password !== password2) {
+        if (password !== password2) {
             setMessage('Les mots de passe ne correspondent pas.');
             return false;
         }
@@ -58,22 +60,70 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, handleCre
     }, [showPassword2]);
 
     return (
-        <div>
-            <h1 className='user-profile-title'>Créez votre compte</h1>
-            <input type='text' placeholder="Nom d'utilisateur" className='user-profile-input username-input' value={userName} onChange={(e) => setUserName(e.target.value)} />
-            <div className = 'password-input-container'>
-                <input type={showPassword ? 'text' : 'password'} placeholder='Mot de passe' className='user-profile-input' value={password} onChange={(e) => setPassword(e.target.value)} />
-                <span className = 'password-icon' onClick={() => setShowPassword(!showPassword)}>{showPassword ? '🙈' : '👁️'}</span>
-            </div>
-            <div className = 'password-input-container'>
-                <input type={showPassword2 ? 'text' : 'password'} placeholder='Confirmez votre mot de passe' className='user-profile-input' value={password2} onChange={(e) => setPassword2(e.target.value)} />
-                <span className = 'password-icon' onClick={() => setShowPassword2(!showPassword2)}>{showPassword2 ? '🙈' : '👁️'}</span>
-            </div>
-            <div className='user-profile-message'> {message} </div>
-            <button onClick={checkDatas} className='user-profile-login-button'>Créez votre compte</button>
-            <div>
-                <p onClick={gotoLogin} className='link'>Vous avez déjà un compte? Connectez-vous.</p>
-            </div>
+        <div className="user-profile-container">
+            {/* Titre */}
+            <Card className="custom-card">
+                <h1>Créez votre compte</h1>
+            </Card>
+
+            {/* Formulaire de création de compte */}
+            <Card className="custom-card">
+                <Space direction="vertical" size="middle">
+                    {/* Nom d'utilisateur */}
+                    <Input
+                        placeholder="Nom d'utilisateur"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        size="large"
+                    />
+
+                    {/* Mot de passe */}
+                    <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        size="large"
+                        suffix={
+                            <span onClick={() => setShowPassword(!showPassword)} className="password-toggle">
+                                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                            </span>
+                        }
+                    />
+
+                    {/* Confirmation du mot de passe */}
+                    <Input
+                        type={showPassword2 ? 'text' : 'password'}
+                        placeholder="Confirmez votre mot de passe"
+                        value={password2}
+                        onChange={(e) => setPassword2(e.target.value)}
+                        size="large"
+                        suffix={
+                            <span onClick={() => setShowPassword2(!showPassword2)} className="password-toggle">
+                                {showPassword2 ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                            </span>
+                        }
+                    />
+
+                    {/* Message */}
+                    <Text type={message.includes('Attention') ? 'secondary' : 'danger'}>
+                        {message}
+                    </Text>
+
+                    {/* Bouton de création de compte */}
+                    <Button type="primary" onClick={checkDatas} block size="large">
+                        Créez votre compte
+                    </Button>
+
+                    {/* Lien vers la page de connexion */}
+                    <Text className="link-text">
+                        Vous avez déjà un compte ?{' '}
+                        <button onClick={gotoLogin} className="link-button">
+                            Connectez-vous.
+                        </button>
+                    </Text>
+                </Space>
+            </Card>
         </div>
     );
 };

@@ -1,5 +1,4 @@
 .account-tab {
-    padding: 20px;
     font-family: Arial, sans-serif;
 }
 
@@ -8,42 +7,50 @@
     text-align: center;
 }
 
-.day-list {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-
 .day-item {
-    width: 25%;
-    padding: 3px;
     background-color: #f0f0f0;
     border: 1px solid #ddd;
     border-radius: 5px;
     cursor: pointer;
-    margin: 5px auto;
+    margin: 1px auto;
     transition: background-color 0.3s;
     text-align: center;
     font-size: 0.9em;
+    padding: 4px 16px !important;
+    justify-content: center !important;
 }
 
 .day-item:hover {
     background-color: #e0e0e0;
 }
 
-.button-account{
-    margin: 5px;
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 20%;
+.no-top-padding .ant-card-body{
+    padding-top: 0 !important;
 }
 
-.button-account:hover {
-    background-color: #45a049;
+.no-bottom-padding .ant-card-body{
+    padding-bottom: 0 !important;
+}
+
+.account-card-content-top {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.account-card-content-bottom {
+    text-align: center;
+}
+
+.days-grid {
+    display: grid;
+    gap: 8px; /* Espacement entre les éléments */
+    width: 50%;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Colonnes dynamiques */
+    margin: auto;
+}
+
+.benefit-text,
+.withdrawn-text {
+    font-size: 1.6em;
 }

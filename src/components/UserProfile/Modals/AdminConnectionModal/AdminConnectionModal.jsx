@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Modal, Input, Button, Typography } from 'antd';
 import { connectAdmin } from '../../../../api/userService';
-import './AdminConnectionModal.css';
 import TransparentLoader from '../../../Loader/TransparentLoader';
+import './AdminConnectionModal.css';
+
+const { Text } = Typography;
 
 const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     const [message, setMessage] = useState('');
@@ -10,27 +13,30 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
 
     const adminConnection = useCallback(() => {
         setMessage('');
-        if(password === '') {
-            setMessage("Merci de rentrer un mot de passe admin.");
+        if (password === '') {
+            setMessage('Merci de rentrer un mot de passe admin.');
             return;
         }
         setIsLoading(true);
-        connectAdmin(password, userId, role).then(data => {
-            if(data === 401 || data === 403) {
-                setMessage("Le mot de passe admin est incorrect.");
-                return;
-            }
-            if(!data.token) {
-                throw new Error('Failed to connect user');
-            }
-            setRole(parseInt(role));
-            localStorage.setItem('token', data.token);
-            onClose();
-        }).catch(error => {
-            console.error(error);
-        }).finally(() => {
-            setIsLoading(false);
-        });
+        connectAdmin(password, userId, role)
+            .then((data) => {
+                if (data === 401 || data === 403) {
+                    setMessage('Le mot de passe admin est incorrect.');
+                    return;
+                }
+                if (!data.token) {
+                    throw new Error('Failed to connect user');
+                }
+                setRole(parseInt(role));
+                localStorage.setItem('token', data.token);
+                onClose();
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     }, [onClose, role, setRole, password, userId]);
 
     useEffect(() => {
@@ -60,22 +66,42 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     }, [adminConnection]);
 
     return (
-        <div className="admin-connection-modal">
-            <div className="admin-connection-content">
-                <div className='admin-connection-header'>
-                    <h2 className='admin-connection-title'>Connexion admin</h2>
-                    <button className="close-button-admin" onClick={onClose}>✖</button>
-                </div>
-                <div>
-                    <input type='password' placeholder='Mot de passe admin' className='user-profile-input' value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <div className='admin-connection-message'> {message} </div>
-                </div>
-                <div className='admin-connection-button'>
-                    <button className='admin-connection-green-button' onClick={adminConnection}>Connexion</button>
-                </div>
-            </div>
+        <Modal
+            title="Connexion admin"
+            visible={true}
+            onCancel={onClose}
+            footer={null} // Supprime les boutons par défaut
+        >
+            {/* Champ de saisie du mot de passe */}
+            <Input.Password
+                placeholder="Mot de passe admin"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                size="large"
+                className="admin-password-input"
+            />
+
+            {/* Message d'erreur ou d'information */}
+            <Text 
+                className="admin-connection-message"
+                type={message.includes('incorrect') ? 'danger' : 'secondary'}>
+                {message}
+            </Text>
+
+            {/* Bouton de connexion */}
+            <Button
+                type="primary"
+                onClick={adminConnection}
+                block
+                size="large"
+                loading={isLoading} // Affiche un spinner si isLoading est true
+            >
+                Connexion
+            </Button>
+
+            {/* Loader */}
             {isLoading && <TransparentLoader message="Connexion admin en cours..." />}
-        </div>
+        </Modal>
     );
 };
 

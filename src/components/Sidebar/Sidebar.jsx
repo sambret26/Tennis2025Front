@@ -1,5 +1,5 @@
 import React from 'react';
-import './Sidebar.css'; // Assurez-vous d'avoir ce fichier CSS pour le style
+import './Sidebar.css';
 
 const Sidebar = ({ setActiveComponent, role }) => {
 

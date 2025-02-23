@@ -8,3 +8,24 @@
     width: calc(100% - 70px); /* Ajustez la largeur pour le contenu */
     background-color: #f4f4f9; /* Couleur de fond pour le contenu */
 }
+
+/* Supprime le background-color par défaut des Card */
+.ant-card {
+    background-color: transparent !important; /* Transparent ou une autre couleur */
+    box-shadow: none !important; /* Optionnel : supprime l'ombre */
+    border: none !important; /* Optionnel : supprime la bordure */
+}
+
+.link-button {
+    background :none !important;
+    border: none !important;
+    color: inherit !important;
+    cursor: pointer !important;
+    transition: color 0.3s !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+}
+
+.center {
+    text-align: center !important;
+}

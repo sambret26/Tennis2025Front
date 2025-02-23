@@ -34,7 +34,7 @@ const Players = ({ startDate, endDate, defaultDate, role }) => {
                 
                 // Extraire les classements uniques et les sélectionner par défaut
                 const uniqueRankings = [...new Set(data.map(player => 
-                    player.ranking?.simple || player.ranking.simple || 'NC'
+                    player.ranking ? player.ranking.simple : 'NC'
                 ))].filter(Boolean);
                 
                 // Extraire les catégories uniques et les sélectionner par défaut
@@ -91,8 +91,8 @@ const Players = ({ startDate, endDate, defaultDate, role }) => {
             }
             if (sortConfig.key === 'ranking') {
                 const rankOrder = ['NC', '40', '30/5', '30/4', '30/3', '30/2', '30/1', '30', '15/5', '15/4', '15/3', '15/2', '15/1', '15'];
-                const aRank = a.ranking?.simple || a.ranking.simple || 'NC';
-                const bRank = b.ranking?.simple || b.ranking.simple || 'NC';
+                const aRank = a.ranking ? a.ranking.simple : 'NC';
+                const bRank = b.ranking ? b.ranking.simple : 'NC';
                 const aIndex = rankOrder.indexOf(aRank);
                 const bIndex = rankOrder.indexOf(bRank);
                 return sortConfig.direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
@@ -128,7 +128,7 @@ const Players = ({ startDate, endDate, defaultDate, role }) => {
     const getFilteredPlayers = () => {
         return getSortedPlayers().filter(player => {
             // Filtre par classement
-            const playerRanking = player.ranking?.simple || player.ranking.simple || 'NC';
+            const playerRanking = player.ranking ? player.ranking.simple : 'NC';
             if (!filters.selectedRankings.has(playerRanking)) {
                 return false;
             }
@@ -397,7 +397,7 @@ const Players = ({ startDate, endDate, defaultDate, role }) => {
                                         <tr key={player.id} className={getRowClassName(player)}>
                                             <td className="col-player">{player.lastName} {player.firstName}</td>
                                             {role === 2 && <PlayerTooltip className="" player={player} />}
-                                            <td>{player.ranking?.simple || player.ranking.simple || 'NC'}</td>
+                                            <td>{player.ranking ? player.ranking.simple : 'NC'}</td>
                                             <td>{player.categories.join(', ')}</td>
                                             <td>{player.balance.finalAmount}€</td>
                                             <td>

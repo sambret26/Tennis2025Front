@@ -36,6 +36,7 @@
     outline: none; /* Pas de contour lors de la sélection */
     box-shadow: none; /* Pas d'ombre */
     background-color: #f4f4f9;
+    color: black;
 }
 
 /* Ajout de marges pour éloigner les flèches du calendrier */
@@ -104,13 +105,13 @@
 }
 
 .schedule-col-player-admin {
-    text-align: left !important;
+    /*text-align: left !important;*/
     padding-left: 10px !important;
     width: 19%
 }
 
 .schedule-col-player-no-admin {
-    text-align: left !important;
+    /*text-align: left !important;*/
     padding-left: 10px !important;
     width: 26%
 }
@@ -146,6 +147,7 @@
     margin-left: 10px; /* Espace entre le texte et le bouton */
     font-size: 14px;
     height: 35px;
+    color: black;
 }
 
 .gray-button:hover {

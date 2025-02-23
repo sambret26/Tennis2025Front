@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Card, Input, Button, Space, Typography } from 'antd';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, message, gotoCreateAccount }) => {
-
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
@@ -28,18 +31,56 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
     }, [showPassword]);
 
     return (
-        <div>
-            <h1 className='user-profile-title'>Connexion</h1>
-            <input type='text' placeholder="Nom d'utilisateur" className='user-profile-input username-input' value={userName} onChange={(e) => setUserName(e.target.value)} />
-            <div className = 'password-input-container'>
-                <input type={showPassword ? 'text' : 'password'} placeholder='Mot de passe' className='user-profile-input' value={password} onChange={(e) => setPassword(e.target.value)} />
-                <span className = 'password-icon' onClick={() => setShowPassword(!showPassword)}>{showPassword ? '🙈' : '👁️'}</span>
-            </div>
-            <div className='user-profile-message'> {message} </div>
-            <button onClick={handleLogin} className='user-profile-login-button'>Se connecter</button>
-            <div>
-                <p onClick={gotoCreateAccount} className='link'>Pas de compte? Créez-en un.</p>
-            </div>
+        <div className="user-profile-container">
+            {/* Titre */}
+            <Card className="custom-card">
+                <h1>Connexion</h1>
+            </Card>
+
+            {/* Formulaire de connexion */}
+            <Card className="custom-card">
+                <Space direction="vertical" size="middle">
+                    {/* Nom d'utilisateur */}
+                    <Input
+                        placeholder="Nom d'utilisateur"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        size="large"
+                    />
+
+                    {/* Mot de passe */}
+                    <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        size="large"
+                        suffix={
+                            <span onClick={() => setShowPassword(!showPassword)} className="password-toggle">
+                                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                            </span>
+                        }
+                    />
+
+                    {/* Message */}
+                    <Text type={message.includes('Erreur') ? 'danger' : 'secondary'}>
+                        {message}
+                    </Text>
+
+                    {/* Bouton de connexion */}
+                    <Button type="primary" onClick={handleLogin} block size="large">
+                        Se connecter
+                    </Button>
+
+                    {/* Lien vers la page de création de compte */}
+                    <Text className="link-text">
+                        Pas de compte ?{' '}
+                        <button className="link-button" onClick={gotoCreateAccount}>
+                            Créez-en un.
+                        </button>
+                    </Text>
+                </Space>
+            </Card>
         </div>
     );
 };
