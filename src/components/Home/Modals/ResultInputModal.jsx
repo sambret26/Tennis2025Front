@@ -81,7 +81,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     return (
         <Modal
             title="Renseigner un résultat"
-            visible={true}
+            open={true}
             onCancel={onClose}
             footer={[
                 <Button key="cancel" onClick={onClose}>

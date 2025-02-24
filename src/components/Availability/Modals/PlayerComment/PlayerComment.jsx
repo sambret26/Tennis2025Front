@@ -66,7 +66,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
 
             <Modal
                 title={<Text >Message pour {playerName} le {getFormattedDay()}</Text>}
-                visible={isModalOpen}
+                open={isModalOpen}
                 onCancel={handleCancel}
                 footer={
                     role === 2 ? (

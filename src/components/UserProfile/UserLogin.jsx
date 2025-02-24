@@ -63,7 +63,7 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
                     />
 
                     {/* Message */}
-                    <Text type={message.includes('Erreur') ? 'danger' : 'secondary'}>
+                    <Text type={'danger'}>
                         {message}
                     </Text>
 

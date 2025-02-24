@@ -92,3 +92,47 @@ export async function connectAdmin(password, userId, newRole) {
         throw error;
     }
 }
+
+export async function askAccess(userId, role) {
+    try {
+        const response = await fetch(`${USER_API_URL}/${userId}/access`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        });
+        if (response.status === 404) {
+            return 404;
+        }
+        if(!response.ok) {
+            throw new Error('Failed to ask access');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error asking access:', error);
+        throw error;
+    }
+}
+
+export async function changeUserPassword(userId, oldPassword, password) {
+    try {
+        const response = await fetch(`${USER_API_URL}/${userId}/changePassword`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ oldPassword, password }),
+        });
+        if (response.status === 401) {
+            return 401;
+        }
+        if(!response.ok) {
+            throw new Error('Failed to change password');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error changing password:', error);
+        throw error;
+    }
+}

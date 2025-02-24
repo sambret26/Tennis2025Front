@@ -1,27 +1,42 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
-import { connectAdmin } from '../../../../api/userService';
+import { connectAdmin, askAccess } from '../../../../api/userService';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import './AdminConnectionModal.css';
 
 const { Text } = Typography;
 
-const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
-    const [message, setMessage] = useState('');
+const AdminConnectionModal = ({ role, setRole, onClose, userId, setSuccessMessage }) => {
+    const [messageError, setMessageError] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState('');
+
+    const getRoleName = (role) => {
+        switch (role) {
+            case 0:
+                return 'Visiteur';
+            case 1:
+                return 'Staff';
+            case 2:
+                return 'Admin';
+            default:
+                return 'Inconnu';
+        }
+    };
 
     const adminConnection = useCallback(() => {
-        setMessage('');
+        setMessageError('');
         if (password === '') {
-            setMessage('Merci de rentrer un mot de passe admin.');
+            setMessageError('Merci de rentrer un mot de passe admin.');
             return;
         }
+        setLoadingMessage('Connexion admin en cours...');
         setIsLoading(true);
         connectAdmin(password, userId, role)
             .then((data) => {
                 if (data === 401 || data === 403) {
-                    setMessage('Le mot de passe admin est incorrect.');
+                    setMessageError('Le mot de passe admin est incorrect.');
                     return;
                 }
                 if (!data.token) {
@@ -39,18 +54,25 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
             });
     }, [onClose, role, setRole, password, userId]);
 
-    useEffect(() => {
-        const handleKeyPress = (event) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
+    const handleRequestAccess = () => {
+        setLoadingMessage('Demande d’accès en cours...');
+        setIsLoading(true);
+        askAccess(userId, role)
+            .then((data) => {
+                if (data === 404) {
+                    setMessageError('Une erreur est survenue.');
+                    return;
+                }
+                setSuccessMessage(`Demande d’accès ${getRoleName(role)} envoyée avec succès.`);
                 onClose();
-            }
-        };
-        window.addEventListener('keydown', handleKeyPress);
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [onClose]);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -68,7 +90,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     return (
         <Modal
             title="Connexion admin"
-            visible={true}
+            open={true}
             onCancel={onClose}
             footer={null} // Supprime les boutons par défaut
         >
@@ -81,11 +103,11 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
                 className="admin-password-input"
             />
 
-            {/* Message d'erreur ou d'information */}
-            <Text 
+            {/* Message d'erreur */}
+            <Text
                 className="admin-connection-message"
-                type={message.includes('incorrect') ? 'danger' : 'secondary'}>
-                {message}
+                type={'danger'}>
+                {messageError}
             </Text>
 
             {/* Bouton de connexion */}
@@ -99,8 +121,24 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
                 Connexion
             </Button>
 
+            {/* Séparateur "OU" */}
+            <div className="separator">
+                <Text>OU</Text>
+            </div>
+
+            {/* Bouton "Demander les accès" */}
+            <Button
+                type="default" // Style secondaire
+                onClick={handleRequestAccess}
+                block
+                size="large"
+                style={{ marginTop: '0' }} // Réinitialiser la marge supérieure
+            >
+                Faire une demande d'accès {getRoleName(role)}
+            </Button>
+
             {/* Loader */}
-            {isLoading && <TransparentLoader message="Connexion admin en cours..." />}
+            {isLoading && <TransparentLoader message={loadingMessage} />}
         </Modal>
     );
 };

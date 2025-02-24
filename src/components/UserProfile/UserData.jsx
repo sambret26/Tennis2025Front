@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Select, Modal, Card, Space } from 'antd';
+import { Button, Select, Modal, Card, Space, message } from 'antd';
 import { LogoutOutlined, KeyOutlined, SyncOutlined } from '@ant-design/icons';
 import { updateRole } from '../../api/userService';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
+import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
 import TransparentLoader from '../Loader/TransparentLoader';
 
 const { Option } = Select;
@@ -14,11 +15,13 @@ const profils = [
 ];
 
 const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
-    const [showModal, setShowModal] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
     const [newRole, setNewRole] = useState(role);
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showAdminModal, setShowAdminModal] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const changeRole = async (newRole) => {
         setNewRole(newRole);
@@ -28,7 +31,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
             setIsLoading(true);
             const response = await updateRole(userId, newRole);
             if (response === 403) {
-                setShowModal(true);
+                setShowAdminModal(true);
                 return;
             }
             if (!response.token) throw new Error('Failed to connect user');
@@ -53,6 +56,16 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
     };
 
     useEffect(() => {
+        if (successMessage) {
+            messageApi.open({
+                type: 'success',
+                content: successMessage,
+            });
+            setSuccessMessage('');
+        }
+    }, [successMessage, messageApi]);
+
+    useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Escape' && showConfirm) {
                 event.preventDefault();
@@ -64,13 +77,15 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
     }, [showConfirm]);
 
     return (
-        <div className="user-profile-container">
-            {/* En-tête */}
-            <Card className="user-profile-header">
-                <h1>Bienvenue, {userName}</h1>
-            </Card>
+        <>
+            {contextHolder}
+            <div className="user-profile-container">
+                {/* En-tête */}
+                <Card className="user-profile-header">
+                    <h1>Bienvenue, {userName}</h1>
+                </Card>
 
-            {/* Section des rôles */}
+                {/* Section des rôles */}
             <Card className="user-profile-role-section custom-cards">
                 <h4>Votre rôle :</h4>
                 <Space>
@@ -109,19 +124,20 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
             )}
 
             {/* Modales */}
-            {showModal && (
+            {showAdminModal && (
                 <AdminConnectionModal
                     role={newRole}
                     setRole={setRole}
-                    onClose={() => setShowModal(false)}
+                    onClose={() => setShowAdminModal(false)}
                     userId={userId}
+                    setSuccessMessage={setSuccessMessage}
                 />
             )}
 
             {showConfirm && (
                 <Modal
                     title="Confirmation de déconnexion"
-                    visible={showConfirm}
+                    open={showConfirm}
                     onOk={confirmLogout}
                     onCancel={() => setShowConfirm(false)}
                     okText="Confirmer"
@@ -133,23 +149,17 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
             )}
 
             {showChangePasswordModal && (
-                <Modal
-                    title="Changer le mot de passe"
-                    visible={showChangePasswordModal}
-                    onOk={() => setShowChangePasswordModal(false)}
-                    onCancel={() => setShowChangePasswordModal(false)}
-                    okText="Confirmer"
-                    cancelText="Annuler"
-                    className="change-password-modal"
-                >
-                    {/* Formulaire de changement de mot de passe ici */}
-                    <p>Formulaire de changement de mot de passe...</p>
-                </Modal>
+                <ChangePasswordModal
+                    onClose={() => setShowChangePasswordModal(false)}
+                    userId={userId}
+                    setSuccessMessage={setSuccessMessage}
+                />
             )}
 
             {/* Loader */}
             {isLoading && <TransparentLoader message="Mise à jour du rôle..." />}
         </div>
+        </>
     );
 };
 

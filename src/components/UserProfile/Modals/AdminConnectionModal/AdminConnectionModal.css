@@ -6,3 +6,8 @@
     display: block;
     margin-bottom: 16px;
 }
+
+.separator {
+    text-align: center;
+    margin: 16px 0;
+}
