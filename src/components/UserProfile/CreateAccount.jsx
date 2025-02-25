@@ -4,8 +4,7 @@ import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
-const CreateAccount = ({ userName, setUserName, password, setPassword, handleCreateAccount, message, setMessage, gotoLogin }) => {
-    const [password2, setPassword2] = useState('');
+const CreateAccount = ({ userName, setUserName, password, setPassword, password2, setPassword2, handleCreateAccount, message, setMessage, gotoLogin }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showPassword2, setShowPassword2] = useState(false);
 
@@ -13,31 +12,31 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, handleCre
         setMessage('Attention, ne rentrez pas un mot de passe important, un opérateur peut le voir.');
     }, [setMessage]);
 
+    const checkDatas = useCallback(() => {
+        if (password !== password2) {
+            setMessage('Les mots de passe ne correspondent pas.');
+            return;
+        }
+        setInitialMessage();
+        handleCreateAccount();
+    }, [handleCreateAccount, password, password2, setInitialMessage, setMessage]);
+
     useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                handleCreateAccount();
+                checkDatas();
             }
         };
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [handleCreateAccount]);
+    }, [handleCreateAccount, checkDatas]);
 
     useEffect(() => {
-        setInitialMessage();
-    }, [setInitialMessage]);
-
-    const checkDatas = () => {
-        if (password !== password2) {
-            setMessage('Les mots de passe ne correspondent pas.');
-            return false;
-        }
-        setInitialMessage();
-        handleCreateAccount();
-    };
+        if (message === '') setInitialMessage();
+    }, [message, setInitialMessage]);
 
     useEffect(() => {
         let timer;

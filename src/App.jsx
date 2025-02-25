@@ -12,8 +12,10 @@ import { getProfils } from './api/profilsService';
 import {jwtDecode } from 'jwt-decode';
 import './App.css';
 import Loader from './components/Loader/Loader';
+import { message } from 'antd';
 
 function App() {
+  const [messageApi, contextHolder] = message.useMessage();
   const [activeComponent, setActiveComponent] = useState('home'); // État pour suivre le composant actif
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -23,6 +25,8 @@ function App() {
   const [userId, setUserId] = useState(null)
   const [isLoading, setIsLoading] = useState(true);
   const [profils, setProfils] = useState([]);
+  const [globalSuccessMessage, setglobalSuccessMessage] = useState('');
+  const [globalErrorMessage, setglobalErrorMessage] = useState('');
 
   useEffect(() => {
 
@@ -76,9 +80,29 @@ function App() {
     loadProfils();
     }, []); // Exécutez une seule fois au chargement du composant
 
+    useEffect(() => {
+        if (globalSuccessMessage) {
+            messageApi.open({
+                type: 'success',
+                content: globalSuccessMessage,
+            });
+            setglobalSuccessMessage('');
+        }
+    }, [globalSuccessMessage, messageApi]);
+
+    useEffect(() => {
+        if (globalErrorMessage) {
+            messageApi.open({
+                type: 'error',
+                content: globalErrorMessage,
+            });
+            setglobalErrorMessage('');
+        }
+    }, [globalErrorMessage, messageApi]);
+
   const renderComponent = () => {
     if (isLoading) {
-        return <Loader message="Chargement de l'application..." />; // Affichez un message de chargement ou un spinner
+        return <Loader message="Chargement de l'application..." />;
     }
 
     switch (activeComponent) {
@@ -95,19 +119,22 @@ function App() {
         case 'account':
             return <Account startDate={startDate} endDate={endDate} />;
         case 'settings':
-            return <Settings />;
+            return <Settings setGlobalSuccessMessage={setglobalSuccessMessage} setGlobalErrorMessage={setglobalErrorMessage} />;
         default:
         return <Home startDate={startDate} endDate={endDate} defaultDate={defaultDate} />;
     }
   };
 
   return (
+    <>
+    {contextHolder}
       <div className="app-container">
           <Sidebar setActiveComponent={setActiveComponent} role={role} />
           <div className="content">
               {renderComponent()} {/* Affiche le composant actif */}
           </div>
       </div>
+  </>
   );
 }
 

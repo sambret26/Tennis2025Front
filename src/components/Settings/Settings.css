@@ -1,0 +1,25 @@
+.settings-container {
+    padding-top: 20px;
+    padding-left: 10%;
+    max-width: 1000px;
+}
+
+.settings-title {
+    text-align: center;
+}
+
+.settings-select, .settings-input-number, .settings-space, .save-settings-button {
+    width: 100%;
+}
+
+.settings-button {
+    margin-top: 7px;
+}
+
+.save-settings-button {
+    margin-left :24px;
+}
+
+.settings-input-number-zero .ant-input-number-input {
+    color: #ccc; /* Texte blanc */
+  }

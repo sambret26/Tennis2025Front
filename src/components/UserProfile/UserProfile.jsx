@@ -11,6 +11,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
     const [isLoggedIn, setIsLoggedIn] = useState(userId !== null);
     const [userNameValue, setUserNameValue] = useState(username || '');
     const [password, setPassword] = useState('');
+    const [password2, setPassword2] = useState('');
     const [message, setMessage] = useState('');
     const [tryToCreateAccount, setTryToCreateAccount] = useState();
     const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +84,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
         setTryToCreateAccount(true);
         setUserNameValue('');
         setPassword('');
+        setPassword2('');
         setMessage('');
     };
 
@@ -106,7 +108,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
     const renderComponent = () => {
         if(isLoading) return <TransparentLoader message="Chargement du profil..." />
         if(isLoggedIn) return <UserData userName={username} userId={userId} role={role} setRole={setRole} handleLogout={handleLogout} profils={profils}/>;
-        if(tryToCreateAccount) return <CreateAccount userName={userNameValue} setUserName={setUserNameValue} password={password} setPassword={setPassword} handleCreateAccount={handleCreateAccount} message={message} setMessage={setMessage} gotoLogin={gotoLogin} />;
+        if(tryToCreateAccount) return <CreateAccount userName={userNameValue} setUserName={setUserNameValue} password={password} setPassword={setPassword} password2={password2} setPassword2={setPassword2} handleCreateAccount={handleCreateAccount} message={message} setMessage={setMessage} gotoLogin={gotoLogin} />;
         return <UserLogin userName={userNameValue} setUserName={setUserNameValue} password={password} setPassword={setPassword} handleLogin={handleLogin} message={message} gotoCreateAccount={gotoCreateAccount} />;
     }
 

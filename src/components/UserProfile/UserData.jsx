@@ -157,7 +157,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
             )}
 
             {/* Loader */}
-            {isLoading && <TransparentLoader message="Mise à jour du rôle..." />}
+            {isLoading && <TransparentLoader message="Sauvegarde du rôle..." />}
         </div>
         </>
     );

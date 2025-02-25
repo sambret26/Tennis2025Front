@@ -3,9 +3,9 @@ import { Card, Button, Typography } from 'antd';
 import DetailModal from './Modals/DetailModal';
 import TransactionManagementModal from './Modals/TransactionManagementModal';
 import { getAccountData } from '../../api/accountService';
-import './Account.css';
 import Loader from '../Loader/Loader';
 import TransparentLoader from '../Loader/TransparentLoader';
+import './Account.css';
 
 const { Title, Text } = Typography;
 
@@ -113,7 +113,7 @@ const Account = ({ startDate, endDate }) => {
             </div>
 
             {/* Loaders et modales */}
-            {isTransparentLoaderVisible && <TransparentLoader message="Mise à jour des données..." />}
+            {isTransparentLoaderVisible && <TransparentLoader message="Sauvegarde des données..." />}
             {isDetailModalOpen && <DetailModal days={days} day={selectedDay} onClose={closeDetailModal} />}
             {isTransactionManagementModalOpen && (
                 <TransactionManagementModal
