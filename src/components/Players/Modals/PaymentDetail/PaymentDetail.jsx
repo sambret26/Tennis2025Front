@@ -110,13 +110,23 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
 
         const amount = parseFloat(newPayment.amount);
         const isFullPayment = amount >= remainingAmount;
-        const newPaymentEntry = {
-            amount: amount,
-            date: newPayment.date,
-            isFullPayment: 0
-        }
 
-        const updatedPayments = [...payments, newPaymentEntry];
+        const paymentIndex = payments.findIndex(payment => payment.date === newPayment.date);
+        const updatedPayments = [...payments];
+        if (paymentIndex !== -1) {
+            updatedPayments[paymentIndex] = {
+                ...updatedPayments[paymentIndex],
+                amount: updatedPayments[paymentIndex].amount + amount,
+                isFullPayment: 0
+            };
+        } else {
+            const newPaymentEntry = {
+                amount: amount,
+                date: newPayment.date,
+                isFullPayment: isFullPayment ? 1 : 0
+            };
+            updatedPayments.push(newPaymentEntry);
+        }
 
         updatedPayments.sort((a, b) => new Date(a.date) - new Date(b.date));
 
