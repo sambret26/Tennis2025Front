@@ -26,6 +26,7 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
   const [isCompetitionChanged, setIsCompetitionChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransparentLoading, setIsTransparentLoading] = useState(false);
+  const [editingReduction, setEditingReduction] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +39,9 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
         }
 
         const reductionsData = await getPredefinedReductions();
+        for (const reduction of reductionsData) {
+          reduction.key = reduction.reason;
+        }
         setReductions(reductionsData);
 
         const settingsData = await getSettings();
@@ -98,6 +102,7 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
 
     if (newReductionReason && newReductionAmount) {
       const newReduction = {
+        key: newReductionReason,
         reason: newReductionReason,
         amount: newReductionAmount,
       };
@@ -108,13 +113,14 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
     }
   };
 
-  const handleUpdateReduction = async (reason, updatedReduction) => {
-    setReductions(reductions.map((r) => (r.reason === reason ? updatedReduction : r)));
+  const handleUpdateReduction = async (key, updatedReduction) => {
+    updatedReduction.key = updatedReduction.reason;
+    setReductions(reductions.map((r) => (r.key === key ? updatedReduction : r)));
     setIsReductionsChanged(true);
   };
 
-  const handleDeleteReduction = async (reason) => {
-    setReductions(reductions.filter((r) => r.reason !== reason));
+  const handleDeleteReduction = async (key) => {
+    setReductions(reductions.filter((r) => r.key !== key));
     setIsReductionsChanged(true);
   };
 
@@ -250,16 +256,26 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
       <Card title="Gestion des réductions">
         <Space direction="vertical" className="settings-space">
           {reductions.map((reduction) => (
-            <Row key={reduction.reason} gutter={16} align="middle">
+            <Row key={reduction.key} gutter={16} align="middle">
               <Col span={10}>
                 <Input
-                  value={reduction.reason}
-                  onChange={(e) =>
-                    handleUpdateReduction(reduction.reason, {
-                      ...reduction,
+                  value={editingReduction?.key === reduction.key ? editingReduction?.reason : reduction.reason}
+                  onChange={(e) => {
+                    setIsReductionsChanged(true);
+                    setEditingReduction({
+                      key: reduction.key,
                       reason: e.target.value,
-                    })
-                  }
+                    });
+                  }}
+                  onBlur={() => {
+                    if (editingReduction?.key === reduction.key) {
+                        handleUpdateReduction(reduction.key, {
+                            reason: editingReduction.reason || reduction.reason,
+                            amount: reduction.amount,
+                        });
+                        setEditingReduction(null);
+                    }
+                }}
                 />
               </Col>
               <Col span={10}>
@@ -301,7 +317,7 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
               />
             </Col>
             <Col span={4}>
-              <Button type="primary" onClick={handleAddReduction}>
+              <Button type="primary" onClick={handleAddReduction} className="add-reduction-button">
                 Ajouter
               </Button>
             </Col>

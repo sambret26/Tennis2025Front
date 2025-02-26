@@ -23,3 +23,7 @@
 .settings-input-number-zero .ant-input-number-input {
     color: #ccc; /* Texte blanc */
   }
+
+  .add-reduction-button {
+    width: 80%;
+  }
