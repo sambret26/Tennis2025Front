@@ -94,22 +94,24 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
             className="result-input-modal"
         >
             <div className="radio-label">
-                <label>{match.player1.fullName}</label>
+                <label htmlFor={`player1-${match.id}`}>{match.player1.fullName}</label>
                 <input
                     type="radio"
+                    id={`player1-${match.id}`}
                     checked={selectedPlayer === match.player1Id}
                     onClick={() => handleRadioChange(match.player1Id)}
-                        onChange={()=> {}}
-                    />
-                    <label>VS</label>
-                    <input
-                        type="radio"
-                        checked={selectedPlayer === match.player2Id}
-                        onClick={() => handleRadioChange(match.player2Id)}
-                        onChange={() => {}}
-                    />
-                    <label>{match.player2.fullName}</label>
-                </div>
+                    onChange={()=> {}}
+                />
+                <label>VS</label>
+                <input
+                    type="radio"
+                    id={`player2-${match.id}`}
+                    checked={selectedPlayer === match.player2Id}
+                    onClick={() => handleRadioChange(match.player2Id)}
+                    onChange={() => {}}
+                />
+                <label htmlFor={`player2-${match.id}`}>{match.player2.fullName}</label>
+            </div>
             <Input
                 type="text"
                 value={displayScore}
