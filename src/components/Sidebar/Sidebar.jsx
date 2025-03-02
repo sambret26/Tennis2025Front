@@ -1,64 +1,91 @@
-import React from 'react';
-import './Sidebar.css';
-
-const Sidebar = ({ setActiveComponent, role }) => {
-
-    const isAdmin = () => {
-        return role === 2;
-    }
-
-    const isStaff = () => {
-        return role === 1;
-    }
-
-    const isStaffOrAdmin = () => {
-        return isStaff() || isAdmin();
-    }
-
-    return (
-        <div className="side-menu">
-            <button onClick={() => setActiveComponent('profil')}>
-                <i className="bi bi-person"></i>
+    import React, { useContext } from 'react';
+    import { Link } from 'react-router-dom'; // Importez Link
+    import { GlobalContext } from '../../App';
+    import './Sidebar.css';
+    
+    const Sidebar = ({ error }) => {
+        const { role } = useContext(GlobalContext);
+        
+        const isAdmin = () => role === 2;
+        
+        const isStaff = () => role === 1;
+        
+        const isStaffOrAdmin = () => isStaff() || isAdmin();
+        
+        const isNotAdmin = () => !isAdmin() || error;
+        
+        const isNotStaffOrAdmin = () => !isStaffOrAdmin() || error;
+        
+        const getAdminTitle = () => {
+            if (isAdmin() || error) return '';
+            return 'Seuls les administrateurs ont accès à cet onglet';
+        };
+        
+        const getStaffTitle = () => {
+            if (isStaffOrAdmin() || error) return '';
+            return 'Seuls les membres du staff ont accès à cet onglet';
+        };
+        
+        return (
+            <div className="side-menu">
+            {/* Bouton Profil */}
+            <Link to="/profil">
+            <button disabled={error}>
+            <i className="bi bi-person"></i>
             </button>
+            </Link>
+            
+            {/* Boutons cachés pour l'espacement */}
             <button className="hidden"></button>
             <button className="hidden"></button>
-            <button onClick={() => setActiveComponent('home')}>
-                <i className="bi bi-house"></i>
+            
+            {/* Bouton Accueil */}
+            <Link to="/home">
+            <button disabled={error}>
+            <i className="bi bi-house"></i>
             </button>
-            <button onClick={() => setActiveComponent('calendar')} 
-                disabled={!isAdmin()}
-                title={!isAdmin() ? "Seuls les administrateurs ont accès à cet onglet" : ""}
-            >
-                <i className="bi bi-calendar-event"></i>
+            </Link>
+            
+            {/* Bouton Calendrier (Admin uniquement) */}
+            <Link to="/calendar">
+            <button disabled={isNotAdmin()} title={getAdminTitle()}>
+            <i className="bi bi-calendar-event"></i>
             </button>
-            <button onClick={() => setActiveComponent('availability')}
-                disabled={!isStaffOrAdmin()}
-                title={!isStaffOrAdmin() ? "Seuls les membres du staff ont accès à cet onglet" : ""}
-            >
-                <i className="bi bi-person-lines-fill"></i>
+            </Link>
+            
+            {/* Bouton Disponibilités (Staff ou Admin) */}
+            <Link to="/availability">
+            <button disabled={isNotStaffOrAdmin()} title={getStaffTitle()}>
+            <i className="bi bi-person-lines-fill"></i>
             </button>
-            <button onClick={() => setActiveComponent('players')}
-                disabled={!isStaffOrAdmin()}
-                title={!isStaffOrAdmin() ? "Seuls les membres du staff ont accès à cet onglet" : ""}
-            >
-                <i className="bi bi-people"></i>
+            </Link>
+            
+            {/* Bouton Joueurs (Staff ou Admin) */}
+            <Link to="/players">
+            <button disabled={isNotStaffOrAdmin()} title={getStaffTitle()}>
+            <i className="bi bi-people"></i>
             </button>
-            <button onClick={() => setActiveComponent('account')}
-                disabled={!isAdmin()}
-                title={!isAdmin() ? "Seuls les administrateurs ont accès à cet onglet" : ""}
-            >
-                <i className="bi bi-currency-euro"></i>
+            </Link>
+            
+            {/* Bouton Compte (Admin uniquement) */}
+            <Link to="/account">
+            <button disabled={isNotAdmin()} title={getAdminTitle()}>
+            <i className="bi bi-currency-euro"></i>
             </button>
-            <button onClick={() => setActiveComponent('settings')}
-                disabled={!isAdmin()}
-                title={!isAdmin() ? "Seuls les administrateurs ont accès à cet onglet" : ""}
-            >
-                <i className="bi bi-gear"></i>
+            </Link>
+            
+            {/* Bouton Paramètres (Admin uniquement) */}
+            <Link to="/settings">
+            <button disabled={isNotAdmin()} title={getAdminTitle()}>
+            <i className="bi bi-gear"></i>
             </button>
+            </Link>
+            
+            {/* Boutons cachés pour l'espacement */}
             <button className="hidden"></button>
             <button className="hidden"></button>
-        </div>
-    );
-};
-
-export default Sidebar;
+            </div>
+        );
+    };
+    
+    export default Sidebar;

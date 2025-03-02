@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import './PaymentDetail.css';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
+import { GlobalContext } from '../../../../App';
+import './PaymentDetail.css';
 
-const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate, role }) => {
+const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate  }) => {
+    const { role } = useContext(GlobalContext);
+
     const getDefaultDate = () => {
         return new Date(defaultDate).toISOString().split('T')[0]
     }

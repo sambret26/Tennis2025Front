@@ -1,13 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import { getAllAvailabilities } from "../../api/availabilityService";
 import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
+import { GlobalContext } from "../../App";
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
-const Availability = ({ startDate, endDate, role }) => {
+const Availability = ({ startDate, endDate }) => {
+    const { role } = useContext(GlobalContext);
+
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
     const UNAVAILABLE = 4;
@@ -342,7 +345,6 @@ const Availability = ({ startDate, endDate, role }) => {
                                             isModalOpen={isPlayerCommentModalOpen}
                                             setIsModalOpen={setPlayerCommentModalOpen}
                                             isLoading={isLoading}
-                                            role={role}
                                         />
                                     </td>
                                     <td className="player-name">{player ? player.fullName : ''}</td>

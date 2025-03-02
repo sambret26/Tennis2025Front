@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Ajoutez useNavigate
 import Sidebar from './components/Sidebar/Sidebar';
 import UserProfile from './components/UserProfile/UserProfile';
 import Home from './components/Home/Home';
@@ -7,135 +8,144 @@ import Availability from './components/Availability/Availability';
 import Players from './components/Players/Players';
 import Account from './components/Account/Account';
 import Settings from './components/Settings/Settings';
+import Error from './components/Error/Error';
+import NotFound from './components/NotFound/NotFound';
 import { getStartAndEndDate } from './api/settingsService';
 import { getProfils } from './api/profilsService';
-import {jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import './App.css';
 import Loader from './components/Loader/Loader';
 import { message } from 'antd';
 
+export const GlobalContext = createContext();
+
 function App() {
   const [messageApi, contextHolder] = message.useMessage();
-  const [activeComponent, setActiveComponent] = useState('home'); // État pour suivre le composant actif
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [defaultDate, setDefaultDate] = useState(null);
   const [username, setUsername] = useState(null);
   const [role, setRole] = useState(0);
-  const [userId, setUserId] = useState(null)
+  const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [profils, setProfils] = useState([]);
-  const [globalSuccessMessage, setglobalSuccessMessage] = useState('');
-  const [globalErrorMessage, setglobalErrorMessage] = useState('');
-
+  const [globalSuccessMessage, setGlobalSuccessMessage] = useState('');
+  const [globalErrorMessage, setGlobalErrorMessage] = useState('');
+  const [error, setError] = useState(true);
+  
+  const navigate = useNavigate();
+  
   useEffect(() => {
-
     const connect = () => {
-        const token = localStorage.getItem('token');
-        if(!token) {
-            return;
-        }
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+      try {
         const data = jwtDecode(token);
         setUsername(data.name);
         setUserId(data.id);
         setRole(parseInt(data.profileValue));
-    }
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        throw error;
+      }
+    };
 
     const loadDates = async () => {
-        try {
-            const data = await getStartAndEndDate();
-            const startDateObj = new Date(data.startDate);
-            const endDateObj = new Date(data.endDate);
-            
-            setStartDate(startDateObj);
-            setEndDate(endDateObj);
+      try {
+        const data = await getStartAndEndDate();
+        const startDateObj = new Date(data.startDate);
+        const endDateObj = new Date(data.endDate);
 
-            const today = new Date();
-            if (today < startDateObj) {
-                setDefaultDate(startDateObj);
-             } else if (today > endDateObj) {
-                setDefaultDate(endDateObj);
-             } else {
-                setDefaultDate(today);
-             }
-
-        } catch (error) {
-            console.error('Error fetching dates:', error);
-        } finally {
-            setIsLoading(false);
+        setStartDate(startDateObj);
+        setEndDate(endDateObj);
+        
+        const today = new Date();
+        if (today < startDateObj) {
+          setDefaultDate(startDateObj);
+        } else if (today > endDateObj) {
+          setDefaultDate(endDateObj);
+        } else {
+          setDefaultDate(today);
         }
+        setError(false);
+      } catch (error) {
+        console.error('Error fetching dates:', error);
+        navigate('/error');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     const loadProfils = async () => {
-        try {
-            const data = await getProfils();
-            setProfils(data);
-        } catch (error) {
-            console.error('Error fetching profils:', error);
-        }
-    }
-
+      try {
+        const data = await getProfils();
+        setProfils(data);
+      } catch (error) {
+        console.error('Error fetching profils:', error);
+      }
+    };
     connect();
     loadDates();
     loadProfils();
-    }, []); // Exécutez une seule fois au chargement du composant
+  }, [navigate]);
 
-    useEffect(() => {
-        if (globalSuccessMessage) {
-            messageApi.open({
-                type: 'success',
-                content: globalSuccessMessage,
-            });
-            setglobalSuccessMessage('');
-        }
-    }, [globalSuccessMessage, messageApi]);
+  useEffect(() => {
+    if (globalSuccessMessage) {
+      messageApi.open({
+        type: 'success',
+        content: globalSuccessMessage,
+      });
+      setGlobalSuccessMessage('');
+    }
+  }, [globalSuccessMessage, messageApi]);
 
-    useEffect(() => {
-        if (globalErrorMessage) {
-            messageApi.open({
-                type: 'error',
-                content: globalErrorMessage,
-            });
-            setglobalErrorMessage('');
-        }
-    }, [globalErrorMessage, messageApi]);
+  useEffect(() => {
+    if (globalErrorMessage) {
+      messageApi.open({
+        type: 'error',
+        content: globalErrorMessage,
+      });
+      setGlobalErrorMessage('');
+    }
+  }, [globalErrorMessage, messageApi]);
 
-  const renderComponent = () => {
+  const getAppRouter = () => {
     if (isLoading) {
-        return <Loader message="Chargement de l'application..." />;
+      return <Loader message="Chargement de l'application..." />;
     }
-
-    switch (activeComponent) {
-        case 'profil':
-            return <UserProfile username={username} setUsername={setUsername} userId={userId} setUserId={setUserId} role={role} setRole={setRole} profils={profils} />;
-        case 'home':
-            return <Home startDate={startDate} endDate={endDate} defaultDate={defaultDate} role={role} />;
-        case 'calendar':
-            return <Calendar />;
-        case 'availability':
-            return <Availability startDate={startDate} endDate={endDate} role={role} />;
-        case 'players':
-            return <Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} role={role} />;
-        case 'account':
-            return <Account startDate={startDate} endDate={endDate} />;
-        case 'settings':
-            return <Settings setGlobalSuccessMessage={setglobalSuccessMessage} setGlobalErrorMessage={setglobalErrorMessage} />;
-        default:
-        return <Home startDate={startDate} endDate={endDate} defaultDate={defaultDate} />;
+    if (error) {
+      return <Error />;
     }
+    return (
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/home" element={<Home startDate={startDate} endDate={endDate} defaultDate={defaultDate}/>} />
+        <Route path="/profil" element={<UserProfile username={username} setUsername={setUsername} userId={userId} setUserId={setUserId} profils={profils} />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/availability" element={<Availability startDate={startDate} endDate={endDate} />} />
+        <Route path="/players" element={<Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} />} />
+        <Route path="/account" element={<Account startDate={startDate} endDate={endDate} />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/error" element={<Error />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    )
   };
 
   return (
-    <>
-    {contextHolder}
+    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, role, setRole }}>
+      {contextHolder}
       <div className="app-container">
-          <Sidebar setActiveComponent={setActiveComponent} role={role} />
-          <div className="content">
-              {renderComponent()} {/* Affiche le composant actif */}
-          </div>
+        <Sidebar error={error} />
+        <div className="content">
+          {getAppRouter()}
+        </div>
       </div>
-  </>
+    </GlobalContext.Provider>
   );
+  
 }
 
 export default App;

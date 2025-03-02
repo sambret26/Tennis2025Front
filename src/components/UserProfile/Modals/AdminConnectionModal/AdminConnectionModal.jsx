@@ -1,12 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { connectAdmin, askAccess } from '../../../../api/userService';
 import TransparentLoader from '../../../Loader/TransparentLoader';
+import { GlobalContext } from '../../../../App';
 import './AdminConnectionModal.css';
 
 const { Text } = Typography;
 
-const AdminConnectionModal = ({ role, setRole, onClose, userId, setSuccessMessage }) => {
+const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
+    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+
     const [messageError, setMessageError] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -45,14 +48,16 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId, setSuccessMessag
                 setRole(parseInt(role));
                 localStorage.setItem('token', data.token);
                 onClose();
+                setGlobalSuccessMessage("Connexion admin réussie.");
             })
             .catch((error) => {
                 console.error(error);
+                setGlobalErrorMessage("Une erreur est survenue lors de la connexion admin.");
             })
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [onClose, role, setRole, password, userId]);
+    }, [onClose, role, setRole, password, userId, setGlobalSuccessMessage, setGlobalErrorMessage]);
 
     const handleRequestAccess = () => {
         setLoadingMessage('Demande d’accès en cours...');
@@ -63,11 +68,12 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId, setSuccessMessag
                     setMessageError('Une erreur est survenue.');
                     return;
                 }
-                setSuccessMessage(`Demande d’accès ${getRoleName(role)} envoyée avec succès.`);
+                setGlobalSuccessMessage(`Demande d’accès ${getRoleName(role)} envoyée avec succès.`);
                 onClose();
             })
             .catch((error) => {
                 console.error(error);
+                setGlobalErrorMessage("Une erreur est survenue lors de la demande d'accès.");
             })
             .finally(() => {
                 setIsLoading(false);

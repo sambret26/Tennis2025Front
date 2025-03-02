@@ -24,7 +24,6 @@ const Account = ({ startDate, endDate }) => {
     useEffect(() => {
         const loadAccountData = async () => {
             try {
-                setIsTransparentLoaderVisible(true);
                 const data = await getAccountData();
                 setAmountInCash(data.totalDeposit + data.totalPayments - data.totalWithdrawal);
                 setProfit(data.totalPayments);
@@ -32,7 +31,6 @@ const Account = ({ startDate, endDate }) => {
             } catch (error) {
                 console.error('Error fetching account data:', error);
             } finally {
-                setIsTransparentLoaderVisible(false);
                 setIsLoading(false);
             }
         };

@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { changeUserPassword } from '../../../../api/userService';
+import { GlobalContext } from '../../../../App';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import './ChangePasswordModal.css';
 
 const { Text } = Typography;
 
-const ChangePasswordModal = ({ onClose, userId, setSuccessMessage }) => {
+const ChangePasswordModal = ({ onClose, userId }) => {
+    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+
     const [oldPassword, setOldPassword] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
@@ -52,17 +55,18 @@ const ChangePasswordModal = ({ onClose, userId, setSuccessMessage }) => {
                 if(data === 401) {
                     setMessageError('Mot de passe actuel incorrect.');
                 } else {
-                    setSuccessMessage('Mot de passe changé avec succès.');
+                    setGlobalSuccessMessage('Mot de passe changé avec succès.');
                     onClose();
                 }
             })
             .catch((error) => {
                 console.error(error);
+                setGlobalErrorMessage("Une erreur est survenue lors du changement de mot de passe.");
             })
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [userId, oldPassword, password, checkDatas, setSuccessMessage, onClose]);
+    }, [userId, oldPassword, password, checkDatas, setGlobalSuccessMessage, setGlobalErrorMessage, onClose]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { connectUser, createAccount } from '../../api/userService';
-import UserLogin from './UserLogin';
+import { jwtDecode } from 'jwt-decode';
+import { GlobalContext } from '../../App';import UserLogin from './UserLogin';
 import CreateAccount from './CreateAccount';
 import UserData from './UserData';
-import './UserProfile.css';
-import { jwtDecode } from 'jwt-decode';
 import TransparentLoader from '../Loader/TransparentLoader';
 
-const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, profils}) => {
+import './UserProfile.css';
+
+const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
+    const { role, setRole, setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+
     const [isLoggedIn, setIsLoggedIn] = useState(userId !== null);
     const [userNameValue, setUserNameValue] = useState(username || '');
     const [password, setPassword] = useState('');
@@ -53,8 +56,10 @@ const UserProfile = ({username, setUsername, userId, setUserId, role, setRole, p
                 localStorage.setItem('token', data.token);
                 login(data.token)
             }
+            setGlobalSuccessMessage("Connexion réussie.");
         }).catch(error => {
             console.error(error);
+            setGlobalErrorMessage("Une erreur est survenue lors de la connexion.");
         }).finally(() => {
             setIsLoading(false);
         });

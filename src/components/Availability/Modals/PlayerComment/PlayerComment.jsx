@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
+import { GlobalContext } from '../../../../App';
 import './PlayerComment.css';
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
-const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading, role }) => {
+const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
+    const { role } = useContext(GlobalContext);
+    
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
 

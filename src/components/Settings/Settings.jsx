@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Card, Switch, Col, Form, Input, InputNumber, Row, Select, Space, Typography } from "antd";
 import { getCompetitions, updateCompetition } from "../../api/competitionService";
 import { getPredefinedReductions, updatePredefinedReductions} from "../../api/reductionSettingsService";
 import { getSettings, updatePrices, updateBatchsActive, updateMojaSync, updateCalendarSync } from "../../api/settingsService";
+import { GlobalContext } from '../../App';
 import Loader from "../Loader/Loader";
 import TransparentLoader from "../Loader/TransparentLoader";
 import './Settings.css';
@@ -10,7 +11,9 @@ import './Settings.css';
 const { Title } = Typography;
 const { Option } = Select;
 
-const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
+const Settings = () => {
+  const { setGlobalErrorMessage, setGlobalSuccessMessage } = useContext(GlobalContext);
+
   const [competitions, setCompetitions] = useState([]);
   const [selectedCompetition, setSelectedCompetition] = useState(null);
   const [batchsEnabled, setBatchsEnabled] = useState(false);
@@ -18,10 +21,11 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
   const [calendarSyncEnabled, setCalendarSyncEnabled] = useState(false);
   const [simplePrice, setSimplePrice] = useState(0);
   const [doublePrice, setDoublePrice] = useState(0);
+  const [simpleInitialPrice, setSimpleInitialPrice] = useState(0);
+  const [doubleInitialPrice, setDoubleInitialPrice] = useState(0);
   const [reductions, setReductions] = useState([]);
   const [newReductionReason, setNewReductionReason] = useState("");
   const [newReductionAmount, setNewReductionAmount] = useState(0);
-  const [isPricesChanged, setIsPricesChanged] = useState(false);
   const [isReductionsChanged, setIsReductionsChanged] = useState(false);
   const [isCompetitionChanged, setIsCompetitionChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +54,8 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
         setCalendarSyncEnabled(settingsData.calendarSync === "1");
         setSimplePrice(parseInt(settingsData.simplePrice));
         setDoublePrice(parseInt(settingsData.doublePrice));
+        setSimpleInitialPrice(parseInt(settingsData.simplePrice));
+        setDoubleInitialPrice(parseInt(settingsData.doublePrice));
 
         setIsLoading(false);
       } catch (error) {
@@ -82,12 +88,10 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
 
   const handleSimplePriceChange = (value) => {
     setSimplePrice(value);
-    setIsPricesChanged(true);
   };
 
   const handleDoublePriceChange = (value) => {
     setDoublePrice(value);
-    setIsPricesChanged(true);
   };
 
   const handleAddReduction = async () => {
@@ -124,23 +128,30 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
     setIsReductionsChanged(true);
   };
 
+  const isPricesChanged = () => {
+    return simplePrice !== simpleInitialPrice || doublePrice !== doubleInitialPrice;
+  };
+
   const saveSettings = async () => {
     setIsTransparentLoading(true);
     try {
-      if (isPricesChanged) {
+      if (isPricesChanged()) {
         const prices = {
           simplePrice,
           doublePrice,
         };
         await updatePrices(prices);
-        setIsPricesChanged(false);
+        setSimpleInitialPrice(simplePrice);
+        setDoubleInitialPrice(doublePrice);
       }
       if (isReductionsChanged) {
         await updatePredefinedReductions(reductions);
         setIsReductionsChanged(false);
       }
+      setGlobalSuccessMessage("Les modifications ont été enregistrées.");
     } catch (error) {
       console.error("Error saving settings:", error);
+      setGlobalErrorMessage("Une erreur est survenue lors de l'enregistrement des modifications.");
     } finally {
       setIsTransparentLoading(false);
     }
@@ -162,6 +173,7 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
   if (isLoading) {
     return <Loader message="Chargement des paramètres..." />;
   }
+
 
   return (
     <div className="settings-container">
@@ -327,7 +339,7 @@ const Settings = ({ setGlobalSuccessMessage, setGlobalErrorMessage }) => {
 
       <Button
         type="primary"
-        disabled={!isPricesChanged && !isReductionsChanged}
+        disabled={!isPricesChanged() && !isReductionsChanged}
         onClick={saveSettings}
         className="settings-button save-settings-button"
       >

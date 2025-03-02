@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import { getAllPlayers } from '../../api/playersService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
+import { GlobalContext } from '../../App';
 import Loader from '../Loader/Loader';
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Players.css';
 
-const Players = ({ startDate, endDate, defaultDate, role }) => {
+const Players = ({ startDate, endDate, defaultDate }) => {
+    const { role } = useContext(GlobalContext);
+
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
         rankings: [],
@@ -433,7 +436,6 @@ const Players = ({ startDate, endDate, defaultDate, role }) => {
                     startDate={startDate}
                     endDate={endDate}
                     defaultDate={defaultDate}
-                    role={role}
                 />
             )}
         </div>

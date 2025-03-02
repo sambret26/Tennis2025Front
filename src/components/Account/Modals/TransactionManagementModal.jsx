@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { getTransactions, updateTransactions } from '../../../api/transactionService';
+import { GlobalContext } from '../../../App';
 import './TransactionManagementModal.css';
 
 const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderVisible }) => {
-    // Exemple de données de retraits/dépots
+    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+
     const [transactions, setTransactions] = useState([]);
     const [newTransaction, setNewTransaction] = useState({ type: 0, date: new Date().toISOString().split('T')[0], amount: '' });
     const [hasChanges, setHasChanges] = useState(false);
@@ -81,8 +83,10 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                 setIsTransparentLoaderVisible(true);
                 await updateTransactions(transactions);
             }
+            setGlobalSuccessMessage('Les modifications ont été enregistrées.');
         } catch (error) {
             console.error('Error saving changes:', error);
+            setGlobalErrorMessage('Une erreur est survenue lors de l\'enregistrement des modifications.');
         } finally {
             onChange();
             setIsTransparentLoaderVisible(false);

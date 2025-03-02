@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Select, Modal, Card, Space, message } from 'antd';
+import React, { useState, useEffect, useContext } from 'react';
+import { Button, Select, Modal, Card, Space } from 'antd';
 import { LogoutOutlined, KeyOutlined, SyncOutlined } from '@ant-design/icons';
 import { updateRole } from '../../api/userService';
+import { GlobalContext } from '../../App';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
 import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
 import TransparentLoader from '../Loader/TransparentLoader';
 
 const { Option } = Select;
 
-const profils = [
-    { id: 0, label: 'Visiteur', value: 0 },
-    { id: 1, label: 'Staff', value: 1 },
-    { id: 2, label: 'Admin', value: 2 },
-];
-
-const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
-    const [messageApi, contextHolder] = message.useMessage();
+const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) => {
+    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+    
     const [newRole, setNewRole] = useState(role);
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminModal, setShowAdminModal] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
 
     const changeRole = async (newRole) => {
         setNewRole(newRole);
         if (role === newRole) return;
-
+        
         try {
             setIsLoading(true);
             const response = await updateRole(userId, newRole);
@@ -35,36 +30,28 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
                 return;
             }
             if (!response.token) throw new Error('Failed to connect user');
-
-            setRole(parseInt(newRole));
+            
+            setRole(newRole);
             localStorage.setItem('token', response.token);
+            setGlobalSuccessMessage("Le rôle a bien été modifié.");
         } catch (error) {
             console.error(error);
+            setGlobalErrorMessage("Une erreur est survenue lors de la modification du rôle.");
         } finally {
             setIsLoading(false);
         }
     };
-
+    
     const askLogout = () => setShowConfirm(true);
     const confirmLogout = () => {
         handleLogout();
         setShowConfirm(false);
     };
-
+    
     const handleChangePassword = () => {
         setShowChangePasswordModal(true);
     };
-
-    useEffect(() => {
-        if (successMessage) {
-            messageApi.open({
-                type: 'success',
-                content: successMessage,
-            });
-            setSuccessMessage('');
-        }
-    }, [successMessage, messageApi]);
-
+    
     useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Escape' && showConfirm) {
@@ -75,89 +62,86 @@ const UserData = ({ userName, userId, role, setRole, handleLogout }) => {
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [showConfirm]);
-
+    
     return (
         <>
-            {contextHolder}
-            <div className="user-profile-container">
-                {/* En-tête */}
-                <Card className="user-profile-header">
-                    <h1>Bienvenue, {userName}</h1>
-                </Card>
-
-                {/* Section des rôles */}
-            <Card className="user-profile-role-section custom-cards">
-                <h4>Votre rôle :</h4>
-                <Space>
-                    <Select
-                        className="custom-select"
-                        value={role} // Utilise directement la valeur de `role`
-                        onChange={(value) => changeRole(value)} // Passe la valeur (ID) lors du changement
-                    >
-                        {profils.map((profil) => (
-                            <Option key={profil.id} value={profil.value}>
-                                {profil.label} {/* Affiche le label dans la liste déroulante */}
-                            </Option>
-                        ))}
-                    </Select>
-                    <Button icon={<KeyOutlined />} onClick={handleChangePassword}>
-                        Changer le mot de passe
-                    </Button>
-                    <Button icon={<LogoutOutlined />} danger onClick={askLogout}>
-                        Déconnexion
-                    </Button>
-                </Space>
+        <div className="user-profile-container">
+        {/* En-tête */}
+        <Card className="user-profile-header">
+        <h1>Bienvenue, {userName}</h1>
+        </Card>
+        
+        {/* Section des rôles */}
+        <Card className="user-profile-role-section custom-cards">
+        <h4>Votre rôle :</h4>
+        <Space>
+        <Select
+        className="custom-select"
+        value={role} // Utilise directement la valeur de `role`
+        onChange={(value) => changeRole(value)} // Passe la valeur (ID) lors du changement
+        >
+        {profils.map((profil) => (
+            <Option key={profil.id} value={parseInt(profil.value)}>
+            {profil.label} {/* Affiche le label dans la liste déroulante */}
+            </Option>
+        ))}
+        </Select>
+        <Button icon={<KeyOutlined />} onClick={handleChangePassword}>
+        Changer le mot de passe
+        </Button>
+        <Button icon={<LogoutOutlined />} danger onClick={askLogout}>
+        Déconnexion
+        </Button>
+        </Space>
+        </Card>
+        
+        {/* Section des actions administrateur */}
+        {role === 2 && ( // Supposons que le rôle 2 est administrateur
+            <Card className="admin-actions-section">
+            <Space>
+            <Button icon={<SyncOutlined />} onClick={() => console.log('Mettre à jour les matchs')}>
+            Mettre à jour les matchs
+            </Button>
+            <Button icon={<SyncOutlined />} onClick={() => console.log('Homologation')}>
+            Mettre à jour l'homologation
+            </Button>
+            </Space>
             </Card>
-
-            {/* Section des actions administrateur */}
-            {role === 2 && ( // Supposons que le rôle 2 est administrateur
-                <Card className="admin-actions-section">
-                    <Space>
-                        <Button icon={<SyncOutlined />} onClick={() => console.log('Mettre à jour les matchs')}>
-                            Mettre à jour les matchs
-                        </Button>
-                        <Button icon={<SyncOutlined />} onClick={() => console.log('Homologation')}>
-                            Mettre à jour l'homologation
-                        </Button>
-                    </Space>
-                </Card>
-            )}
-
-            {/* Modales */}
-            {showAdminModal && (
-                <AdminConnectionModal
-                    role={newRole}
-                    setRole={setRole}
-                    onClose={() => setShowAdminModal(false)}
-                    userId={userId}
-                    setSuccessMessage={setSuccessMessage}
-                />
-            )}
-
-            {showConfirm && (
-                <Modal
-                    title="Confirmation de déconnexion"
-                    open={showConfirm}
-                    onOk={confirmLogout}
-                    onCancel={() => setShowConfirm(false)}
-                    okText="Confirmer"
-                    cancelText="Annuler"
-                    className="confirm-modal"
-                >
-                    <p>Voulez-vous vraiment vous déconnecter ?</p>
-                </Modal>
-            )}
-
-            {showChangePasswordModal && (
-                <ChangePasswordModal
-                    onClose={() => setShowChangePasswordModal(false)}
-                    userId={userId}
-                    setSuccessMessage={setSuccessMessage}
-                />
-            )}
-
-            {/* Loader */}
-            {isLoading && <TransparentLoader message="Sauvegarde du rôle..." />}
+        )}
+        
+        {/* Modales */}
+        {showAdminModal && (
+            <AdminConnectionModal
+            role={newRole}
+            setRole={setRole}
+            onClose={() => setShowAdminModal(false)}
+            userId={userId}
+            />
+        )}
+        
+        {showConfirm && (
+            <Modal
+            title="Confirmation de déconnexion"
+            open={showConfirm}
+            onOk={confirmLogout}
+            onCancel={() => setShowConfirm(false)}
+            okText="Confirmer"
+            cancelText="Annuler"
+            className="confirm-modal"
+            >
+            <p>Voulez-vous vraiment vous déconnecter ?</p>
+            </Modal>
+        )}
+        
+        {showChangePasswordModal && (
+            <ChangePasswordModal
+            onClose={() => setShowChangePasswordModal(false)}
+            userId={userId}
+            />
+        )}
+        
+        {/* Loader */}
+        {isLoading && <TransparentLoader message="Sauvegarde du rôle..." />}
         </div>
         </>
     );

@@ -1,13 +1,16 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
 import ResultInputModal from './Modals/ResultInputModal';
 import { getMatches, updateMatchResult, updatePlayerAvailability } from '../../api/matchesService';
 import { getAllPlayersAvailabilitiesForDay } from '../../api/playerAvailabilityService';
+import { GlobalContext } from '../../App';
 import PlayerTooltip from '../Tooltips/PlayerTooltip/PlayerTooltip';
 import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
 
 import './Home.css'; 
 
-const Home = ({ startDate, endDate, defaultDate, role }) => {
+const Home = ({ startDate, endDate, defaultDate }) => {
+    const { role } = useContext(GlobalContext);
+
     const NO_ANSWER = 0;
     const UNAVAILABLE = 1;
     const AVAILABLE = 2;
