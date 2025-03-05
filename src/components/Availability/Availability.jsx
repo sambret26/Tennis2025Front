@@ -3,6 +3,7 @@ import { getAllAvailabilities } from "../../api/availabilityService";
 import { getAllPlayers } from "../../api/playersService";
 import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api/playerAvailabilityService";
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
+import { getLocaleDate } from '../../utils/dateUtils';
 import { GlobalContext } from "../../App";
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
@@ -175,7 +176,7 @@ const Availability = ({ startDate, endDate }) => {
     };
 
     const formattedDate = (date) => {
-        return date ? date.toISOString().split('T')[0] : '';
+        return date ? getLocaleDate(date) : '';
     };
 
     const noHourDate = (date = new Date()) => {

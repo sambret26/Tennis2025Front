@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef, useContext } from 'rea
 import ResultInputModal from './Modals/ResultInputModal';
 import { getMatches, updateMatchResult, updatePlayerAvailability } from '../../api/matchesService';
 import { getAllPlayersAvailabilitiesForDay } from '../../api/playerAvailabilityService';
+import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
 import PlayerTooltip from '../Tooltips/PlayerTooltip/PlayerTooltip';
 import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
@@ -358,10 +359,10 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                     disabled={currentDate <= startDate}
                 >&#8249;</button>
                 <input type="date" id="datePicker" 
-                    value={currentDate ? currentDate.toISOString().split('T')[0] : ''} // Affiche rien tant que currentDate est null
+                    value={currentDate ? getLocaleDate(currentDate) : ''} // Affiche rien tant que currentDate est null
                     onChange={(e) => setCurrentDate(new Date(e.target.value))} 
-                    min={startDate ? startDate.toISOString().split('T')[0] : undefined}
-                    max={endDate ? endDate.toISOString().split('T')[0] : undefined}
+                    min={startDate ? getLocaleDate(startDate) : undefined}
+                    max={endDate ? getLocaleDate(endDate) : undefined}
                 />
                 <button id="nextDay" className="arrow-button" 
                     onClick={handleNextDay}

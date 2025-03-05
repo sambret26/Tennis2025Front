@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
+import { getLocaleDate } from '../../../../utils/dateUtils.js';
 import { GlobalContext } from '../../../../App';
 import Loader from '../../../Loader/Loader';
 import './PaymentDetail.css';
@@ -9,7 +10,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
     const { role } = useContext(GlobalContext);
     
     const getDefaultDate = () => {
-        return new Date(defaultDate).toISOString().split('T')[0]
+        return getLocaleDate(new Date(defaultDate))
     }
     
     const [initialAmount, setInitialAmount] = useState(0);
@@ -309,8 +310,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         type="date"
                         value={newPayment.date}
                         onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
-                        min={startDate ? startDate.toISOString().split('T')[0] : undefined}
-                        max={endDate ? endDate.toISOString().split('T')[0] : undefined}
+                        min={startDate ? getLocaleDate(startDate) : undefined}
+                        max={endDate ? getLocaleDate(endDate) : undefined}
                     />
                 </td>
                 <td className={redIfNegative(newPayment.amount)}>

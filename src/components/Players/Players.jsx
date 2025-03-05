@@ -3,6 +3,7 @@ import { Layout, Table, Button, Typography, Checkbox, notification } from 'antd'
 import { getAllPlayers } from '../../api/playersService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import { updatePlayerPayments } from '../../api/paymentsService';
+import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
 import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import PlayersFilters from './PlayersFilters';
@@ -88,7 +89,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
             
             const newPayment = {
                 amount: player.balance.remainingAmount,
-                date: new Date().toISOString().split('T')[0],
+                date: getLocaleDate(new Date()),
                 isFullPayment: true,
             };
             

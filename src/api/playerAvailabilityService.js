@@ -1,4 +1,5 @@
 import { API_URL } from './apiConfig.js';
+import { getLocaleDate } from '../utils/dateUtils.js';
 
 const PLAYER_AVAILABILITY_API_URL = `${API_URL}/playerAvailabilities`;
 
@@ -32,7 +33,7 @@ export async function getAllPlayersAvailabilities() {
 export async function getAllPlayersAvailabilitiesForDay(date) {
     let formattedDate = '[no formatted date]';
     try {
-        formattedDate = date.toISOString().split('T')[0]; // Convertit la date en format ISO
+        formattedDate = getLocaleDate(date); // Convertit la date en format ISO
         const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/date?date=${formattedDate}`);
         if (!response.ok) {
             throw new Error('Failed to fetch availabilities for day ' + formattedDate);

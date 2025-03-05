@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { getTransactions, updateTransactions } from '../../../api/transactionService';
 import { GlobalContext } from '../../../App';
+import { getLocaleDate } from '../../../utils/dateUtils';
 import './TransactionManagementModal.css';
 
 const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderVisible }) => {
     const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
 
     const [transactions, setTransactions] = useState([]);
-    const [newTransaction, setNewTransaction] = useState({ type: 0, date: new Date().toISOString().split('T')[0], amount: '' });
+    const [newTransaction, setNewTransaction] = useState({ type: 0, date: getLocaleDate(new Date()), amount: '' });
     const [hasChanges, setHasChanges] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +73,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
         const updateTransactions = [...transactions, newTransactionEntry]
             .sort((a,b) => new Date(a.date) - new Date(b.date));
         setTransactions(updateTransactions);
-        setNewTransaction({ date: new Date().toISOString().split('T')[0], amount: '' });
+        setNewTransaction({ date: getLocaleDate(new Date()), amount: '' });
         setHasChanges(true);
     };
 

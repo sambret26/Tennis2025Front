@@ -1,10 +1,11 @@
 import { API_URL } from './apiConfig.js';
+import { getLocaleDate } from '../utils/dateUtils.js';
 
 const MATCHES_API_URL = `${API_URL}/matches`;
 
 export async function getMatches(date) {
     try {
-        const formattedDate = date.toISOString().split('T')[0]; // Convertit la date en format ISO
+        const formattedDate = getLocaleDate(date); // Convertit la date en format ISO
         const response = await fetch(`${MATCHES_API_URL}/planning?date=${formattedDate}`);
         if (!response.ok) {
             throw new Error('Failed to fetch matches');
