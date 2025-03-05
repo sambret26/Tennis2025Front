@@ -25,9 +25,7 @@
     position: relative;
     width: 100%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 }
 
 .close-button-payment-detail {
@@ -38,7 +36,6 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
-    margin-top: -15px;
 }
 
 .payment-summary {
@@ -49,6 +46,10 @@
     display: flex;
     justify-content: space-between; /* Espacement uniforme entre les éléments */
     align-items: center; /* Aligne les éléments verticalement au centre */
+}
+
+.details-section {
+    margin: 20px 0;
 }
 
 .payment-summary div {
@@ -64,7 +65,7 @@
 .payments-section td button,
 .reductions-section td button {
     min-width: 100px;
-    width: 100%;
+    width: 70%;
 }
 
 .payment-table, .reduction-table {
@@ -162,8 +163,7 @@
 
 .payment-detail-title {
     text-align: center; /* Centre le texte */
-    margin-bottom: 20px; /* Ajoute un espace en bas si nécessaire */
-    width: 100%;    
+    width: 100%;  
 }
 
 .section-title {
@@ -208,7 +208,6 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
-    margin-top: -15px;
 }
 
 .custom-input {
@@ -216,4 +215,17 @@
     width: 200px;
     height: 40px;
     margin: 5px 0;
+}
+
+.payment-td {
+    text-align: center; /* Centre le texte dans les cellules */
+    padding: 10px; /* Ajoute un peu d'espace autour du texte */
+}
+
+.payment-td input {
+    color: unset !important;
+}
+
+.red {
+    color: red !important;
 }

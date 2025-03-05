@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
 import { GlobalContext } from '../../../../App';
+import Loader from '../../../Loader/Loader';
 import './PaymentDetail.css';
 
 const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate  }) => {
     const { role } = useContext(GlobalContext);
-
+    
     const getDefaultDate = () => {
         return new Date(defaultDate).toISOString().split('T')[0]
     }
@@ -21,8 +22,10 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
     const [hasReductionsChanges, setHasReductionsChanges] = useState(false);
     const [hasPaymentsChanges, setHasPaymentsChanges] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [showNegativeConfirmation, setShowNegativeConfirmation] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-
+    
     const updateFinalPayment = useCallback((newRemainingAmount) => {
         if (newRemainingAmount === 0 && payments.length > 0) {
             const lastPaymentIndex = payments.length - 1;
@@ -37,8 +40,9 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             setPayments(updatedPayments); 
         }
     }, [payments]);
-
+    
     useEffect(() => {
+        setIsLoading(true);
         setInitialAmount(player.balance.initialAmount);
         setFinalAmount(player.balance.finalAmount);
         setRemainingAmount(player.balance.remainingAmount);
@@ -46,11 +50,12 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         setReductions(player.reductions);
         setHasReductionsChanges(false);
         setHasPaymentsChanges(false);
+        setIsLoading(false);
     }, [player]);
-
+    
     const handleAddReduction = () => {
         if (!newReduction.reason || !newReduction.amount) return;
-
+        
         const amount = parseFloat(newReduction.amount);
         
         setReductions([...reductions, {
@@ -67,12 +72,12 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         updateFinalPayment(newRemainingAmount)
         setHasReductionsChanges(true);
     };
-
+    
     const handleAddDefaultReduction = (defaultReason, defaultAmount) => {
         if (!defaultReason || !defaultAmount) return;
-
+        
         const amount = parseFloat(defaultAmount);
-
+        
         setReductions([...reductions, {
             reason: defaultReason,
             amount: amount,
@@ -85,7 +90,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         updateFinalPayment(newRemainingAmount)
         setHasReductionsChanges(true);
     }
-
+    
     const handleDeleteReduction = (reductionToDelete) => {
         const deletedReduction = reductions.find(reduction => reduction === reductionToDelete);
         const updatedReductions = reductions.filter(reduction => reduction !== reductionToDelete);
@@ -97,7 +102,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         updateFinalPayment(newRemainingAmount)
         setHasReductionsChanges(true);
     };
-
+    
     const handleDeleteDefaultReduction = (reductionToDelete) => {
         setReductions((prev) => prev.filter(reduction => reduction.reason !== reductionToDelete.reason));
         let newFinalAmount = finalAmount + reductionToDelete.amount;
@@ -107,13 +112,13 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         updateFinalPayment(newRemainingAmount)
         setHasReductionsChanges(true);
     }
-
+    
     const handleAddPayment = () => {
         if (!newPayment.amount) return;
-
+        
         const amount = parseFloat(newPayment.amount);
         const isFullPayment = amount >= remainingAmount;
-
+        
         const paymentIndex = payments.findIndex(payment => payment.date === newPayment.date);
         const updatedPayments = [...payments];
         if (paymentIndex !== -1) {
@@ -126,28 +131,28 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             const newPaymentEntry = {
                 amount: amount,
                 date: newPayment.date,
-                isFullPayment: isFullPayment ? 1 : 0
+                isFullPayment: 0
             };
             updatedPayments.push(newPaymentEntry);
         }
-
+        
         updatedPayments.sort((a, b) => new Date(a.date) - new Date(b.date));
-
+        
         if (isFullPayment) {
             updatedPayments[updatedPayments.length - 1].isFullPayment = true;
         }
-
+        
         setPayments(updatedPayments);
-
+        
         // Réinitialiser le champ de paiement
         setNewPayment({ amount: '', date: getDefaultDate() });
-
+        
         // Mettre à jour le montant restant
-        let newRemainingAmount = Math.max(0, remainingAmount - amount);
+        let newRemainingAmount = remainingAmount - amount;
         setRemainingAmount(newRemainingAmount);
         setHasPaymentsChanges(true);
     };
-
+    
     const handleDeletePayment = (index) => {
         const deletedPayment = payments[index];
         const updatedPayments = payments.filter((payment, i) => {
@@ -159,11 +164,11 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         });
         let newRemainingAmount = remainingAmount + deletedPayment.amount;
         setRemainingAmount(newRemainingAmount);
-
+        
         setPayments(updatedPayments);
         setHasPaymentsChanges(true);
     };
-
+    
     const handleClose = useCallback(() => {
         if (hasReductionsChanges || hasPaymentsChanges) {
             setShowConfirmation(true);
@@ -171,39 +176,46 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             onClose();
         }
     }, [hasReductionsChanges, hasPaymentsChanges, onClose]);
-
+    
     const handleConfirmClose = () => {
         setShowConfirmation(false);
         onClose();
     };
 
+    const handleAskSave = () => {
+        if (remainingAmount < 0) {
+            setShowNegativeConfirmation(true);
+        } else {
+            handleSave();
+        }
+    }
+    
     const handleSave = async () => {
         try {
             setIsSaving(true);
             player.balance.initialAmount = initialAmount;
             player.balance.finalAmount = finalAmount;
             player.balance.remainingAmount = remainingAmount;
-            onClose();
+            const updatePromises = [];
             if(hasReductionsChanges) {
-                await updatePlayerReductions(player.id, reductions, player.balance);
+                updatePromises.push(updatePlayerReductions(player.id, reductions, player.balance));
                 player.reductions = reductions
             }
             if(hasPaymentsChanges) {
-                await updatePlayerPayments(player.id, payments, player.balance);
+                updatePromises.push(updatePlayerPayments(player.id, payments, player.balance));
                 player.payments = payments
             }
-            player.balance.initialAmount = initialAmount;
-            player.balance.finalAmount = finalAmount;
-            player.balance.remainingAmount = remainingAmount;
             setHasReductionsChanges(false);
             setHasPaymentsChanges(false);
+            onClose();
+            await Promise.all(updatePromises);
         } catch (error) {
             console.error('Error saving changes:', error);
         } finally {
             setIsSaving(false);
         }
     };
-
+    
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0'); // Obtenir le jour
@@ -211,12 +223,18 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         return `${day}/${month}`; // Retourner le format jj/mm
     };
 
+    const redIfNegative = (value=0) => {
+        return remainingAmount-value < 0 ? 'red payment-td' : 'payment-td';
+    };
+    
     useEffect(() => {
         const handleKeyPress = (event) => {
             if (event.key === 'Escape') {
                 event.preventDefault();
                 if(showConfirmation) {
                     setShowConfirmation(false);
+                } else if (showNegativeConfirmation) {
+                    setShowNegativeConfirmation(false);
                 } else {
                     handleClose();
                 }
@@ -226,15 +244,15 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [handleClose, showConfirmation]);
-
+    }, [handleClose, showConfirmation, showNegativeConfirmation]);
+    
     const paymentHeaders = () => {
         if(payments.length > 0) {
             return (
                 <tr>
                     <th>Type</th>
-                    <th>Montant</th>
                     <th>Date de paiement</th>
+                    <th>Montant</th>
                     {(role === 2 && <th></th>)}
                 </tr>
             )
@@ -245,7 +263,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             </tr>
         )
     }
-
+    
     const reductionHeaders = () => {
         if(reductions.some(reduction => reduction.default === 0)) {
             return (
@@ -262,7 +280,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             </tr>
         )
     }
-
+    
     const deletePaymentButton = (index) => {
         if(role !== 2) return;
         return (
@@ -271,7 +289,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             </td>
         )
     }
-
+    
     const deleteReductionButton = (reduction) => {
         if(role !== 2) return;
         return (
@@ -280,101 +298,96 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             </td>
         )
     }
-
+    
     const newPaymentSection = () => {
         if(role !== 2) return;
         return (
             <tr>
-            <td>Nouveau paiement</td>
-            <td>
-                <input
-                    type="number"
-                    value={newPayment.amount}
-                    onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
-                    placeholder="Montant"
-                />
-            </td>
-            <td>
-                <input
-                    type="date"
-                    value={newPayment.date}
-                    onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
-                    min={startDate ? startDate.toISOString().split('T')[0] : undefined}
-                    max={endDate ? endDate.toISOString().split('T')[0] : undefined}
-                />
-            </td>
-            <td>
-                <button
-                    className="green-button"
-                    onClick={handleAddPayment}
-                    disabled={!newPayment.amount}
-                >
-                    Ajouter
-                </button>
-            </td>
-        </tr>
+                <td className="payment-td">Nouveau paiement</td>
+                <td className="payment-td">
+                    <input
+                        type="date"
+                        value={newPayment.date}
+                        onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
+                        min={startDate ? startDate.toISOString().split('T')[0] : undefined}
+                        max={endDate ? endDate.toISOString().split('T')[0] : undefined}
+                    />
+                </td>
+                <td className={redIfNegative(newPayment.amount)}>
+                    <input
+                        type="number"
+                        value={newPayment.amount}
+                        onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
+                        placeholder="Montant"
+                    />
+                </td>
+                <td className="payment-td">
+                    <button
+                        className="green-button"
+                        onClick={handleAddPayment}
+                        disabled={!newPayment.amount}
+                    >
+                        Ajouter
+                    </button>
+                </td>
+            </tr>
         )
     }
-
+    
     const newReductionSection = () => {
         if(role !== 2) return;
         return (
             <tr>
-            <td>
-                <input
-                    type="text"
-                    value={newReduction.reason}
-                    onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
-                    placeholder="Motif de la réduction"
-                    className="custom-input"
+                <td>
+                    <input
+                        type="text"
+                        value={newReduction.reason}
+                        onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
+                        placeholder="Motif de la réduction"
+                        className="custom-input"
                 />
-            </td>
-            <td>
-                <input
-                    type="number"
-                    value={newReduction.amount}
-                    onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
-                    className="custom-input"
-                    placeholder="Montant"
+                </td>
+                <td>
+                    <input
+                        type="number"
+                        value={newReduction.amount}
+                        onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
+                        className="custom-input"
+                        placeholder="Montant"
                 />
-            </td>
-            <td>
-                <button
-                    className="green-button"
-                    onClick={handleAddReduction}
-                    disabled={!newReduction.reason || !newReduction.amount}
-                >
-                    Ajouter
-                </button>
-            </td>
-        </tr>
+                </td>
+                <td>
+                    <button
+                        className="green-button"
+                        onClick={handleAddReduction}
+                        disabled={!newReduction.reason || !newReduction.amount}
+                    >
+                        Ajouter
+                    </button>
+                </td>
+            </tr>
         )
     }
-
+    
     const footerSection = () => {
         if(role !== 2) return;
         return (
             <div className="modal-footer">
-                <button className="green-button" onClick={handleSave} disabled={isSaving}>Valider</button>
+                <button className="green-button" onClick={handleAskSave} disabled={isSaving}>Valider</button>
                 <button className="red-button" onClick={handleClose}>Fermer</button>
             </div>
         )
     }
-
-    return (
-        <div className="payment-detail-modal">
-            <div className="payment-detail-content">
-                <div className="payment-detail-header">
-                    <h2 className="payment-detail-title">Détail du paiement de {player.lastName} {player.firstName}</h2>
-                    <button className="close-button-payment-detail" onClick={handleClose}>✖</button>
-                </div>
-
+    
+    const detailSection = () => {
+        return (
+            <div className="details-section">
                 <div className="payment-summary">
                     <div>Montant initial : {initialAmount}€</div>
                     <div>Montant final : {finalAmount}€</div>
-                    <div>Montant restant à payer : {remainingAmount}€</div>
+                    <div className={redIfNegative()}>Montant restant à payer : {remainingAmount}€</div>
                 </div>
-
+                
                 <div className="payments-section">
                     <h3 className="section-title">Paiements</h3>
                     <table className="payment-table">
@@ -384,17 +397,17 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         <tbody>
                             {payments.map((payment, index) => (
                                 <tr key={index}>
-                                    <td>{payment.isFullPayment ? 'Paiement final' : 'Paiement partiel'}</td>
-                                    <td>{payment.amount}€</td>
-                                    <td>{formatDate(payment.date)}</td>
-                                    {deletePaymentButton(index)}
+                                <td className="payment-td">{payment.isFullPayment ? 'Paiement final' : 'Paiement partiel'}</td>
+                                <td className="payment-td">{formatDate(payment.date)}</td>
+                                <td className="payment-td">{payment.amount}€</td>
+                                {deletePaymentButton(index)}
                                 </tr>
                             ))}
                             {newPaymentSection()}
                         </tbody>
                     </table>
                 </div>
-
+                
                 <div className="reductions-section">
                     <h3 className="section-title">Réductions</h3>
                     <div className="reductions-section">
@@ -402,7 +415,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                             {globalReductions.map((globalReduction) => {
                                 // Vérifiez si la raison de la réduction globale existe dans les réductions du joueur
                                 const isChecked = reductions.some(reduction => reduction.reason === globalReduction.reason);
-
+                                
                                 return (
                                     <div key={globalReduction.id}>
                                         <input
@@ -434,16 +447,30 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                 <tr key={index}>
                                     <td>{reduction.reason}</td>
                                     <td>{reduction.amount}€</td>
-                                    {deleteReductionButton(reduction)}
+                                {deleteReductionButton(reduction)}
                                 </tr>
                             ))}
                             {newReductionSection()}
                         </tbody>
                     </table>
                 </div>
+            </div>
+        )
+    }
+
+    if (isLoading) return <Loader message="Chargement en cours..." />;
+
+    return (
+        <div className="payment-detail-modal">
+            <div className="payment-detail-content">
+                <div className="payment-detail-header">
+                    <h2 className="payment-detail-title">Détail du paiement de {player.lastName} {player.firstName}</h2>
+                    <button className="close-button-payment-detail" onClick={handleClose}>✖</button>
+                </div>
+                {detailSection()}
                 {footerSection()}
             </div>
-
+            
             {showConfirmation && (
                 <div className="confirmation-modal">
                     <div className="confirmation-content">
@@ -459,6 +486,23 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                     </div>
                 </div>
             )}
+
+            {showNegativeConfirmation && (
+                <div className="confirmation-modal">
+                    <div className="confirmation-content">
+                        <div className="confirmation-header">
+                            <h3 className="confirmation-title">Confirmation</h3>
+                            <button className="close-button-confirmation" onClick={() => setShowNegativeConfirmation(false)}>✖</button>
+                        </div>
+                        <p>Êtes-vous sûr de vouloir confirmer ? <br></br>Le montant restant à payer sera négatif.</p>
+                        <div className="confirmation-buttons">
+                            <button className="green-button" onClick={handleSave}>Confirmer</button>
+                            <button className="red-button" onClick={() => setShowNegativeConfirmation(false)}>Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

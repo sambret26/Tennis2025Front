@@ -247,8 +247,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const putPlayerTooltip = (match, player) => {
         if(viewProfile !== 2) return;
-        if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} />);
-        return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} />);
+        if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
+        return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} table={true} />);
     }
 
     const showSwitch = () => {

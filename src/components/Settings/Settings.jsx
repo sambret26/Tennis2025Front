@@ -158,7 +158,7 @@ const Settings = () => {
   };
 
   const saveCompetition = async () => {
-    await updateCompetition({ competitionId: selectedCompetition }); //TODO : Work
+    await updateCompetition({ competitionId: selectedCompetition }); //TODO : Work in progress
     setIsCompetitionChanged(false);
   };
 

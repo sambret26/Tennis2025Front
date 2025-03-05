@@ -98,6 +98,13 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
         onClose();
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0'); // Obtenir le jour
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Obtenir le mois (0-11)
+        return `${day}/${month}`; // Retourner le format jj/mm
+    };
+
     const headers = () => {
         if(transactions.length > 0) {
             return (
@@ -135,7 +142,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                     {transactions.map((transaction, index) => (
                         <tr key={index}>
                             <td className="transaction-td">{transaction.type === 1 ? 'Depot' : 'Retrait'}</td>
-                            <td className="transaction-td">{transaction.date}</td>
+                            <td className="transaction-td">{formatDate(transaction.date)}</td>
                             <td className="transaction-td">{transaction.amount}€</td>
                             <td className="transaction-td">
                                 <button className="transaction-red-button" onClick={() => handleDeleteTransaction(index)}>Supprimer</button>

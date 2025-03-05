@@ -2,7 +2,14 @@ import React from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import './PlayerTooltip.css';
 
-const PlayerTooltip = ({ className, player }) => {
+const infoCircle = (className, table) => {
+    if (table) {
+        return <td className={`bi bi-info-circle info-circle ${className}`}></td>;
+    }
+    return <div className={`bi bi-info-circle info-circle ${className}`}></div>;
+}
+
+const PlayerTooltip = ({ className, player, table }) => {
     return (
         <OverlayTrigger
             placement="right"
@@ -19,7 +26,7 @@ const PlayerTooltip = ({ className, player }) => {
                 </Tooltip>
             }
         >
-            <td className={`bi bi-info-circle info-circle ${className}`}></td>
+            {infoCircle(className, table)}
         </OverlayTrigger>
     );
 }

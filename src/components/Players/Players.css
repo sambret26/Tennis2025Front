@@ -1,139 +1,14 @@
-.players-container {
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.players-container h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-}
-
-.players-content {
-    display: flex;
-    gap: 20px;
-}
-
-.players-table-content {
-    width: 100%;
-}
-
 .filters-section {
     width: 250px;
     padding: 20px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
+    background-color: #f5f5f5 !important;
+    border: none;
 }
 
 .filters-section label {
     display: block;
     margin: 5px 0;
     cursor: pointer;
-}
-
-.filters-section input[type="checkbox"],
-.filters-section input[type="radio"] {
-    margin-right: 8px;
-}
-
-.ranking-filters,
-.category-filters,
-.payment-status-filters {
-    margin-bottom: 20px;
-}
-
-.ranking-filters h3,
-.category-filters h3,
-.payment-status-filters h3 {
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.players-table-container {
-    flex: 1;
-    overflow-x: auto;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    border: 1px solid #ccc;
-}
-
-.players-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.players-table th,
-.players-table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-.players-table th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.players-table th:hover {
-    background-color: #e0e0e0;
-}
-
-
-.players-table td:not(.col-player):not(.col-payment-detail) {
-    width: 10%;
-}
-
-.players-table tbody tr:hover {
-    background-color: #f8f8f8;
-}
-
-.players-table input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #4CAF50;
-}
-
-.players-table input[type="checkbox"]:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.players-table input[type="checkbox"]:disabled:checked {
-    accent-color: #3498db;
-    opacity: 1;
-}
-
-.players-table input[type="checkbox"]:disabled:not(:checked) {
-    opacity: 0.5;
-}
-
-.players-table button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.players-table button:hover {
-    background-color: #45a049;
-}
-
-.col-player {
-    text-align: left !important;
-    width: 20%;
-    padding-left: 15px !important;
-}
-
-.col-payment-detail {
-    width: 30%;
 }
 
 /* Styles pour les statuts de payment */
@@ -149,8 +24,64 @@
     color: #f44336;
 }
 
-/* Styles pour les flèches de tri */
-th span {
-    margin-left: 5px;
-    font-size: 12px;
+.paid-too-much {
+    color: #6536f4;
+}
+
+.player-name {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.player-tooltip {
+    margin-right : 10%
+}
+
+.player-column,
+.details-column {
+    width: 20%;
+}
+
+.ranking-column,
+.category-column,
+.amount-column,
+.paid-column,
+.payment-date-column {
+    width: 10%;
+}
+
+.player-column,
+.ranking-column,
+.category-column,
+.amount-column,
+.paid-column,
+.payment-date-column,
+.details-column {
+    text-align: center !important;
+}
+
+.ant-table-cell {
+    text-align: unset;
+}
+
+tr:not(:hover) td.ant-table-column-sort {
+    background: unset !important;
+}
+
+th.ant-table-column-sort:not(:hover) {
+    background: #fafafa !important;
+}
+
+.player-layout {
+    font-family: Arial, sans-serif;
+}
+
+.player-layout h2, .player-layout h3 {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.ant-layout {
+    font-size: unset !important;
 }

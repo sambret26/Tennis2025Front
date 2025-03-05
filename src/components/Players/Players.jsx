@@ -1,195 +1,144 @@
-import React, { useState, useEffect, useContext } from 'react';
-import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
+import React, { useState, useEffect, useCallback, useMemo, useContext } from 'react';
+import { Layout, Table, Button, Typography, Checkbox, notification } from 'antd';
 import { getAllPlayers } from '../../api/playersService';
-import { updatePlayerPayments } from '../../api/paymentsService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
+import { updatePlayerPayments } from '../../api/paymentsService';
 import { GlobalContext } from '../../App';
+import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
+import PlayersFilters from './PlayersFilters';
 import Loader from '../Loader/Loader';
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Players.css';
 
+const { Title } = Typography;
+const { Sider, Content } = Layout;
+
 const Players = ({ startDate, endDate, defaultDate }) => {
     const { role } = useContext(GlobalContext);
-
+    
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
         rankings: [],
-        selectedRankings: new Set(),
+        selectedRankings: [],
         categories: [],
-        selectedCategories: new Set(),
-        paymentStatus: 'all'
+        selectedCategories: [],
+        paymentStatus: 'all',
     });
-    const [sortConfig, setSortConfig] = useState({ key: 'lastName', direction: 'asc' });
     const [loading, setLoading] = useState(true);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [globalReductions, setGlobalReductions] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const rankingList = useMemo(() => ['NC', '40', '30/5', '30/4', '30/3', '30/2', '30/1', '30', '15/5', '15/4', '15/3', '15/2', '15/1', '15'], []);
 
+    const sortRankings = useCallback((rankings) => {
+        return rankings.sort((a, b) => rankingList.indexOf(a) - rankingList.indexOf(b));
+    }, [rankingList]);
+
+    // Chargement des joueurs et des réductions
     useEffect(() => {
-        const fetchPlayers = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const data = await getAllPlayers();
+                const [playersData, reductionsData] = await Promise.all([
+                    getAllPlayers(),
+                    getPredefinedReductions(),
+                ]);
                 
-                if (!Array.isArray(data)) {
-                    console.error('Expected array of players, got:', typeof data);
-                    return;
-                }
+                const uniqueRankings = [...new Set(playersData.map((player) => player.ranking?.simple || 'NC'))];
+                const uniqueRankingsSorted = sortRankings(uniqueRankings);
+                const uniqueCategories = [...new Set(playersData.flatMap((player) => player.categories || []))];
                 
-                // Extraire les classements uniques et les sélectionner par défaut
-                const uniqueRankings = [...new Set(data.map(player => 
-                    player.ranking ? player.ranking.simple : 'NC'
-                ))].filter(Boolean);
-                
-                // Extraire les catégories uniques et les sélectionner par défaut
-                const uniqueCategories = [...new Set(data.flatMap(player => player.categories || []))];
-                
-                setPlayers(data);
-                setFilters(prev => ({
+                setPlayers(playersData);
+                setFilters((prev) => ({
                     ...prev,
-                    rankings: uniqueRankings,
-                    selectedRankings: new Set(uniqueRankings),
+                    rankings: uniqueRankingsSorted,
                     categories: uniqueCategories,
-                    selectedCategories: new Set(uniqueCategories)
                 }));
+                setGlobalReductions(reductionsData);
             } catch (error) {
-                console.error('Erreur lors du chargement des joueurs:', error);
+                notification.error({
+                    message: 'Erreur',
+                    description: 'Erreur lors du chargement des données.',
+                });
             } finally {
                 setLoading(false);
             }
         };
-    
-        const fetchGlobalRecuctions = async () => {
-            try {
-                const data = await getPredefinedReductions();
-                setGlobalReductions(data);
-            } catch (error) {
-                console.error('Erreur lors du chargement des réductions:', error);
-            }
-        };
         
-        fetchPlayers();
-        fetchGlobalRecuctions();
-    }, []);
-
-    useEffect(() => {
-    }, [players]);
-
-    useEffect(() => {
-    }, [filters]);
-
-    const handleSort = (key) => {
-        let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-        setSortConfig({ key, direction });
+        fetchData();
+    }, [sortRankings]);
+    
+    // Gestion des filtres
+    const handleRankingFilterChange = (checkedValues) => {
+        setFilters((prev) => ({ ...prev, selectedRankings: checkedValues }));
     };
-
-    const getSortedPlayers = () => {
-        const sortedPlayers = [...players];
-        return sortedPlayers.sort((a, b) => {
-            if (sortConfig.key === 'lastName') {
-                const compareResult = `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`);
-                return sortConfig.direction === 'asc' ? compareResult : -compareResult;
-            }
-            if (sortConfig.key === 'ranking') {
-                const rankOrder = ['NC', '40', '30/5', '30/4', '30/3', '30/2', '30/1', '30', '15/5', '15/4', '15/3', '15/2', '15/1', '15'];
-                const aRank = a.ranking ? a.ranking.simple : 'NC';
-                const bRank = b.ranking ? b.ranking.simple : 'NC';
-                const aIndex = rankOrder.indexOf(aRank);
-                const bIndex = rankOrder.indexOf(bRank);
-                return sortConfig.direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
-            }
-            if (sortConfig.key === 'amount') {
-                return sortConfig.direction === 'asc' ? b.balance.finalAmount - a.balance.finalAmount : a.balance.finalAmount - b.balance.finalAmount;
-            }
-            if (sortConfig.key === 'paid') {
-                if ((a.balance.remainingAmount === 0) === (b.balance.remainingAmount === 0)) return 0;
-                if (sortConfig.direction === 'asc') {
-                    return a.balance.remainingAmount === 0 ? -1 : 1;
-                }
-                return a.balance.remainingAmount === 0 ? 1 : -1;
-            }
-            if (sortConfig.key === 'partiallyPaid') {
-                const aValue = a.paid ? 2 : (a.partiallyPaid ? 1 : 0);
-                const bValue = b.paid ? 2 : (b.partiallyPaid ? 1 : 0);
-                return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
-            }
-            if (sortConfig.key === 'paymentDate') {
-                const paymentDateA = getLatestPaymentDate(a);
-                const paymentDateB = getLatestPaymentDate(b);
-                if (!paymentDateA) return sortConfig.direction === 'asc' ? 1 : 1;
-                if (!paymentDateB) return sortConfig.direction === 'asc' ? -1 : -1;
-                return sortConfig.direction === 'asc' 
-                    ? new Date(paymentDateB) - new Date(paymentDateA)
-                    : new Date(paymentDateA) - new Date(paymentDateB);
-            }
-            return 0;
-        });
+    
+    const handleCategoryFilterChange = (checkedValues) => {
+        setFilters((prev) => ({ ...prev, selectedCategories: checkedValues }));
     };
-
-    const getFilteredPlayers = () => {
-        return getSortedPlayers().filter(player => {
-            // Filtre par classement
-            const playerRanking = player.ranking ? player.ranking.simple : 'NC';
-            if (!filters.selectedRankings.has(playerRanking)) {
-                return false;
-            }
-
-            // Filtre par catégorie
-            const playerCategories = player.categories || [];
-            const hasMatchingCategory = playerCategories.some(cat => 
-                filters.selectedCategories.has(cat)
+    
+    const handlePaymentStatusChange = (e) => {
+        setFilters((prev) => ({ ...prev, paymentStatus: e.target.value }));
+    };
+    
+    // Gestion du changement de statut de paiement
+    const handlePaymentChange = async (player) => {
+        try {
+            if (player.balance.remainingAmount === 0) return;
+            
+            const newPayment = {
+                amount: player.balance.remainingAmount,
+                date: new Date().toISOString().split('T')[0],
+                isFullPayment: true,
+            };
+            
+            const updatedPayments = [...player.payments, newPayment];
+            const updatedBalance = { ...player.balance, remainingAmount: 0 };
+            
+            await updatePlayerPayments(player.id, updatedPayments, updatedBalance);
+            
+            setPlayers((prevPlayers) =>
+                prevPlayers.map((p) =>
+                    p.id === player.id
+                    ? { ...p, payments: updatedPayments, balance: updatedBalance }
+                    : p
+                )
             );
-            if (!hasMatchingCategory) {
-                return false;
-            }
+    
+            notification.success({
+                message: 'Succès',
+                description: 'Le paiement a été enregistré.',
+            });
+        } catch (error) {
+            notification.error({
+                message: 'Erreur',
+                description: 'Erreur lors de la mise à jour du paiement.',
+            });
+        }
+    };
 
-            // Filtre par statut de paiement
-            if (filters.paymentStatus === 'paid' && player.balance.remainingAmount > 0) {
-                return false;
-            }           
-            if (filters.paymentStatus === 'partiallyPaid' && (player.balance.remainingAmount === 0 || player.balance.remainingAmount === player.balance.finalAmount)) {
-                return false;
-            }
-            if (filters.paymentStatus === 'unpaid' && (player.balance.remainingAmount !== player.balance.finalAmount)) {
-                return false;
-            }
-            return true;
+    // Filtrage des joueurs
+    const getFilteredPlayers = () => {
+        return players.filter((player) => {
+            const matchesRanking =
+            filters.selectedRankings.length === 0 ||
+            filters.selectedRankings.includes(player.ranking?.simple || 'NC');
+            const matchesCategory =
+            filters.selectedCategories.length === 0 ||
+            player.categories.some((cat) => filters.selectedCategories.includes(cat));
+            const matchesPaymentStatus =
+            filters.paymentStatus === 'all' ||
+            (filters.paymentStatus === 'paid' && player.balance.remainingAmount === 0) ||
+            (filters.paymentStatus === 'partiallyPaid' &&
+                player.balance.remainingAmount > 0 &&
+                player.balance.remainingAmount < player.balance.finalAmount) ||
+            (filters.paymentStatus === 'unpaid' &&
+                player.balance.remainingAmount === player.balance.finalAmount);
+                    
+            return matchesRanking && matchesCategory && matchesPaymentStatus;
         });
     };
-
-    const handleRankingFilterChange = (ranking, checked) => {
-        setFilters(prev => ({
-            ...prev,
-            selectedRankings: checked 
-                ? new Set([...prev.selectedRankings, ranking])
-                : new Set([...prev.selectedRankings].filter(r => r !== ranking))
-        }));
-    };
-
-    const handleCategoryFilterChange = (category, checked) => {
-        setFilters(prev => ({
-            ...prev,
-            selectedCategories: checked
-                ? new Set([...prev.selectedCategories, category])
-                : new Set([...prev.selectedCategories].filter(c => c !== category))
-        }));
-    };
-
-    const handlePaymentStatusChange = (status) => {
-        setFilters(prev => ({
-            ...prev,
-            paymentStatus: status
-        }));
-    };
-
-    const getRowClassName = (player) => {
-        if (player.balance.remainingAmount === 0) return 'paid';
-        if (player.balance.remainingAmount !== player.balance.finalAmount) return 'partially-paid';
-        return 'unpaid';
-    };
-
+        
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -197,7 +146,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Obtenir le mois (0-11)
         return `${day}/${month}`; // Retourner le format jj/mm
     };
-
+        
     const getLatestPaymentDate = (player) => {
         if (player.payments && player.payments.length > 0) {
             return player.payments.reduce((lastDate, payment) => {
@@ -207,238 +156,155 @@ const Players = ({ startDate, endDate, defaultDate }) => {
         }
         return null;
     };
-
-    const handleRankingChange = (checked) => {
-        if (checked) {
-            setFilters(prev => ({
-                ...prev,
-                selectedRankings: new Set(filters.rankings)
-            }));
-        } else {
-            setFilters(prev => ({
-                ...prev,
-                selectedRankings: new Set()
-            }));
-        }
+        
+    const rankingSorter = (a, b) => {
+        const aRank = a.ranking ? a.ranking.simple : 'NC';
+        const bRank = b.ranking ? b.ranking.simple : 'NC';
+        const aIndex = rankingList.indexOf(aRank);
+        const bIndex = rankingList.indexOf(bRank);
+        return aIndex - bIndex;
+    }
+        
+    const paymentDateSorted = (a, b) => {
+        const paymentDateA = getLatestPaymentDate(a);
+        if (!paymentDateA) return 1;
+        const paymentDateB = getLatestPaymentDate(b);
+        if (!paymentDateB) return -1;
+        return paymentDateB - paymentDateA;
+    }
+        
+    // Colonnes de la table
+    const columns = [
+        {
+            title: 'Joueur',
+            dataIndex: 'fullName',
+            key: 'fullName',
+            className: 'player-column',
+            sorter: (a, b) => a.lastName.localeCompare(b.lastName),
+            defaultSortOrder: 'ascend',
+            render: (text, record) => (
+                <div className="player-name">
+                <span>
+                {record.lastName} {record.firstName}
+                </span>
+                {role === 2 && <PlayerTooltip className="player-tooltip" player={record} table={false}/>}
+                </div>
+            ),
+        },
+        {
+            title: 'Classement',
+            dataIndex: 'ranking',
+            key: 'ranking',
+            className: 'ranking-column',
+            sorter: (a, b) => rankingSorter(a, b),
+            render: (ranking) => ranking?.simple || 'NC',
+        },
+        {
+            title: 'Catégories',
+            dataIndex: 'categories',
+            key: 'categories',
+            className: 'category-column',
+            render: (categories) => categories.join(', '),
+        },
+        {
+            title: 'Montant',
+            dataIndex: 'balance',
+            key: 'amount',
+            className: 'amount-column',
+            sorter: (a, b) => a.balance.finalAmount - b.balance.finalAmount,
+            render: (balance) => `${balance.finalAmount}€`,
+        },
+        {
+            title: 'Payé',
+            dataIndex: 'balance',
+            key: 'paid',
+            className: 'paid-column',
+            sorter: (a, b) => a.balance.remainingAmount - b.balance.remainingAmount,
+            render: (balance, record) => (
+                <Checkbox
+                checked={balance.remainingAmount <= 0}
+                disabled={role !== 2}
+                onChange={() => handlePaymentChange(record)}
+                />
+            ),
+        },
+        {
+            title: 'Date de paiement',
+            key: 'paymentDate',
+            className: 'payment-date-column',
+            sorter: (a, b) => paymentDateSorted(a, b),
+            render: (_, record) => formatDate(getLatestPaymentDate(record)),
+        },
+        {
+            title: 'Détails',
+            key: 'details',
+            className: 'details-column',
+            render: (_, record) => (
+                <Button type="link" onClick={() => showPaymentDetail(record)}>
+                Détails
+                </Button>
+            ),
+        },
+    ];
+        
+    // Affichage de la modale de détail des paiements
+    const showPaymentDetail = (player) => {
+        setSelectedPlayer(player);
+        setIsModalOpen(true);
     };
-
-    const handleCategoryChange = (checked) => {
-        if (checked) {
-            setFilters(prev => ({
-                ...prev,
-                selectedCategories: new Set(filters.categories)
-            }));
-        } else {
-            setFilters(prev => ({
-                ...prev,
-                selectedCategories: new Set()
-            }));
-        }
+    
+    const handleModalClose = () => {
+        setIsModalOpen(false);
     };
-
-    const handlePaymentChange = async (player) => {
-        try {
-            if (player.balance.remainingAmount === 0) return; //TODO que faire si c'est déjà coché
-
-            // Créer un nouvel objet de paiement
-            const newPayment = {
-                amount: player.balance.remainingAmount,
-                date: new Date().toISOString().split('T')[0], // Date courante au format ISO
-                isFullPayment: true
-            };
-
-            player.payments.push(newPayment);
-            player.balance.remainingAmount = 0;
-
-            updatePlayerPayments(player.id, player.payments, player.balance);
-
-            setPlayers((prevPlayers) =>
-                prevPlayers.map((p) => (p.id === player.id ? { ...p, payments: player.payments } : p))
-            );
-        } catch (error) {
-            console.error("Erreur lors de la création du paiement :", error);
-        }
+        
+    const getRowClassName = (player) => {
+        if (player.balance.remainingAmount < 0) return 'paid-too-much';
+        if (player.balance.remainingAmount === 0) return 'paid';
+        if (player.balance.remainingAmount !== player.balance.finalAmount) return 'partially-paid';
+        return 'unpaid';
     };
-
-    const playersHeaders = () => {
-        if(getFilteredPlayers().length > 0){
-            return (
-                <thead>
-                    <tr>
-                        <th colSpan={role === 2 ? 2 : 1} onClick={() => handleSort('lastName')}>
-                            Joueur {sortConfig.key === 'lastName' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th onClick={() => handleSort('ranking')}>
-                            Classement {sortConfig.key === 'ranking' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th>Catégories</th>
-                        <th onClick={() => handleSort('amount')}>
-                            Montant {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th onClick={() => handleSort('paid')}>
-                            Payé {sortConfig.key === 'paid' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th onClick={() => handleSort('paymentDate')}>
-                            Date de paiement {sortConfig.key === 'paymentDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th>Détails</th>
-                    </tr>
-                </thead>
-            );
-        }
+    
+    const getTable = () => {
+        if (loading) return <Loader message="Chargement des joueurs..." />;
         return (
-            <tr>
-                <th colSpan={7}>Aucun joueur ne correspond aux filtres</th>
-            </tr>
-        )
-    };
-
+            <Table
+                dataSource={getFilteredPlayers()}
+                columns={columns}
+                loading={loading}
+                rowClassName={getRowClassName}
+                locale={{ emptyText: 'Aucun joueur ne correspond aux filtres' }}
+            />
+        );
+    }
+        
     return (
-        <div className="players-container">
-            <h1>Gestion des joueurs</h1>
-            <div className="players-content">
-                <div className="filters-section">
-                    <div className="ranking-filters">
-                        <h3>Classements</h3>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={filters.selectedRankings.size === filters.rankings.length}
-                                onChange={(e) => handleRankingChange(e.target.checked)}
-                            />
-                            Tous les classements
-                        </label>
-                        {filters.rankings.map(ranking => {
-                            return (
-                                <label key={ranking}>
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.selectedRankings.has(ranking)}
-                                        onChange={(e) => handleRankingFilterChange(ranking, e.target.checked)}
-                                    />
-                                    {ranking}
-                                </label>
-                            );
-                        })}
-                    </div>
-
-                    <div className="category-filters">
-                        <h3>Catégories</h3>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={filters.selectedCategories.size === filters.categories.length}
-                                onChange={(e) => handleCategoryChange(e.target.checked)}
-                            />
-                            Toutes les catégories
-                        </label>
-                        {filters.categories.map(category => (
-                            <label key={category}>
-                                <input
-                                    type="checkbox"
-                                    checked={filters.selectedCategories.has(category)}
-                                    onChange={(e) => handleCategoryFilterChange(category, e.target.checked)}
-                                />
-                                {category}
-                            </label>
-                        ))}
-                    </div>
-
-                    <div className="payment-status-filters">
-                        <h3>Statut de paiement</h3>
-                        <label>
-                            <input
-                                type="radio"
-                                name="paymentStatus"
-                                value="all"
-                                checked={filters.paymentStatus === 'all'}
-                                onChange={() => handlePaymentStatusChange('all')}
-                            />
-                            Tous
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="paymentStatus"
-                                value="paid"
-                                checked={filters.paymentStatus === 'paid'}
-                                onChange={() => handlePaymentStatusChange('paid')}
-                            />
-                            Payé
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="paymentStatus"
-                                value="partiallyPaid"
-                                checked={filters.paymentStatus === 'partiallyPaid'}
-                                onChange={() => handlePaymentStatusChange('partiallyPaid')}
-                            />
-                            Partiellement payé
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="paymentStatus"
-                                value="unpaid"
-                                checked={filters.paymentStatus === 'unpaid'}
-                                onChange={() => handlePaymentStatusChange('unpaid')}
-                            />
-                            Non payé
-                        </label>
-                    </div>
-                </div>
-
-                <div className="players-table-content">
-                    {loading && <Loader message="Chargement des joueurs..." />}
-                    <div className="players-table-container">
-                        {!loading && (
-                            <table className="players-table">
-                                {playersHeaders()}
-                                <tbody>
-                                    {getFilteredPlayers().map(player => (
-                                        <tr key={player.id} className={getRowClassName(player)}>
-                                            <td className="col-player">{player.lastName} {player.firstName}</td>
-                                            {role === 2 && <PlayerTooltip className="" player={player} />}
-                                            <td>{player.ranking ? player.ranking.simple : 'NC'}</td>
-                                            <td>{player.categories.join(', ')}</td>
-                                            <td>{player.balance.finalAmount}€</td>
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={player.balance.remainingAmount === 0}
-                                                    onChange={() => handlePaymentChange(player)}
-                                                    disabled = {role !== 2}
-                                                />
-                                            </td>
-                                            <td>
-                                                {formatDate(getLatestPaymentDate(player))}
-                                            </td>
-                                            <td className="col-payment-detail">
-                                                <button onClick={() => setSelectedPlayer(player)}>
-                                                    Détail du paiement
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {selectedPlayer && (
+        <Layout className="player-layout">
+            <Sider
+                width={300}
+                className="filters-section"
+                >
+                <PlayersFilters
+                    filters={filters}
+                    handleRankingFilterChange={handleRankingFilterChange}
+                    handleCategoryFilterChange={handleCategoryFilterChange}
+                    handlePaymentStatusChange={handlePaymentStatusChange}
+                />
+            </Sider>
+            <Content style={{ padding: '20px' }}>
+                <Title level={2}>Gestion des joueurs</Title>
+                  {getTable()}
+            </Content>
+            {selectedPlayer && isModalOpen && (
                 <PaymentDetail
                     player={selectedPlayer}
-                    onClose={() => setSelectedPlayer(null)}
+                    onClose={handleModalClose}
                     globalReductions={globalReductions}
                     startDate={startDate}
                     endDate={endDate}
                     defaultDate={defaultDate}
                 />
             )}
-        </div>
+        </Layout>
     );
 };
 

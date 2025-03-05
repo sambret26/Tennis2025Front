@@ -348,7 +348,7 @@ const Availability = ({ startDate, endDate }) => {
                                         />
                                     </td>
                                     <td className="player-name">{player ? player.fullName : ''}</td>
-                                    {role === 2 && <PlayerTooltip className="" player={player} />}
+                                    {role === 2 && <PlayerTooltip className="" player={player} table={true} />}
                                     {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                         const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                         const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
