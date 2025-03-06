@@ -23,11 +23,11 @@ const Settings = () => {
   const [doublePrice, setDoublePrice] = useState(0);
   const [simpleInitialPrice, setSimpleInitialPrice] = useState(0);
   const [doubleInitialPrice, setDoubleInitialPrice] = useState(0);
+  const [initialCompetition, setInitialCompetition] = useState(0);
   const [reductions, setReductions] = useState([]);
   const [newReductionReason, setNewReductionReason] = useState("");
   const [newReductionAmount, setNewReductionAmount] = useState(0);
-  const [isReductionsChanged, setIsReductionsChanged] = useState(false);
-  const [isCompetitionChanged, setIsCompetitionChanged] = useState(false);
+  const [hasReductionsChanged, setHasReductionsChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransparentLoading, setIsTransparentLoading] = useState(false);
   const [editingReduction, setEditingReduction] = useState(null);
@@ -40,6 +40,7 @@ const Settings = () => {
         setCompetitions(competitionsData);
         if (competitionsData.length > 0) {
           setSelectedCompetition(competitionsData[0].id);
+          setInitialCompetition(competitionsData[0].id);
         }
 
         const reductionsData = await getPredefinedReductions();
@@ -68,7 +69,6 @@ const Settings = () => {
 
   const handleCompetitionChange = (value) => {
     setSelectedCompetition(value);
-    setIsCompetitionChanged(true);
   };
 
   const handleBatchToggle = (checked) => {
@@ -113,29 +113,29 @@ const Settings = () => {
       setReductions([...reductions, newReduction]);
       setNewReductionReason("");
       setNewReductionAmount(0);
-      setIsReductionsChanged(true);
+      setHasReductionsChanged(true);
     }
   };
 
   const handleUpdateReduction = async (key, updatedReduction) => {
     updatedReduction.key = updatedReduction.reason;
     setReductions(reductions.map((r) => (r.key === key ? updatedReduction : r)));
-    setIsReductionsChanged(true);
+    setHasReductionsChanged(true);
   };
 
   const handleDeleteReduction = async (key) => {
     setReductions(reductions.filter((r) => r.key !== key));
-    setIsReductionsChanged(true);
+    setHasReductionsChanged(true);
   };
 
-  const isPricesChanged = () => {
+  const hasPricesChanged = () => {
     return simplePrice !== simpleInitialPrice || doublePrice !== doubleInitialPrice;
   };
 
   const saveSettings = async () => {
     setIsTransparentLoading(true);
     try {
-      if (isPricesChanged()) {
+      if (hasPricesChanged()) {
         const prices = {
           simplePrice,
           doublePrice,
@@ -144,9 +144,9 @@ const Settings = () => {
         setSimpleInitialPrice(simplePrice);
         setDoubleInitialPrice(doublePrice);
       }
-      if (isReductionsChanged) {
+      if (hasReductionsChanged) {
         await updatePredefinedReductions(reductions);
-        setIsReductionsChanged(false);
+        setHasReductionsChanged(false);
       }
       setGlobalSuccessMessage("Les modifications ont été enregistrées.");
     } catch (error) {
@@ -159,7 +159,7 @@ const Settings = () => {
 
   const saveCompetition = async () => {
     await updateCompetition({ competitionId: selectedCompetition }); //TODO : Work in progress
-    setIsCompetitionChanged(false);
+    setInitialCompetition(selectedCompetition);
   };
 
   const getReductionAmountValue = () => {
@@ -202,7 +202,7 @@ const Settings = () => {
             <Col span={6}>
               <Button
                 type="primary"
-                disabled={!isCompetitionChanged}
+                disabled={initialCompetition === selectedCompetition}
                 onClick={saveCompetition}
                 className="settings-button"
               >
@@ -273,7 +273,7 @@ const Settings = () => {
                 <Input
                   value={editingReduction?.key === reduction.key ? editingReduction?.reason : reduction.reason}
                   onChange={(e) => {
-                    setIsReductionsChanged(true);
+                    setHasReductionsChanged(true);
                     setEditingReduction({
                       key: reduction.key,
                       reason: e.target.value,
@@ -339,7 +339,7 @@ const Settings = () => {
 
       <Button
         type="primary"
-        disabled={!isPricesChanged() && !isReductionsChanged}
+        disabled={!hasPricesChanged() && !hasReductionsChanged}
         onClick={saveSettings}
         className="settings-button save-settings-button"
       >
