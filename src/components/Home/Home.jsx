@@ -131,16 +131,18 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             score = null;
         }
         let finish = 0;
+        let double = false;
         setSchedule(prevSchedule => {
             return prevSchedule.map(match => {
                 if (match.id !== matchId) return match;
                 let winner = getWinnerName(match, playerId);
                 finish = winner === null ? 0 : 1;
+                double = match.double;
                 return { ...match, score, winner: winner, winnerId: playerId, finish: finish};
             });
         });
         setShowModal(false);
-        await updateMatchResult(matchId, playerId, score, finish);
+        await updateMatchResult(matchId, playerId, score, finish, double);
     };
 
     const getWinnerName = (match, playerId) => {
@@ -248,6 +250,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const putPlayerTooltip = (match, player) => {
         if(viewProfile !== 2) return;
+        if(match.double) return (<td></td>);
         if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
         return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} table={true} />);
     }

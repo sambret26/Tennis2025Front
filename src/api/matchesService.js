@@ -17,14 +17,14 @@ export async function getMatches(date) {
     }
 }
 
-export async function updateMatchResult(matchId, playerId, score, finish) {
+export async function updateMatchResult(matchId, playerId, score, finish, double) {
     try {
         const response = await fetch(`${MATCHES_API_URL}/result`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ matchId, playerId, score, finish }),
+            body: JSON.stringify({ matchId, playerId, score, finish, double }),
         });
         if (!response.ok) {
             throw new Error('Failed to set match result');
