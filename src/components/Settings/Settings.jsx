@@ -11,7 +11,7 @@ import './Settings.css';
 const { Title } = Typography;
 const { Option } = Select;
 
-const Settings = () => {
+const Settings = ({ setSettingError, setReload }) => {
   const { setGlobalErrorMessage, setGlobalSuccessMessage } = useContext(GlobalContext);
 
   const [competitions, setCompetitions] = useState([]);
@@ -38,9 +38,10 @@ const Settings = () => {
         setIsLoading(true);
         const competitionsData = await getCompetitions();
         setCompetitions(competitionsData);
-        if (competitionsData.length > 0) {
-          setSelectedCompetition(competitionsData[0].id);
-          setInitialCompetition(competitionsData[0].id);
+        const activeCompetition = competitionsData.find(c => c.isActive === true);
+        if (activeCompetition) {
+          setSelectedCompetition(activeCompetition.id);
+          setInitialCompetition(activeCompetition.id);
         }
 
         const reductionsData = await getPredefinedReductions();
@@ -158,8 +159,11 @@ const Settings = () => {
   };
 
   const saveCompetition = async () => {
-    await updateCompetition({ competitionId: selectedCompetition }); //TODO : Work in progress
+    await updateCompetition({ competitionId: selectedCompetition });
     setInitialCompetition(selectedCompetition);
+    setGlobalSuccessMessage("La compétition a été mise à jour.");
+    setSettingError(false);
+    setReload(true);
   };
 
   const getReductionAmountValue = () => {
@@ -206,7 +210,7 @@ const Settings = () => {
                 onClick={saveCompetition}
                 className="settings-button"
               >
-                Mettre à jour l'application
+                Mettre à jour la compétition
               </Button>
             </Col>
           </Row>

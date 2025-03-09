@@ -10,7 +10,7 @@ import Account from './components/Account/Account';
 import Settings from './components/Settings/Settings';
 import Error from './components/Error/Error';
 import NotFound from './components/NotFound/NotFound';
-import { getStartAndEndDate } from './api/settingsService';
+import { getStartAndEndDate } from './api/competitionService';
 import { getProfils } from './api/profilsService';
 import { jwtDecode } from 'jwt-decode';
 import './App.css';
@@ -32,6 +32,8 @@ function App() {
   const [globalSuccessMessage, setGlobalSuccessMessage] = useState('');
   const [globalErrorMessage, setGlobalErrorMessage] = useState('');
   const [error, setError] = useState(true);
+  const [settingError, setSettingError] = useState(false);
+  const [reload, setReload] = useState(false)
   
   const navigate = useNavigate();
   
@@ -55,6 +57,14 @@ function App() {
     const loadDates = async () => {
       try {
         const data = await getStartAndEndDate();
+        if (!data) {
+          setGlobalErrorMessage('Aucune compétition n\'est configurée!');
+          setError(false);
+          setSettingError(true);
+          if (role === 2) navigate('/settings')
+          else navigate('/profil');
+          return;
+        }
         const startDateObj = new Date(data.startDate);
         const endDateObj = new Date(data.endDate);
 
@@ -70,6 +80,7 @@ function App() {
           setDefaultDate(today);
         }
         setError(false);
+        setSettingError(false);
       } catch (error) {
         console.error('Error fetching dates:', error);
         navigate('/error');
@@ -89,7 +100,7 @@ function App() {
     connect();
     loadDates();
     loadProfils();
-  }, [navigate]);
+  }, [navigate, reload, role]);
 
   useEffect(() => {
     if (globalSuccessMessage) {
@@ -118,6 +129,14 @@ function App() {
     if (error) {
       return <Error />;
     }
+    if (settingError) {
+      return (
+        <Routes>
+          <Route path="/profil" element={<UserProfile username={username} setUsername={setUsername} userId={userId} setUserId={setUserId} profils={profils} />} />
+          <Route path="/settings" element={<Settings setSettingError={setSettingError} setReload={setReload} />} />
+        </Routes>
+      )
+    }
     return (
       <Routes>
         <Route path="/" element={<Navigate to="/home" />} />
@@ -127,7 +146,7 @@ function App() {
         <Route path="/availability" element={<Availability startDate={startDate} endDate={endDate} />} />
         <Route path="/players" element={<Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} />} />
         <Route path="/account" element={<Account startDate={startDate} endDate={endDate} />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<Settings setSettingError={setSettingError} setReload={setReload} />} />
         <Route path="/error" element={<Error />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -138,7 +157,7 @@ function App() {
     <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, role, setRole }}>
       {contextHolder}
       <div className="app-container">
-        <Sidebar error={error} />
+        <Sidebar error={error} settingError={settingError} />
         <div className="content">
           {getAppRouter()}
         </div>

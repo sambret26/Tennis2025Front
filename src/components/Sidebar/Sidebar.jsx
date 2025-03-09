@@ -3,7 +3,7 @@
     import { GlobalContext } from '../../App';
     import './Sidebar.css';
     
-    const Sidebar = ({ error }) => {
+    const Sidebar = ({ error, settingError }) => {
         const { role } = useContext(GlobalContext);
         
         const isAdmin = () => role === 2;
@@ -12,9 +12,11 @@
         
         const isStaffOrAdmin = () => isStaff() || isAdmin();
         
-        const isNotAdmin = () => !isAdmin() || error;
+        const isNotAdmin = () => !isAdmin() || error || settingError;
+
+        const isNotAdminSettings = () => !isAdmin() || (error && !settingError);
         
-        const isNotStaffOrAdmin = () => !isStaffOrAdmin() || error;
+        const isNotStaffOrAdmin = () => !isStaffOrAdmin() || error || settingError;
         
         const getAdminTitle = () => {
             if (isAdmin() || error) return '';
@@ -41,7 +43,7 @@
             
             {/* Bouton Accueil */}
             <Link to="/home">
-            <button disabled={error}>
+            <button disabled={error || settingError}>
             <i className="bi bi-house"></i>
             </button>
             </Link>
@@ -76,7 +78,7 @@
             
             {/* Bouton Paramètres (Admin uniquement) */}
             <Link to="/settings">
-            <button disabled={isNotAdmin()} title={getAdminTitle()}>
+            <button disabled={isNotAdminSettings()} title={getAdminTitle()}>
             <i className="bi bi-gear"></i>
             </button>
             </Link>

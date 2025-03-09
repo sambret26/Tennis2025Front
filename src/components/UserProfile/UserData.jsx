@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, Select, Modal, Card, Space } from 'antd';
 import { LogoutOutlined, KeyOutlined, SyncOutlined } from '@ant-design/icons';
 import { updateRole } from '../../api/userService';
+import { updateCompetitions } from '../../api/competitionService';
 import { GlobalContext } from '../../App';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
 import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
@@ -62,6 +63,15 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [showConfirm]);
+
+    const handleUpdateCompetitions = async () => {
+        try {
+            await updateCompetitions();
+            setGlobalSuccessMessage("La liste des compétitions a bien été mise à jour.");
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la liste des compétitions.");
+        }
+    }
     
     return (
         <>
@@ -99,6 +109,9 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         {role === 2 && ( // Supposons que le rôle 2 est administrateur
             <Card className="admin-actions-section">
             <Space>
+            <Button icon={<SyncOutlined />} onClick={handleUpdateCompetitions}>
+            Mettre à jour la liste des compétitions
+            </Button>
             <Button icon={<SyncOutlined />} onClick={() => console.log('Mettre à jour les matchs')}>
             Mettre à jour les matchs
             </Button>
