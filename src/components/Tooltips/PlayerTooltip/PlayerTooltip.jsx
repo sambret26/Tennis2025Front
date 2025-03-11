@@ -15,6 +15,10 @@ const PlayerTooltip = ({ className, player, table }) => {
             placement="right"
             overlay={
                 <Tooltip>
+                    <div className="tooltip-club-content">
+                        <div className="bi bi-house tooltip-icon"></div>
+                        <div>{player && player.club ? player.club : 'NC'}</div>
+                    </div>
                     <div className="tooltip-phone-content">
                         <div className="bi bi-telephone tooltip-icon"></div>
                         <div>{player && player.phoneNumber ? player.phoneNumber : 'NC'}</div>

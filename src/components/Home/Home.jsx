@@ -5,6 +5,7 @@ import { getAllPlayersAvailabilitiesForDay } from '../../api/playerAvailabilityS
 import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
 import PlayerTooltip from '../Tooltips/PlayerTooltip/PlayerTooltip';
+import TeamTooltip from '../Tooltips/PlayerTooltip/TeamTooltip';
 import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
 
 import './Home.css'; 
@@ -250,7 +251,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const putPlayerTooltip = (match, player) => {
         if(viewProfile !== 2) return;
-        if(match.double) return (<td></td>);
+        if(match.double && player === 1) return (<TeamTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} team={match.player1} table={true} />);
+        if(match.double && player === 2) return (<TeamTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} team={match.player2} table={true} />);
         if(player === 1) return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
         return (<PlayerTooltip className={getPlayerClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} table={true} />);
     }
