@@ -94,7 +94,7 @@ body {
     width: 4%;
 }
 
-.player-name {
+.player-name-availability {
     width: 27%; /* Nom du joueur */
     margin-left: 10px;
     text-align: left !important;
@@ -104,10 +104,6 @@ body {
 .player-availability {
     width: 20%;
     margin-left: 10px;
-}
-
-.availability-actions {
-    width: 1%; /* Check/Croix */
 }
 
 .player-table-container select {
