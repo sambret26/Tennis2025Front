@@ -136,3 +136,35 @@ export async function changeUserPassword(userId, oldPassword, password) {
         throw error;
     }
 }
+
+export async function getUsers() {
+    try {
+        const response = await fetch(`${USER_API_URL}/users`);
+        if(!response.ok) {
+            throw new Error('Failed to get users');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error getting users:', error);
+        throw error;
+    }
+}
+
+export async function updateUsers(users) {
+    try {
+        const response = await fetch(`${USER_API_URL}/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(users),
+        });
+        if(!response.ok) {
+            throw new Error('Failed to update users');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating users:', error);
+        throw error;
+    }
+}

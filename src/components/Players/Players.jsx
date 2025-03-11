@@ -271,7 +271,6 @@ const Players = ({ startDate, endDate, defaultDate }) => {
             <Table
                 dataSource={getFilteredPlayers()}
                 columns={columns}
-                loading={loading}
                 rowClassName={getRowClassName}
                 locale={{ emptyText: 'Aucun joueur ne correspond aux filtres' }}
             />

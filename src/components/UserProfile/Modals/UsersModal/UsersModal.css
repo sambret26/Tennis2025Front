@@ -1,0 +1,12 @@
+.user-management-modal .ant-table {
+    margin-top: 20px;
+}
+
+.user-management-modal .ant-select {
+    width: 100%;
+}
+
+.user-management-modal {
+    max-height: 50vh;
+    overflow-y: none;
+}

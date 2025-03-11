@@ -90,3 +90,22 @@ export async function updateCalendarSync(calendarSync) {
         throw error;
     }
 }
+
+export async function updateToken(token) {
+    try {
+        const response = await fetch(`${SETTINGS_API_URL}/token`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token })
+        });
+        if(!response.ok) {
+            throw new Error('Failed to update token');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating token:', error);
+        throw error;
+    }
+}

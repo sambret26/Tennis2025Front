@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Select, Modal, Card, Space } from 'antd';
-import { LogoutOutlined, KeyOutlined, SyncOutlined } from '@ant-design/icons';
+import { LogoutOutlined, KeyOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons';
 import { updateRole } from '../../api/userService';
-import { updateCompetitions } from '../../api/competitionService';
+import { updateCompetitions, updateMatches } from '../../api/competitionService';
 import { GlobalContext } from '../../App';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
 import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
+import UsersModal from './Modals/UsersModal/UsersModal';
+import TokenModal from './Modals/TokenModal/TokenModal';
 import TransparentLoader from '../Loader/TransparentLoader';
 
 const { Option } = Select;
@@ -18,6 +20,8 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminModal, setShowAdminModal] = useState(false);
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+    const [showUsersModal, setShowUsersModal] = useState(false);
+    const [showTokenModal, setShowTokenModal] = useState(false);
 
     const changeRole = async (newRole) => {
         setNewRole(newRole);
@@ -72,6 +76,15 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
             setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la liste des compétitions.");
         }
     }
+
+    const handleUpdateMatches = async () => {
+        try {
+            await updateMatches();
+            setGlobalSuccessMessage("Les matchs ont bien été mis à jour.");
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour des matchs.");
+        }
+    }
     
     return (
         <>
@@ -106,17 +119,27 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         </Card>
         
         {/* Section des actions administrateur */}
-        {role === 2 && ( // Supposons que le rôle 2 est administrateur
+        {role === 2 && (
             <Card className="admin-actions-section">
             <Space>
             <Button icon={<SyncOutlined />} onClick={handleUpdateCompetitions}>
             Mettre à jour la liste des compétitions
             </Button>
-            <Button icon={<SyncOutlined />} onClick={() => console.log('Mettre à jour les matchs')}>
+            <Button icon={<SyncOutlined />} onClick={handleUpdateMatches}>
             Mettre à jour les matchs
             </Button>
-            <Button icon={<SyncOutlined />} onClick={() => console.log('Homologation')}>
-            Mettre à jour l'homologation
+            </Space>
+            </Card>
+        )}
+
+        {role === 2 && (
+            <Card className="admin-actions-section">
+            <Space>
+            <Button icon={<UserOutlined  />} onClick={() => setShowUsersModal(true)}>
+            Gérer les utilisateurs
+            </Button>
+            <Button icon={<KeyOutlined  />} onClick={() => setShowTokenModal(true)}>
+            Changer le token de connexion
             </Button>
             </Space>
             </Card>
@@ -131,7 +154,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
             userId={userId}
             />
         )}
-        
+
         {showConfirm && (
             <Modal
             title="Confirmation de déconnexion"
@@ -150,6 +173,19 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
             <ChangePasswordModal
             onClose={() => setShowChangePasswordModal(false)}
             userId={userId}
+            />
+        )}
+
+        {showUsersModal && (
+            <UsersModal
+            profils={profils}
+            onClose={() => setShowUsersModal(false)}
+            />
+        )}
+
+        {showTokenModal && (
+            <TokenModal
+            onClose={() => setShowTokenModal(false)}
             />
         )}
         

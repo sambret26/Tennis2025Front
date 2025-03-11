@@ -459,7 +459,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         )
     }
 
-    if (isLoading) return <Loader message="Chargement en cours..." />;
+    if (isLoading) return <Loader message="Chargement en cours..." global={false} />;
 
     return (
         <div className="payment-detail-modal">

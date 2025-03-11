@@ -1,9 +1,14 @@
 import React from 'react';
 import './Loader.css';
 
-const Loader = ({ message}) => {
+const Loader = ({ message, global = true }) => {
+
+    const getClassName = (global) => {
+        return global ? 'loader-container loader-global-container' : 'loader-container loader-local-container';
+    }
+
     return (
-        <div className="loader-container">
+        <div className={getClassName(global)}>
             <div className="loader"></div>
             <p className="loader-message">{message}</p>
         </div>
