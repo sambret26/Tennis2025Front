@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Button, Card, Switch, Col, Form, Input, InputNumber, Row, Select, Space, Typography } from "antd";
-import { getCompetitions, updateCompetition } from "../../api/competitionService";
+import { getCompetitions, activeCompetition, deleteCompetitionData, updateCourts, updateCategories, updateGrids, updatePlayers, updateMatches, updateRankings } from "../../api/competitionService";
 import { getPredefinedReductions, updatePredefinedReductions} from "../../api/reductionSettingsService";
 import { getSettings, updatePrices, updateBatchsActive, updateMojaSync, updateCalendarSync } from "../../api/settingsService";
 import { GlobalContext } from '../../App';
@@ -30,7 +30,9 @@ const Settings = ({ setSettingError, setReload }) => {
   const [hasReductionsChanged, setHasReductionsChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransparentLoading, setIsTransparentLoading] = useState(false);
+  const [transparentLoaderMessage, setTransparentLoaderMessage] = useState("Sauvegarde des paramètres...");
   const [editingReduction, setEditingReduction] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +136,7 @@ const Settings = ({ setSettingError, setReload }) => {
   };
 
   const saveSettings = async () => {
+    setTransparentLoaderMessage("Sauvegarde des paramètres...");
     setIsTransparentLoading(true);
     try {
       if (hasPricesChanged()) {
@@ -159,11 +162,39 @@ const Settings = ({ setSettingError, setReload }) => {
   };
 
   const saveCompetition = async () => {
-    await updateCompetition({ competitionId: selectedCompetition });
-    setInitialCompetition(selectedCompetition);
-    setGlobalSuccessMessage("La compétition a été mise à jour.");
-    setSettingError(false);
-    setReload(true);
+    try {
+      setShowConfirmation(false);
+      setTransparentLoaderMessage("Activation de la compétition (1/8)...");
+      setIsTransparentLoading(true);
+      let batchActive = await activeCompetition(selectedCompetition);
+      setTransparentLoaderMessage("Suppression de toutes les données (2/8)...");
+      await deleteCompetitionData()
+      setTransparentLoaderMessage("Mise à jour des courts (3/8)...");
+      await updateCourts();
+      setTransparentLoaderMessage("Mise à jour des catégories (4/8)...");
+      await updateCategories();
+      setTransparentLoaderMessage("Mise à jour des classements (5/8)...");
+      await updateRankings();
+      setTransparentLoaderMessage("Mise à jour des découpages (6/8)...");
+      await updateGrids();
+      setTransparentLoaderMessage("Mise à jour des joueurs et des équipes (7/8)...");
+      await updatePlayers();
+      setTransparentLoaderMessage("Mise à jour des matchs (8/8)...");
+      await updateMatches();
+      if (batchActive) {
+        await updateBatchsActive("1");
+      }
+      setInitialCompetition(selectedCompetition);
+      setGlobalSuccessMessage("La compétition a été mise à jour.");
+      setIsTransparentLoading(false);
+      setSettingError(false);
+      setReload(true);
+    } catch (error) {
+      console.error("Error saving competition:", error);
+      setGlobalErrorMessage("Une erreur est survenue lors de l'enregistrement de la compétition.");
+    } finally {
+      setIsTransparentLoading(false);
+    }
   };
 
   const getReductionAmountValue = () => {
@@ -173,6 +204,21 @@ const Settings = ({ setSettingError, setReload }) => {
   const getInputClassName = () => {
     return newReductionAmount > 0 ? 'settings-input-number' : 'settings-input-number settings-input-number-zero';
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            if(showConfirmation) {
+                setShowConfirmation(false);
+            }
+        }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+    };
+}, [showConfirmation]);
 
   if (isLoading) {
     return <Loader message="Chargement des paramètres..." />;
@@ -206,8 +252,8 @@ const Settings = ({ setSettingError, setReload }) => {
             <Col span={6}>
               <Button
                 type="primary"
-                disabled={initialCompetition === selectedCompetition}
-                onClick={saveCompetition}
+                disabled={selectedCompetition === null || selectedCompetition === initialCompetition}
+                onClick={() => setShowConfirmation(true)}
                 className="settings-button"
               >
                 Mettre à jour la compétition
@@ -351,7 +397,22 @@ const Settings = ({ setSettingError, setReload }) => {
       </Button>
 
       {/* Loader */}
-      {isTransparentLoading && <TransparentLoader message="Sauvegarde des paramètres..." />}
+      {isTransparentLoading && <TransparentLoader message={transparentLoaderMessage} />}
+      {showConfirmation && (
+                <div className="settings-confirmation-modal">
+                    <div className="settings-confirmation-content">
+                        <div className="settings-confirmation-header">
+                            <h3 className="settings-confirmation-title">Confirmation</h3>
+                            <button className="settings-close-button-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
+                        </div>
+                        <p>Êtes-vous sûr de vouloir mettre à jour la compétition ? <br></br>Toutes les données propre à la compétition active seront perdues.</p>
+                        <div className="settings-confirmation-buttons">
+                            <button className="green-button" onClick={saveCompetition}>Confirmer</button>
+                            <button className="red-button" onClick={() => setShowConfirmation(false)}>Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            )}
     </div>
   );
 };
