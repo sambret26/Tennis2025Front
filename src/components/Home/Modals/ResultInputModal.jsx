@@ -130,7 +130,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
 export default ResultInputModal;
 
 const formatScoreOk = (score) => {
-    const regex = /^\d\/\d(\(\d{1,2}\))?\s\d\/\d(\(\d{1,2}\))?(\s\d\/\d(\(\d{1,2}\))?)?$/;
+    const regex = /^\d\/\d(\(\d{1,2}\))?\s\d\/\d(\(\d{1,2}\))?(\s\d{1,2}\/\d{1,2}(\(\d{1,2}\))?)?$/;
     return regex.test(score) || score === null || score === '';
 };
 
@@ -146,10 +146,10 @@ const scoreOk = (score) => {
         return false;
     }
     if (sets.length !== 3) return false;
-    return checkScore(sets[2]) !== 0;
+    return checkScore(sets[2], true) !== 0;
 };
 
-const checkScore = (score) => {
+const checkScore = (score, last=false) => {
     let scoreSet;
     let tieBreak;
     if (score.includes('(')) {
@@ -159,6 +159,7 @@ const checkScore = (score) => {
         scoreSet = score.split('/');
         tieBreak = false;
     }
+    if (last && (parseInt(scoreSet[0]) >= 10 || parseInt(scoreSet[1]) >= 10)) return 1
     if (scoreSet[0] === '7') {
         if (scoreSet[1] === '5') {
             if (tieBreak) return 0;
