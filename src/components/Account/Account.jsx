@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Card, Button, Typography } from 'antd';
 import DetailModal from './Modals/DetailModal';
 import TransactionManagementModal from './Modals/TransactionManagementModal';
 import { getAccountData } from '../../api/accountService';
+import { GlobalContext } from '../../App';
 import Loader from '../Loader/Loader';
 import TransparentLoader from '../Loader/TransparentLoader';
 import './Account.css';
@@ -10,6 +11,9 @@ import './Account.css';
 const { Title, Text } = Typography;
 
 const Account = ({ startDate, endDate }) => {
+
+    const {setGlobalErrorMessage} = useContext(GlobalContext);
+
     const [amountInCash, setAmountInCash] = useState(0);
     const [profit, setProfit] = useState(0);
     const [withdrawn, setWithdrawn] = useState(0);
@@ -29,6 +33,7 @@ const Account = ({ startDate, endDate }) => {
                 setProfit(data.totalPayments);
                 setWithdrawn(data.totalWithdrawal);
             } catch (error) {
+                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des données.")
                 console.error('Error fetching account data:', error);
             } finally {
                 setIsLoading(false);
@@ -51,7 +56,7 @@ const Account = ({ startDate, endDate }) => {
 
         loadAccountData();
         loadDays();
-    }, [reload, startDate, endDate]);
+    }, [reload, startDate, endDate, setGlobalErrorMessage]);
 
     const noHourDate = (date = new Date()) => {
         const newDate = new Date(date);

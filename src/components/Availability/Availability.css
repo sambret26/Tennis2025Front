@@ -89,8 +89,7 @@ body {
 }
 
 .player-remove,
-.player-comment,
-.player-info {
+.player-comment{
     width: 4%;
 }
 
@@ -138,7 +137,11 @@ body {
     cursor: default;
 }
 
-.calendar-container {
+.calendar-container-availability {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding-top: 25px;
 }
 
@@ -163,18 +166,6 @@ body {
 .suggestion-list div:hover {
     background-color: #f0f0f0; /* Couleur de survol */
     border-radius: 8px; /* Arrondir les angles au survol */
-}
-
-.remove-player {
-    cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
-    color: red; /* Couleur de la croix */
-    font-size: 20px; /* Taille de la croix */
-    transition: color 0.3s ease, transform 0.3s ease; /* Transition douce pour la couleur et la taille */
-}
-
-.remove-player:hover,
-.remove-player:focus {
-    transform: scale(1.2); /* Augmente la taille de la croix au survol */
 }
 
 .availability-actions {
@@ -205,30 +196,7 @@ body {
     transform: scale(1.1); /* Agrandit la croix au survol */
 }
 
-/* Style pour les flèches */
-.arrow-button {
-    background-color: transparent; /* Pas de fond */
-    color: gray; /* Couleur de la flèche */
-    border: none; /* Pas de bordure */
-    padding: 10px;
-    font-size: 30px; /* Augmenter la taille de la police des flèches */
-    cursor: pointer;
-    border-radius: 8px; /* Optionnel, si tu veux des coins arrondis */
-    transition: color 0.3s; /* Animation pour le changement de couleur */
-}
-
-/* Changer la couleur lors du survol */
-.arrow-button:hover {
-    color: #333; /* Couleur plus foncée lors du survol */
-}
-
-.arrow-button:disabled {
-    color: #666; /* Couleur du texte grise */
-    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
-    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
-}
-
-.header {
+.availability-header {
     background-color: #f0f0f0; /* Couleur de fond pour l'en-tête */
     font-weight: bold; /* Met le texte en gras */
 }

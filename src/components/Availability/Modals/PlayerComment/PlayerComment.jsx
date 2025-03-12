@@ -8,7 +8,7 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
-    const { role } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
     
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
@@ -42,8 +42,10 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
             if (onCommentChange) {
                 onCommentChange();
             }
+            setGlobalSuccessMessage("Le message a bien été mis à jour.");
         } catch (error) {
             console.error('Error saving comment:', error);
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du message.");
         }
     };
 
@@ -67,6 +69,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
                 {isLoading ? '' : hasComment ? '💬' : '✉️'}
             </span>
 
+            {/*TODO : Passage en confirmationModal (/!\ Sauvegarder et non confirmer)*/}
             <Modal
                 title={<Text >Message pour {playerName} le {getFormattedDay()}</Text>}
                 open={isModalOpen}

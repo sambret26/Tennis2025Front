@@ -11,7 +11,7 @@ import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
 import './Home.css'; 
 
 const Home = ({ startDate, endDate, defaultDate }) => {
-    const { role } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
 
     const NO_ANSWER = 0;
     const UNAVAILABLE = 1;
@@ -76,11 +76,16 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         };
         
         if (currentDate !== previousDate) {
-            initializeAll();
+            try {
+                initializeAll();
+            } catch (error) {
+                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des disponibilités.");
+                console.error('Error initializing all:', error);
+            }
             setPreviousDate(currentDate);
             currentDateRef.current = currentDate;
         }
-    }, [currentDate, previousDate]);
+    }, [currentDate, previousDate, setGlobalErrorMessage]);
 
     const getNextDay = (date) => {
         const nextDay = new Date(date);
@@ -143,7 +148,12 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             });
         });
         setShowModal(false);
-        await updateMatchResult(matchId, playerId, score, finish, double);
+        try {
+            await updateMatchResult(matchId, playerId, score, finish, double);
+            setGlobalSuccessMessage("Le résultat a bien été mis à jour.");
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du résultat.");
+        }
     };
 
     const getWinnerName = (match, playerId) => {
@@ -231,7 +241,12 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         setSchedule(prevSchedule => {
             return prevSchedule.map(m => m.id === match.id ? match : m);
         });
-        await updatePlayerAvailability(match.id, available, 1);
+        try {
+            await updatePlayerAvailability(match.id, available, 1);
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
+            console.error('Error updating availability:', error);
+        }
     }
 
     const handlePlayer2Availability = async (match, available) => {
@@ -239,7 +254,12 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         setSchedule(prevSchedule => {
             return prevSchedule.map(m => m.id === match.id ? match : m);
         });
-        await updatePlayerAvailability(match.id, available, 2);
+        try {
+            await updatePlayerAvailability(match.id, available, 2);
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
+            console.error('Error updating availability:', error);
+        }
     }
 
     const putAvailableTooltip = (match, handlePlayerAvailability, player) => {

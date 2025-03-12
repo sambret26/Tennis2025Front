@@ -10,7 +10,7 @@ import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
 const Availability = ({ startDate, endDate }) => {
-    const { role } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage } = useContext(GlobalContext);
 
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
@@ -60,11 +60,16 @@ const Availability = ({ startDate, endDate }) => {
         };
 
         const initializeAll = async () => {
-            await Promise.all([loadDates(), loadAvailabilities(), loadPlayers(), loadPlayersAvailabilities()]);
+            try {
+                await Promise.all([loadDates(), loadAvailabilities(), loadPlayers(), loadPlayersAvailabilities()]);
+            } catch (error) {
+                setGlobalErrorMessage("Une erreur est survenue lors de l'initialisation des données.")
+                console.error('Error initializing all:', error);
+            }
         };
 
         initializeAll();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, setGlobalErrorMessage]);
 
     useEffect(() => {
         const loadComments = async () => {
@@ -78,6 +83,7 @@ const Availability = ({ startDate, endDate }) => {
                     }, {});
                     setPlayerComments(commentsByPlayer);
                 } catch (error) {
+                    setGlobalErrorMessage("Une erreur est survenue lors de la récupération des commentaires.")
                     console.error('Error fetching comments:', error);
                 } finally {
                     setIsLoading(false);
@@ -85,7 +91,7 @@ const Availability = ({ startDate, endDate }) => {
             }
         };
         loadComments();
-    }, [currentDate]);
+    }, [currentDate, setGlobalErrorMessage]);
 
     useEffect(() => {
         if(currentDate) {
@@ -220,13 +226,23 @@ const Availability = ({ startDate, endDate }) => {
         const availability = allAvailabilities.find(availability => availability.value === available);
         const number = availability ? availability.number : NO_ANSWER;
         changeAvailability(playerId, timeSlot, number);
-        await updatePlayerAvailability(playerId, formattedDate(currentDate), timeSlot, number);
+        try {
+            await updatePlayerAvailability(playerId, formattedDate(currentDate), timeSlot, number);
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
+            console.error('Error updating availability:', error);
+        }
     };
 
     const handleDayAvailability = async (playerId, number) => {
-        stopBlur();
-        for (let i = 0; i < 3; i++) changeAvailability(playerId, i, number); 
-        for (let i = 0; i < 3; i++) await updatePlayerAvailability(playerId, formattedDate(currentDate), i, number);
+        try {
+            stopBlur();
+            for (let i = 0; i < 3; i++) changeAvailability(playerId, i, number); 
+            for (let i = 0; i < 3; i++) await updatePlayerAvailability(playerId, formattedDate(currentDate), i, number);
+        } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour des disponibilités.")
+            console.error('Error updating availability:', error);
+        }
     }
 
     const handleCommentChange = async () => {
@@ -238,6 +254,7 @@ const Availability = ({ startDate, endDate }) => {
             }, {});
             setPlayerComments(commentsByPlayer);
         } catch (error) {
+            setGlobalErrorMessage("Une erreur est survenue lors de la récupération des commentaires.")
             console.error('Error refreshing comments:', error);
         }
     };
@@ -245,7 +262,7 @@ const Availability = ({ startDate, endDate }) => {
     const playersHeaders = () => {
         if (selectedPlayers.length === 0) {
             return (
-                <thead className="header">
+                <thead className="availability-header">
                     <tr>
                         <th colSpan={8} className="full-width">Séléctionnez au moins un joueur pour afficher ses disponibilités</th>
                     </tr>
@@ -255,7 +272,7 @@ const Availability = ({ startDate, endDate }) => {
         if (isWeekend) {
             return (
                 <thead>
-                    <tr className="header">
+                    <tr className="availability-header">
                         <th colSpan={2}></th>
                         <th colSpan={role === 2 ? 2 : 1}>Joueur</th>
                         <th>Matin</th>
@@ -296,7 +313,7 @@ const Availability = ({ startDate, endDate }) => {
                 <h2>Gestion de la disponibilité des joueurs</h2>
             </div>
 
-            <div className="calendar-container">
+            <div className="calendar-container-availability">
                 <button id="prevDay" className="arrow-button"
                     onClick={handlePrevDay}
                     disabled={currentDate <= tournamentDates.startDate}

@@ -9,7 +9,10 @@
     text-align: center;
 }
 
-.settings-select, .settings-input-number, .settings-space, .save-settings-button {
+.settings-select,
+.settings-input-number,
+.settings-space,
+.save-settings-button {
     width: 100%;
 }
 
@@ -27,73 +30,4 @@
 
 .add-reduction-button {
     width: 80%;
-}
-
-.red-button {
-    background-color: #e74c3c !important;
-    border-color: #c0392b !important;
-}
-
-.green-button {
-    background-color: #28a745 !important;
-    border-color: #1e7e34 !important;
-}
-
-.settings-confirmation-modal button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-}
-
-
-.settings-confirmation-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1100;
-}
-
-.settings-confirmation-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 450;
-    text-align: center;
-}
-
-.settings-confirmation-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.settings-confirmation-header {
-    display: flex;
-    align-items: center;
-    position: relative;
-    width: 100%;
-}
-
-.settings-confirmation-title {
-    text-align: center; /* Centre le texte */
-    width: 100%;
-}
-
-.settings-close-button-confirmation {
-    position: absolute;
-    right: 0px;
-    color: #333 !important;
-    background: transparent !important;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
 }

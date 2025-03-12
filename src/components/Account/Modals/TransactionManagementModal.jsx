@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { getTransactions, updateTransactions } from '../../../api/transactionService';
 import { GlobalContext } from '../../../App';
 import { getLocaleDate } from '../../../utils/dateUtils';
+import ConfirmModal from '../../ConfirmModal/ConfirmModal';
 import './TransactionManagementModal.css';
 
 const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderVisible }) => {
@@ -20,6 +21,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                 const data = await getTransactions();
                 setTransactions(data);
             } catch (error) {
+                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des transactions.")
                 console.error("Error loading transactions:", error);
             } finally {
                 setIsLoading(false);
@@ -27,7 +29,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
         };
 
         loadTransactions();
-    }, []); 
+    }, [setGlobalErrorMessage]); 
     
     const handleClose = useCallback(() => {
         if (hasChanges) {
@@ -83,8 +85,8 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
             if(hasChanges) {
                 setIsTransparentLoaderVisible(true);
                 await updateTransactions(transactions);
+                setGlobalSuccessMessage('Les modifications ont été enregistrées.');
             }
-            setGlobalSuccessMessage('Les modifications ont été enregistrées.');
         } catch (error) {
             console.error('Error saving changes:', error);
             setGlobalErrorMessage('Une erreur est survenue lors de l\'enregistrement des modifications.');
@@ -146,7 +148,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                             <td className="transaction-td">{formatDate(transaction.date)}</td>
                             <td className="transaction-td">{transaction.amount}€</td>
                             <td className="transaction-td">
-                                <button className="transaction-red-button" onClick={() => handleDeleteTransaction(index)}>Supprimer</button>
+                                <button className="white-button" onClick={() => handleDeleteTransaction(index)}>Supprimer</button>
                             </td>
                         </tr>
                     ))}
@@ -177,7 +179,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                         </td>
                         <td className="transaction-td">
                             <button 
-                                className="transaction-green-button" 
+                                className="blue-button"
                                 onClick={handleAddTransaction}
                                 disabled={!newTransaction.amount}
                             >
@@ -195,8 +197,8 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
         if (isLoading) return;
         return (
             <div className="transaction-footer">
-                <button className="transaction-green-button" onClick={handleSave} >Valider</button>
-                <button className="transaction-red-button" onClick={handleClose}>Fermer</button>
+                <button className="white-button" onClick={handleClose}>Fermer</button>
+                <button className="blue-button" onClick={handleSave} >Valider</button>
             </div>
         )
     }
@@ -206,25 +208,18 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
             <div className="transaction-content">
                 <div className="transaction-header">
                     <h2 className="transaction-title">Gestion des dépôts/retraits</h2>
-                    <button className="close-button-transaction" onClick={handleClose}>✖</button>
+                    <button className="close-button" onClick={handleClose}>✖</button>
                 </div>
                 {transactionSection()}
                 {footerSection()}
             </div>
             {showConfirmation && (
-                <div className="transaction-confirmation">
-                    <div className="transaction-confirmation-content">
-                        <div className="transaction-confirmation-header">
-                            <h3 className="transaction-confirmation-title">Confirmation</h3>
-                            <button className="close-button-transaction-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
-                        </div>
-                        <p>Êtes-vous sûr de vouloir fermer ? <br></br>Toutes les modifications seront perdues.</p>
-                        <div className="transaction-confirmation-buttons">
-                            <button className="transaction-green-button" onClick={handleConfirmClose}>Confirmer</button>
-                            <button className="transaction-red-button" onClick={() => setShowConfirmation(false)}>Annuler</button>
-                        </div>
-                    </div>
-                </div>
+                <ConfirmModal
+                    message="Êtes-vous sûr de vouloir fermer ?"
+                    message2="Toutes les modifications seront perdues."
+                    onSave={handleConfirmClose}
+                    onCancel={() => setShowConfirmation(false)}
+                />
             )}
         </div>
     );

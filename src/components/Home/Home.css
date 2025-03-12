@@ -5,29 +5,6 @@
     gap: 10px;
 }
 
-/* Style pour les flèches */
-.arrow-button {
-    background-color: transparent; /* Pas de fond */
-    color: gray; /* Couleur de la flèche */
-    border: none; /* Pas de bordure */
-    padding: 10px;
-    font-size: 30px; /* Augmenter la taille de la police des flèches */
-    cursor: pointer;
-    border-radius: 8px; /* Optionnel, si tu veux des coins arrondis */
-    transition: color 0.3s; /* Animation pour le changement de couleur */
-}
-
-/* Changer la couleur lors du survol */
-.arrow-button:hover {
-    color: #333; /* Couleur plus foncée lors du survol */
-}
-
-.arrow-button:disabled {
-    color: #666; /* Couleur du texte grise */
-    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
-    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
-}
-
 /* Style pour le date picker */
 #datePicker {
     padding: 5px;

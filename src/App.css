@@ -29,3 +29,73 @@
 .center {
     text-align: center !important;
 }
+
+.blue-button {
+    border: none !important;
+    color: #fff;
+    background: #1677ff; /* Couleur bleue d'Ant Design */
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.blue-button:not(:disabled):hover {
+    background: #40a9ff; /* Couleur bleue plus claire au survol */
+}
+
+.blue-button:not(:disabled):active {
+    background: #0958d9; /* Couleur bleue plus foncée lors du clic */
+}
+
+.blue-button:disabled {
+    background-color: #cccccc !important;
+    cursor: not-allowed;
+}
+
+.white-button {
+    color: #000 !important;
+    border: 1px solid #d9d9d9;
+    background: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.white-button:not(:disabled):hover {
+    background: #f5f5f5; /* Couleur légèrement grise au survol */
+}
+
+.white-button:not(:disabled):active {
+    background: #d9d9d9; /* Couleur légèrement grise lors du clic */
+}
+
+.close-button {
+    position: absolute;
+    right: 0px;
+    color: #333 !important;
+    background: transparent !important;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Style pour les flèches */
+.arrow-button {
+    background-color: transparent; /* Pas de fond */
+    color: gray; /* Couleur de la flèche */
+    border: none; /* Pas de bordure */
+    padding: 10px;
+    font-size: 30px; /* Augmenter la taille de la police des flèches */
+    cursor: pointer;
+    border-radius: 8px; /* Optionnel, si tu veux des coins arrondis */
+    transition: color 0.3s; /* Animation pour le changement de couleur */
+}
+
+/* Changer la couleur lors du survol */
+.arrow-button:hover {
+    color: #333; /* Couleur plus foncée lors du survol */
+}
+
+.arrow-button:disabled {
+    color: #666; /* Couleur du texte grise */
+    cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
+    opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
+}

@@ -1,0 +1,51 @@
+.ant-modal {
+    max-width: 500px; /* Largeur maximale du modal */
+    width: 100%; /* Prend toute la largeur disponible */
+}
+
+.ant-modal-header {
+    background-color: #f0f0f0; /* Couleur d'arrière-plan de l'en-tête */
+    border-bottom: 1px solid #d9d9d9; /* Bordure inférieure */
+}
+
+.ant-typography {
+    text-align: center;
+    font-weight: bold; /* Titre en gras */
+    font-size: 1.5rem; /* Taille du titre */
+}
+
+.ant-modal-title {
+    text-align: center;
+}
+
+.ant-modal-body {
+    padding: 20px; /* Espacement intérieur du corps du modal */
+    text-align: center;
+}
+
+.ant-modal-footer {
+    display: flex;
+    justify-content: center; /* Aligne les boutons à droite */
+    gap: 10px; /* Espace entre les boutons */
+}
+
+.ant-btn-primary {
+    background-color: #1677ff; /* Couleur de fond du bouton primaire */
+    border-color: #1677ff; /* Couleur de la bordure du bouton primaire */
+}
+
+.ant-btn-primary:hover {
+    background-color: #40a9ff; /* Couleur au survol du bouton primaire */
+}
+
+.ant-btn {
+    border-radius: 4px; /* Coins arrondis pour tous les boutons */
+}
+
+.ant-modal-close:hover {
+    background: transparent !important;
+}
+
+.not-center-modal {
+    top: -32% !important;
+}

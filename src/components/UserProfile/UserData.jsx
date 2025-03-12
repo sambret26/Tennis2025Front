@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Select, Modal, Card, Space } from 'antd';
+import { Button, Select, Card, Space } from 'antd';
 import { LogoutOutlined, KeyOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons';
 import { updateRole } from '../../api/userService';
 import { updateCompetitions, updateMatches } from '../../api/competitionService';
@@ -9,11 +9,12 @@ import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModa
 import UsersModal from './Modals/UsersModal/UsersModal';
 import TokenModal from './Modals/TokenModal/TokenModal';
 import TransparentLoader from '../Loader/TransparentLoader';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 const { Option } = Select;
 
 const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, setGlobalLoadingMessage } = useContext(GlobalContext);
     
     const [newRole, setNewRole] = useState(role);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -69,6 +70,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
     }, [showConfirm]);
 
     const handleUpdateCompetitions = async () => {
+        setGlobalLoadingMessage("La mise à jour des compétitions a démarrée.");
         try {
             await updateCompetitions();
             setGlobalSuccessMessage("La liste des compétitions a bien été mise à jour.");
@@ -78,6 +80,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
     }
 
     const handleUpdateMatches = async () => {
+        setGlobalLoadingMessage("La mise à jour des matchs a démarrée (cette opération peut prendre plusieurs minutes).");
         try {
             await updateMatches();
             setGlobalSuccessMessage("Les matchs ont bien été mis à jour.");
@@ -156,17 +159,13 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         )}
 
         {showConfirm && (
-            <Modal
-            title="Confirmation de déconnexion"
-            open={showConfirm}
-            onOk={confirmLogout}
-            onCancel={() => setShowConfirm(false)}
-            okText="Confirmer"
-            cancelText="Annuler"
-            className="confirm-modal"
-            >
-            <p>Voulez-vous vraiment vous déconnecter ?</p>
-            </Modal>
+            <ConfirmModal
+                title="Confirmation de déconnexion"
+                message="Voulez-vous vraiment vous déconnecter ?"
+                onSave={confirmLogout}
+                onCancel={() => setShowConfirm(false)}
+                className="not-center-modal"
+            />
         )}
         
         {showChangePasswordModal && (

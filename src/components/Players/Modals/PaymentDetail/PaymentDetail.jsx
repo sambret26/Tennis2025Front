@@ -4,10 +4,11 @@ import { updatePlayerPayments } from '../../../../api/paymentsService';
 import { getLocaleDate } from '../../../../utils/dateUtils.js';
 import { GlobalContext } from '../../../../App';
 import Loader from '../../../Loader/Loader';
+import ConfirmModal from '../../../ConfirmModal/ConfirmModal';
 import './PaymentDetail.css';
 
 const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate  }) => {
-    const { role } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
     
     const getDefaultDate = () => {
         return getLocaleDate(new Date(defaultDate))
@@ -209,9 +210,13 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             setHasReductionsChanges(false);
             setHasPaymentsChanges(false);
             onClose();
-            await Promise.all(updatePromises);
+            if (updatePromises.length > 0) {
+                await Promise.all(updatePromises);
+                setGlobalSuccessMessage("Les modifications ont bien été sauvegardées.");
+            }
         } catch (error) {
             console.error('Error saving changes:', error);
+            setGlobalErrorMessage("Une erreur est survenue lors de la sauvegarde des modifications.");
         } finally {
             setIsSaving(false);
         }
@@ -286,7 +291,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         if(role !== 2) return;
         return (
             <td>
-                <button className="red-button" onClick={() => handleDeletePayment(index)}>Supprimer</button>
+                <button className="white-button" onClick={() => handleDeletePayment(index)}>Supprimer</button>
             </td>
         )
     }
@@ -295,7 +300,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         if(role !== 2) return;
         return (
             <td>
-                <button  className="red-button" onClick={() => handleDeleteReduction(reduction)}>Supprimer</button>
+                <button  className="white-button" onClick={() => handleDeleteReduction(reduction)}>Supprimer</button>
             </td>
         )
     }
@@ -324,7 +329,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                 </td>
                 <td className="payment-td">
                     <button
-                        className="green-button"
+                        className="blue-button"
                         onClick={handleAddPayment}
                         disabled={!newPayment.amount}
                     >
@@ -359,7 +364,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                 </td>
                 <td>
                     <button
-                        className="green-button"
+                        className="blue-button"
                         onClick={handleAddReduction}
                         disabled={!newReduction.reason || !newReduction.amount}
                     >
@@ -374,8 +379,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         if(role !== 2) return;
         return (
             <div className="modal-footer">
-                <button className="green-button" onClick={handleAskSave} disabled={isSaving}>Valider</button>
-                <button className="red-button" onClick={handleClose}>Fermer</button>
+                <button className="white-button" onClick={handleClose}>Fermer</button>
+                <button className="blue-button" onClick={handleAskSave} disabled={isSaving}>Valider</button>
             </div>
         )
     }
@@ -466,42 +471,28 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             <div className="payment-detail-content">
                 <div className="payment-detail-header">
                     <h2 className="payment-detail-title">Détail du paiement de {player.lastName} {player.firstName}</h2>
-                    <button className="close-button-payment-detail" onClick={handleClose}>✖</button>
+                    <button className="close-button" onClick={handleClose}>✖</button>
                 </div>
                 {detailSection()}
                 {footerSection()}
             </div>
             
             {showConfirmation && (
-                <div className="confirmation-modal">
-                    <div className="confirmation-content">
-                        <div className="confirmation-header">
-                            <h3 className="confirmation-title">Confirmation</h3>
-                            <button className="close-button-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
-                        </div>
-                        <p>Êtes-vous sûr de vouloir fermer ? <br></br>Toutes les modifications seront perdues.</p>
-                        <div className="confirmation-buttons">
-                            <button className="green-button" onClick={handleConfirmClose}>Confirmer</button>
-                            <button className="red-button" onClick={() => setShowConfirmation(false)}>Annuler</button>
-                        </div>
-                    </div>
-                </div>
+                <ConfirmModal
+                    message="Êtes-vous sûr de vouloir fermer ?"
+                    message2="Toutes les modifications seront perdues."
+                    onSave={handleConfirmClose}
+                    onCancel={() => setShowConfirmation(false)}
+                />
             )}
 
             {showNegativeConfirmation && (
-                <div className="confirmation-modal">
-                    <div className="confirmation-content">
-                        <div className="confirmation-header">
-                            <h3 className="confirmation-title">Confirmation</h3>
-                            <button className="close-button-confirmation" onClick={() => setShowNegativeConfirmation(false)}>✖</button>
-                        </div>
-                        <p>Êtes-vous sûr de vouloir confirmer ? <br></br>Le montant restant à payer sera négatif.</p>
-                        <div className="confirmation-buttons">
-                            <button className="green-button" onClick={handleSave}>Confirmer</button>
-                            <button className="red-button" onClick={() => setShowNegativeConfirmation(false)}>Annuler</button>
-                        </div>
-                    </div>
-                </div>
+                <ConfirmModal
+                    message="Êtes-vous sûr de vouloir confirmer ?"
+                    message2="Le montant restant à payer sera négatif."
+                    onSave={handleConfirmClose}
+                    onCancel={() => setShowNegativeConfirmation(false)}
+                />
             )}
 
         </div>

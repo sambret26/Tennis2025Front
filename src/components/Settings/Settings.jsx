@@ -6,6 +6,7 @@ import { getSettings, updatePrices, updateBatchsActive, updateMojaSync, updateCa
 import { GlobalContext } from '../../App';
 import Loader from "../Loader/Loader";
 import TransparentLoader from "../Loader/TransparentLoader";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import './Settings.css';
 
 const { Title } = Typography;
@@ -63,12 +64,13 @@ const Settings = ({ setSettingError, setReload }) => {
 
         setIsLoading(false);
       } catch (error) {
+        setGlobalErrorMessage("Une erreur est survenue lors du chargement des données.");
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [setGlobalErrorMessage]);
 
   const handleCompetitionChange = (value) => {
     setSelectedCompetition(value);
@@ -399,20 +401,13 @@ const Settings = ({ setSettingError, setReload }) => {
       {/* Loader */}
       {isTransparentLoading && <TransparentLoader message={transparentLoaderMessage} />}
       {showConfirmation && (
-                <div className="settings-confirmation-modal">
-                    <div className="settings-confirmation-content">
-                        <div className="settings-confirmation-header">
-                            <h3 className="settings-confirmation-title">Confirmation</h3>
-                            <button className="settings-close-button-confirmation" onClick={() => setShowConfirmation(false)}>✖</button>
-                        </div>
-                        <p>Êtes-vous sûr de vouloir mettre à jour la compétition ? <br></br>Toutes les données propre à la compétition active seront perdues.</p>
-                        <div className="settings-confirmation-buttons">
-                            <button className="green-button" onClick={saveCompetition}>Confirmer</button>
-                            <button className="red-button" onClick={() => setShowConfirmation(false)}>Annuler</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+        <ConfirmModal
+            message="Êtes-vous sûr de vouloir mettre à jour la compétition ?"
+            message2="Toutes les données propre à la compétition active seront perdues."
+            onSave={saveCompetition}
+            onCancel={() => setShowConfirmation(false)}
+        />
+      )}
     </div>
   );
 };

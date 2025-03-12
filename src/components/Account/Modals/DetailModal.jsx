@@ -1,8 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useContext } from 'react';
 import { getAccountDataForADay } from '../../../api/accountService';
+import { GlobalContext } from '../../../App';
 import './DetailModal.css';
 
 const DetailModal = ({ days, day, onClose }) => {
+    const {setGlobalErrorMessage} = useContext(GlobalContext);
+
     const [payments, setPayments] = useState([]);
     const [amountDayBefore, setAmountDayBefore] = useState(0);
     const [amountDay, setAmountDay] = useState(0);
@@ -46,6 +49,7 @@ const DetailModal = ({ days, day, onClose }) => {
                 setDifference(data.amountDayBefore + totalPayments - data.withdraws);
                 setInputValuesToZero();
             } catch (error) {
+                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des données.")
                 console.error("Error fetching account data:", error);
             } finally {
                 if (currentDateRef.current !== selectedDay) return;
@@ -58,7 +62,7 @@ const DetailModal = ({ days, day, onClose }) => {
             setPreviousDate(selectedDay);
             currentDateRef.current = selectedDay;
         }
-    }, [selectedDay, previousDate]);
+    }, [selectedDay, previousDate, setGlobalErrorMessage]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -243,16 +247,16 @@ const DetailModal = ({ days, day, onClose }) => {
         <div className="detail-modal">
             <div className="detail-content">
                 <div className="detail-header">
-                    <button id="prevDayDetail" className="arrow-button-detail"
+                    <button id="prevDayDetail" className="arrow-button"
                         onClick={handlePrevDay}
                         disabled={selectedDay === days[0] || (isLoading || countRegister)}
                     >&#8249;</button>
                     <h2 className="detail-title">Bilan comptable du {selectedDay}</h2>
-                    <button id="nextDayDetail" className="arrow-button-detail"
+                    <button id="nextDayDetail" className="arrow-button"
                     onClick={handleNextDay}
                     disabled={selectedDay === days[days.length - 1] || (isLoading || countRegister)}
                 >&#8250;</button>
-                <button className="close-button-detail" onClick={onClose}>✖</button>
+                <button className="close-button" onClick={onClose}>✖</button>
                 </div>
                 {isLoading ? (
                     <div className="detail-summary">

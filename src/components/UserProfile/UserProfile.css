@@ -5,15 +5,6 @@ body {
     margin: 0;
 }
 
-.confirm-modal .ant-modal-header,
-.confirm-modal .ant-modal-body,
-.confirm-modal .ant-modal-footer,
-.change-password-modal .ant-modal-header,
-.change-password-modal .ant-modal-body,
-.change-password-modal .ant-modal-footer {
-    text-align: center;
-}
-
 .password-toggle {
     cursor: pointer;
 }

@@ -31,6 +31,7 @@ function App() {
   const [profils, setProfils] = useState([]);
   const [globalSuccessMessage, setGlobalSuccessMessage] = useState('');
   const [globalErrorMessage, setGlobalErrorMessage] = useState('');
+  const [globalLoadingMessage, setGlobalLoadingMessage] = useState('');
   const [error, setError] = useState(true);
   const [settingError, setSettingError] = useState(false);
   const [reload, setReload] = useState(false)
@@ -122,6 +123,16 @@ function App() {
     }
   }, [globalErrorMessage, messageApi]);
 
+  useEffect(() => {
+    if (globalLoadingMessage) {
+      messageApi.open({
+        type: 'loading',
+        content: globalLoadingMessage,
+      });
+      setGlobalLoadingMessage('');
+    }
+  }, [globalLoadingMessage, messageApi]);
+
   const getAppRouter = () => {
     if (isLoading) {
       return <Loader message="Chargement de l'application..." />;
@@ -154,7 +165,7 @@ function App() {
   };
 
   return (
-    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, role, setRole }}>
+    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole }}>
       {contextHolder}
       <div className="app-container">
         <Sidebar error={error} settingError={settingError} />

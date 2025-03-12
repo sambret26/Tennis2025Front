@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useContext } from 'react';
-import { Layout, Table, Button, Typography, Checkbox, notification } from 'antd';
+import { Layout, Table, Button, Typography, Checkbox } from 'antd';
 import { getAllPlayers } from '../../api/playersService';
 import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import { updatePlayerPayments } from '../../api/paymentsService';
@@ -15,7 +15,7 @@ const { Title } = Typography;
 const { Sider, Content } = Layout;
 
 const Players = ({ startDate, endDate, defaultDate }) => {
-    const { role } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage, setGlobalSuccessMessage } = useContext(GlobalContext);
     
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
@@ -57,17 +57,15 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                 }));
                 setGlobalReductions(reductionsData);
             } catch (error) {
-                notification.error({
-                    message: 'Erreur',
-                    description: 'Erreur lors du chargement des données.',
-                });
+                setGlobalErrorMessage("Une erreur est survenue lors du chargement des données.");
+                console.error('Error loading data:', error);
             } finally {
                 setLoading(false);
             }
         };
         
         fetchData();
-    }, [sortRankings]);
+    }, [sortRankings, setGlobalErrorMessage]);
     
     // Gestion des filtres
     const handleRankingFilterChange = (checkedValues) => {
@@ -105,16 +103,10 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                     : p
                 )
             );
-    
-            notification.success({
-                message: 'Succès',
-                description: 'Le paiement a été enregistré.',
-            });
+            setGlobalSuccessMessage("Le paiement a été enregistré.");
         } catch (error) {
-            notification.error({
-                message: 'Erreur',
-                description: 'Erreur lors de la mise à jour du paiement.',
-            });
+            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du paiement.");
+            console.error('Error updating payment:', error);
         }
     };
 
