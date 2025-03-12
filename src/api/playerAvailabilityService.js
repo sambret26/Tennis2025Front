@@ -3,20 +3,6 @@ import { getLocaleDate } from '../utils/dateUtils.js';
 
 const PLAYER_AVAILABILITY_API_URL = `${API_URL}/playerAvailabilities`;
 
-//REMOVE ?
-export async function getPlayerAvailabilities(playerId) {
-    try {
-        const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/player/${playerId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch availabilities for playerId ' + playerId);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching availabilities for playerId ' + playerId + ':', error);
-        throw error;
-    }
-}
-
 export async function getAllPlayersAvailabilities() {
     try {
         const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/all`);
@@ -53,24 +39,6 @@ export async function updatePlayerAvailability(playerId, day, timeSlot, availabl
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ playerId, day, timeSlot, available }),
-        });
-        if (!response.ok) { 
-            throw new Error('Failed to update player availability for playerId ' + playerId);
-        }
-    } catch (error) {
-        console.error('Error updating player availability for playerId ' + playerId + ':', error);
-        throw error;
-    }
-}
-
-export async function updatePlayerDayAvailability(playerId, day, available) {
-    try {
-        const response = await fetch(`${PLAYER_AVAILABILITY_API_URL}/updateAllDay`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ playerId, day, available }),
         });
         if (!response.ok) { 
             throw new Error('Failed to update player availability for playerId ' + playerId);

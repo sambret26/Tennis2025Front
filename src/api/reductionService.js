@@ -2,19 +2,6 @@ import { API_URL } from './apiConfig.js';
 
 const REDUCTION_API_URL = `${API_URL}/reductions`;
 
-export const deleteReduction = async (reductionId) => {
-    try {
-        const response = await fetch(`${REDUCTION_API_URL}/${reductionId}`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) throw new Error('Erreur lors de la suppression de la réduction');
-        return true;
-    } catch (error) {
-        console.error('Erreur:', error);
-        throw error;
-    }
-};
-
 export const updatePlayerReductions = async (playerId, reductions, balance) => {
     try {
         const response = await fetch(`${REDUCTION_API_URL}/${playerId}`, {
