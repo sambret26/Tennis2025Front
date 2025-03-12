@@ -20,7 +20,7 @@ export const updatePredefinedReductions = async (reductions) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(reductions)
+            body: JSON.stringify({reductions})
         });
         if (!response.ok) throw new Error('Erreur lors de la mise à jour des réductions prédéfinies');
         return await response.json();

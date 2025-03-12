@@ -22,7 +22,7 @@ export async function updatePrices(prices) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(prices)
+            body: JSON.stringify({prices})
         });
         if(!response.ok) {
             throw new Error('Failed to update prices');

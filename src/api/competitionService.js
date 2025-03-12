@@ -22,7 +22,7 @@ export async function activeCompetition(competitionId) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(competitionId)
+            body: JSON.stringify({ competitionId })
         });
         if (!response.ok) throw new Error('Erreur lors de la mise à jour de la compétition');
         const responseBody = await response.json();

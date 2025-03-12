@@ -157,7 +157,7 @@ export async function updateUsers(users) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(users),
+            body: JSON.stringify({users}),
         });
         if(!response.ok) {
             throw new Error('Failed to update users');

@@ -28,24 +28,3 @@ export async function getAllPlayers() {
         throw error;
     }
 }
-
-export async function updatePlayerBalance(playerId, balance) {
-    try {
-        const response = await fetch(`${PLAYERS_API_URL}/${playerId}/balance`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(balance)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to update balance: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error updating balance:', error);
-        throw error;
-    }
-}
