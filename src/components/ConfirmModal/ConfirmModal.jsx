@@ -1,10 +1,11 @@
 import React from 'react';
 import './ConfirmModal.css';
 import { Modal, Button, Typography } from 'antd';
+import { MODAL } from '../../utils/constants';
 
 const { Text } = Typography;
 
-const ConfirmModal = ({ title="Confirmation", message, message2="", onSave, onCancel, className="" }) => {
+const ConfirmModal = ({ title=MODAL.CONFIRM.TITLE, message, message2="", onSave, onCancel, className="" }) => {
     return (
         <Modal
             title={<Text >{title}</Text>}

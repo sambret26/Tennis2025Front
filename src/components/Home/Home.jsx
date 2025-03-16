@@ -4,6 +4,7 @@ import { getMatches, updateMatchResult, updatePlayerAvailability } from '../../a
 import { getAllPlayersAvailabilitiesForDay } from '../../api/playerAvailabilityService';
 import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
+import { DATA, MESSAGES, CONSOLE, LOADER } from '../../utils/constants';
 import PlayerTooltip from '../Tooltips/PlayerTooltip/PlayerTooltip';
 import TeamTooltip from '../Tooltips/PlayerTooltip/TeamTooltip';
 import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
@@ -11,15 +12,15 @@ import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
 import './Home.css'; 
 
 const Home = ({ startDate, endDate, defaultDate }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, getRoleName } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, getRoleName, ADMIN, STAFF, VISITOR } = useContext(GlobalContext);
 
     const NO_ANSWER = 0;
     const UNAVAILABLE = 1;
     const AVAILABLE = 2;
 
     const [currentDate, setCurrentDate] = useState(defaultDate);
-    const [planningText, setPlanningText] = useState('Planning du --/--');
-    const [dateText, setDateText] = useState('--/--');
+    const [planningText, setPlanningText] = useState(DATA.PLANNING);
+    const [dateText, setDateText] = useState(DATA.VOID_DATE);
     const [schedule, setSchedule] = useState([]);
     const [allAvailabilities, setAllAvailabilities] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -57,12 +58,12 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
         const loadAvailabilities = async () => {
             try { return await getAllPlayersAvailabilitiesForDay(currentDate); }
-            catch (error) { console.error('Error fetching availabilities:', error); }
+            catch (error) { console.error(CONSOLE.FETCH.AVAILABILITIES, error); }
         };
 
         const fetchMatches = async () => {
             try { return await getMatches(currentDate); }
-            catch (error) { console.error('Error fetching matches:', error); }
+            catch (error) { console.error(CONSOLE.FETCH.MATCHES, error); }
         };
 
         const initializeAll = async () => {
@@ -79,8 +80,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             try {
                 initializeAll();
             } catch (error) {
-                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des disponibilités.");
-                console.error('Error initializing all:', error);
+                setGlobalErrorMessage(MESSAGES.ERROR.GET.AVAILABILITIES);
+                console.error(CONSOLE.FETCH.AVAILABILITIES, error);
             }
             setPreviousDate(currentDate);
             currentDateRef.current = currentDate;
@@ -94,10 +95,10 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     };
 
     const canViewDate = useCallback((date) => {
-        if (role === 0) return date <= defaultDate;
-        if (role === 1) return date <= getNextDay(defaultDate);
+        if (role === VISITOR) return date <= defaultDate;
+        if (role === STAFF) return date <= getNextDay(defaultDate);
         return true;
-    }, [role, defaultDate]);
+    }, [role, defaultDate, STAFF, VISITOR]);
     
     const handlePrevDay = useCallback(() => {
         const newDate = new Date(currentDate);
@@ -150,9 +151,9 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         setShowModal(false);
         try {
             await updateMatchResult(matchId, playerId, score, finish, double);
-            setGlobalSuccessMessage("Le résultat a bien été mis à jour.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.RESULT);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du résultat.");
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.RESULT);
         }
     };
 
@@ -178,7 +179,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     };
 
     const getMatchClassName = (match) => {
-        if (viewProfile !== 2) return 'black-row';
+        if (viewProfile !== ADMIN) return 'black-row';
         if (match.finish) return 'black-row';
         if (match.player1Availability === UNAVAILABLE || match.player2Availability === UNAVAILABLE) return 'red-row';
         if (match.player1Availability === AVAILABLE && match.player2Availability === AVAILABLE) return 'green-row';
@@ -223,8 +224,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const getPlayerClassName = () => {
-        if (viewProfile === 0) return 'schedule-col-player-28';
-        if (viewProfile === 1) return 'schedule-col-player-22';
+        if (viewProfile === VISITOR) return 'schedule-col-player-28';
+        if (viewProfile === STAFF) return 'schedule-col-player-22';
         return 'schedule-col-player-19';
     }
 
@@ -238,7 +239,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const getCourt = (court) => {
-        if (viewProfile === 0) return <td className="schedule-col-court-0"></td>;
+        if (viewProfile === VISITOR) return <td className="schedule-col-court-0"></td>;
         return <td className="schedule-col-court-8">{court ? court.number : ''}</td>;
     }
 
@@ -250,8 +251,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         try {
             await updatePlayerAvailability(match.id, available, 1);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
-            console.error('Error updating availability:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.AVAILABILITIES);
+            console.error(CONSOLE.UPDATE.AVAILABILITY, error);
         }
     }
 
@@ -263,20 +264,20 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         try {
             await updatePlayerAvailability(match.id, available, 2);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
-            console.error('Error updating availability:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.AVAILABILITIES);
+            console.error(CONSOLE.UPDATE.AVAILABILITY, error);
         }
     }
 
     const putAvailableTooltip = (match, handlePlayerAvailability, player) => {
-        if(viewProfile !== 2) return;
+        if(viewProfile !== ADMIN) return;
         if (match.finish) return (<td className="schedule-actions"></td>);
         if(player === 1) return (<AvailableTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
         return (<AvailableTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
     }
 
     const putPlayerTooltip = (match, player) => {
-        if(viewProfile !== 2) return;
+        if(viewProfile !== ADMIN) return;
         if(match.double && player === 1) return (<TeamTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} team={match.player1} table={true} />);
         if(match.double && player === 2) return (<TeamTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} team={match.player2} table={true} />);
         if(player === 1) return (<PlayerTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
@@ -284,11 +285,11 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const showSwitch = () => {
-        if (role === 0) return;
+        if (role === VISITOR) return;
         return (
             <div className="switch-container">
                 <label className="switch">
-                    <input type="checkbox" checked={viewProfile > 0 } onChange={() => switchViewProfile(!viewProfile)} />
+                    <input type="checkbox" checked={viewProfile > VISITOR } onChange={() => switchViewProfile(!viewProfile)} />
                     <span className="slider round"></span>
                 </label>
                 <span className="switch-label">{getRoleName(viewProfile)}</span>
@@ -298,7 +299,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const matchResult = (match) => {
         if(match.winner) {
-            if (viewProfile === 0) return (<td className="schedule-col-result-31">{getResultValue(match)}</td>);
+            if (viewProfile === VISITOR) return (<td className="schedule-col-result-31">{getResultValue(match)}</td>);
             return (
                 <>
                     <td className="schedule-col-result-25">{getResultValue(match)}</td>
@@ -306,7 +307,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 </>
             )
         }
-        if (viewProfile === 0) return (<td className="schedule-col-result-31"></td>);
+        if (viewProfile === VISITOR) return (<td className="schedule-col-result-31"></td>);
         return (
             <>
                 <td className="schedule-col-result-25"><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></td>
@@ -320,12 +321,12 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             return (
                 <thead className="header">
                     <tr>
-                        <th>Horaire</th>
-                        {viewProfile !== 0 && <th>Court </th>}
-                        {viewProfile === 0 && <th></th>}
-                        <th colSpan={3}>Joueur 1</th>
-                        <th colSpan={3}>Joueur 2</th>
-                        <th>Résultat</th>
+                        <th>{DATA.HOURS}</th>
+                        {viewProfile !== VISITOR && <th>Court </th>}
+                        {viewProfile === VISITOR && <th></th>}
+                        <th colSpan={3}>{DATA.PLAYER_1}</th>
+                        <th colSpan={3}>{DATA.PLAYER_2}</th>
+                        <th>{DATA.RESULT}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -334,7 +335,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return (
             <thead className="header">
                 <tr>
-                    <th colSpan={10} className="full-width">Aucun match programmé le {dateText}</th>
+                    <th colSpan={10} className="full-width">{DATA.NO_MATCHES} {dateText}</th>
                 </tr>
             </thead>
         );
@@ -350,10 +351,10 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                         <tr className={getMatchClassName(match)} key={index}>
                             <td className="schedule-col-hour">{match.hour}</td>
                             {getCourt(match.court)}
-                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`} colSpan={viewProfile === 2 ? 1 : 3}>{match.player1.fullName} ({match.player1.ranking})</td>
+                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{match.player1.fullName} ({match.player1.ranking})</td>
                             {putAvailableTooltip(match, handlePlayer1Availability, 1)}
                             {putPlayerTooltip(match, 1)}
-                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)}`} colSpan={viewProfile === 2 ? 1 : 3}>{match.player2.fullName} ({match.player2.ranking})</td>
+                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{match.player2.fullName} ({match.player2.ranking})</td>
                             {putAvailableTooltip(match, handlePlayer2Availability, 2)}
                             {putPlayerTooltip(match, 2)}
                             {matchResult(match)}
@@ -370,7 +371,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         if(isLoading) {
             return (
                 <div className="planning-text">
-                    <p>Chargement du planning du {dateText}...</p>
+                    <p>{LOADER.PLANNING} {dateText}...</p>
                 </div>
             )
         }

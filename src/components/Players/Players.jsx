@@ -5,6 +5,7 @@ import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
+import { MESSAGES, DATA, CONSOLE, LOADER, TABLE } from '../../utils/constants';
 import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import PlayersFilters from './PlayersFilters';
 import Loader from '../Loader/Loader';
@@ -15,7 +16,7 @@ const { Title } = Typography;
 const { Sider, Content } = Layout;
 
 const Players = ({ startDate, endDate, defaultDate }) => {
-    const { role, setGlobalErrorMessage, setGlobalSuccessMessage } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage, setGlobalSuccessMessage, ADMIN } = useContext(GlobalContext);
     
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
@@ -57,8 +58,8 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                 }));
                 setGlobalReductions(reductionsData);
             } catch (error) {
-                setGlobalErrorMessage("Une erreur est survenue lors du chargement des données.");
-                console.error('Error loading data:', error);
+                setGlobalErrorMessage(MESSAGES.ERROR.GET.DATA);
+                console.error(CONSOLE.FETCH.DATA, error);
             } finally {
                 setLoading(false);
             }
@@ -103,10 +104,10 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                     : p
                 )
             );
-            setGlobalSuccessMessage("Le paiement a été enregistré.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.PAYMENT);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du paiement.");
-            console.error('Error updating payment:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.PAYMENT);
+            console.error(CONSOLE.UPDATE.PAYMENT, error);
         }
     };
 
@@ -169,7 +170,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
     // Colonnes de la table
     const columns = [
         {
-            title: 'Joueur',
+            title: TABLE.PLAYER_TITLE,
             dataIndex: 'fullName',
             key: 'fullName',
             className: 'player-column',
@@ -180,12 +181,12 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                 <span>
                 {record.lastName} {record.firstName}
                 </span>
-                {role === 2 && <PlayerTooltip className="player-tooltip" player={record} table={false}/>}
+                {role === ADMIN && <PlayerTooltip className="player-tooltip" player={record} table={false}/>}
                 </div>
             ),
         },
         {
-            title: 'Classement',
+            title: TABLE.RANKING_TITLE,
             dataIndex: 'ranking',
             key: 'ranking',
             className: 'ranking-column',
@@ -193,14 +194,14 @@ const Players = ({ startDate, endDate, defaultDate }) => {
             render: (ranking) => ranking?.simple || 'NC',
         },
         {
-            title: 'Catégories',
+            title: TABLE.CATEGORY_TITLE,
             dataIndex: 'categories',
             key: 'categories',
             className: 'category-column',
             render: (categories) => categories.join(', '),
         },
         {
-            title: 'Montant',
+            title: TABLE.AMOUNT_TITLE,
             dataIndex: 'balance',
             key: 'amount',
             className: 'amount-column',
@@ -208,7 +209,7 @@ const Players = ({ startDate, endDate, defaultDate }) => {
             render: (balance) => `${balance.finalAmount}€`,
         },
         {
-            title: 'Payé',
+            title: TABLE.PAID_TITLE,
             dataIndex: 'balance',
             key: 'paid',
             className: 'paid-column',
@@ -216,20 +217,20 @@ const Players = ({ startDate, endDate, defaultDate }) => {
             render: (balance, record) => (
                 <Checkbox
                 checked={balance.remainingAmount <= 0}
-                disabled={role !== 2}
+                disabled={role !== ADMIN}
                 onChange={() => handlePaymentChange(record)}
                 />
             ),
         },
         {
-            title: 'Date de paiement',
+            title: TABLE.PAYMENT_DATE_TITLE,
             key: 'paymentDate',
             className: 'payment-date-column',
             sorter: (a, b) => paymentDateSorted(a, b),
             render: (_, record) => formatDate(getLatestPaymentDate(record)),
         },
         {
-            title: 'Détails',
+            title: TABLE.DETAILS_TITLE,
             key: 'details',
             className: 'details-column',
             render: (_, record) => (
@@ -256,15 +257,27 @@ const Players = ({ startDate, endDate, defaultDate }) => {
         if (player.balance.remainingAmount !== player.balance.finalAmount) return 'partially-paid';
         return 'unpaid';
     };
+
+    const getFilters = () => {
+        if (loading) return <Loader message={LOADER.FILTERS} />;
+        return (
+            <PlayersFilters
+                filters={filters}
+                handleRankingFilterChange={handleRankingFilterChange}
+                handleCategoryFilterChange={handleCategoryFilterChange}
+                handlePaymentStatusChange={handlePaymentStatusChange}
+            />
+        );
+    }
     
     const getTable = () => {
-        if (loading) return <Loader message="Chargement des joueurs..." />;
+        if (loading) return <Loader message={LOADER.PLAYERS} />;
         return (
             <Table
                 dataSource={getFilteredPlayers()}
                 columns={columns}
                 rowClassName={getRowClassName}
-                locale={{ emptyText: 'Aucun joueur ne correspond aux filtres' }}
+                locale={{ emptyText: DATA.NO_PLAYERS }}
             />
         );
     }
@@ -275,15 +288,10 @@ const Players = ({ startDate, endDate, defaultDate }) => {
                 width={300}
                 className="filters-section"
                 >
-                <PlayersFilters
-                    filters={filters}
-                    handleRankingFilterChange={handleRankingFilterChange}
-                    handleCategoryFilterChange={handleCategoryFilterChange}
-                    handlePaymentStatusChange={handlePaymentStatusChange}
-                />
+                {getFilters()}
             </Sider>
             <Content style={{ padding: '20px' }}>
-                <Title level={2}>Gestion des joueurs</Title>
+                <Title level={2}>{DATA.PLAYERS}</Title>
                   {getTable()}
             </Content>
             {selectedPlayer && isModalOpen && (

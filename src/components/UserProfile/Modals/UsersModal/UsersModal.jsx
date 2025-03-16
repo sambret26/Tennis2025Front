@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Table, Select, Button, Modal } from 'antd';
 import { getUsers, updateUsers } from '../../../../api/userService';
 import { GlobalContext } from '../../../../App';
+import { MODAL, CONSOLE, MESSAGES, LOADER, DATA, TABLE } from '../../../../utils/constants';
 import Loader from '../../../../components/Loader/Loader';
 import './UsersModal.css';
 
@@ -21,8 +22,8 @@ const UsersModal = ({ profils, onClose }) => {
                 const response = await getUsers();
                 setUsers(response);
             } catch (error) {
-                console.error("Erreur lors de la récupération des utilisateurs :", error);
-                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des utilisateurs.");
+                console.error(CONSOLE.FETCH.USERS, error);
+                setGlobalErrorMessage(MESSAGES.ERROR.GET.USERS);
             } finally {
                 setLoading(false);
             }
@@ -54,11 +55,11 @@ const UsersModal = ({ profils, onClose }) => {
         setLoading(true);
         try {
             await updateUsers(modifiedRoles);
-            setGlobalSuccessMessage("Les rôles ont été mis à jour avec succès !");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.ROLES);
             onClose();
         } catch (error) {
-            console.error("Erreur lors de la mise à jour des rôles :", error);
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour des rôles.");
+            console.error(CONSOLE.UPDATE.ROLE, error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.ROLE);
         } finally {
             setLoading(false);
         }
@@ -79,12 +80,12 @@ const UsersModal = ({ profils, onClose }) => {
 
     const columns = [
         {
-            title: 'Nom',
+            title: TABLE.NAME_TITLE,
             dataIndex: 'name',
             key: 'name',
         },
         {
-            title: 'Rôle',
+            title: TABLE.ROLE_TITLE,
             dataIndex: 'role',
             key: 'role',
             render: (role, record) => (
@@ -103,7 +104,7 @@ const UsersModal = ({ profils, onClose }) => {
     ];
 
     const getUsersTable = () => {
-        if (loading) return <Loader message="Chargement des utilisateurs..." global={false} />;
+        if (loading) return <Loader message={LOADER.USERS} global={false} />;
         return (
             <Table
                 dataSource={users}
@@ -111,7 +112,7 @@ const UsersModal = ({ profils, onClose }) => {
                 rowKey="id"
                 loading={loading}
                 pagination={false}
-                locale={{ emptyText: 'Aucun utilisateur recensé' }}
+                locale={{ emptyText: DATA.NO_USERS }}
             />
         );
     };
@@ -119,12 +120,12 @@ const UsersModal = ({ profils, onClose }) => {
     return (
         <Modal
             className="user-management-modal"
-            title="Gestion des utilisateurs"
+            title={MODAL.USERS.TITLE}
             open={true}
             onCancel={onClose}
             footer={[
                 <Button key="cancel" onClick={onClose}>
-                    Annuler
+                    {MODAL.USERS.CANCEL_BUTTON}
                 </Button>,
                 <Button
                     key="save"
@@ -132,7 +133,7 @@ const UsersModal = ({ profils, onClose }) => {
                     onClick={handleSave}
                     loading={loading}
                 >
-                    Sauvegarder
+                    {MODAL.USERS.SAVE_BUTTON}
                 </Button>,
             ]}
             width={800}

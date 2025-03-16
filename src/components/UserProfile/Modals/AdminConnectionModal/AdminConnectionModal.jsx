@@ -3,6 +3,7 @@ import { Modal, Input, Button, Typography } from 'antd';
 import { connectAdmin, askAccess } from '../../../../api/userService';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import { GlobalContext } from '../../../../App';
+import { MESSAGES, CONSOLE, LOADER, MODAL, DATA, BUTTON } from '../../../../utils/constants';
 import './AdminConnectionModal.css';
 
 const { Text } = Typography;
@@ -18,28 +19,28 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     const adminConnection = useCallback(() => {
         setMessageError('');
         if (password === '') {
-            setMessageError('Merci de rentrer un mot de passe admin.');
+            setMessageError(MESSAGES.ERROR.NO_ADMIN_PASSWORD);
             return;
         }
-        setLoadingMessage('Connexion admin en cours...');
+        setLoadingMessage(LOADER.ADMIN_CONNECTION);
         setIsLoading(true);
         connectAdmin(password, userId, role)
             .then((data) => {
                 if (data === 401 || data === 403) {
-                    setMessageError('Le mot de passe admin est incorrect.');
+                    setMessageError(MESSAGES.ERROR.ADMIN_PASSWORD);
                     return;
                 }
                 if (!data.token) {
-                    throw new Error('Failed to connect user');
+                    throw new Error(CONSOLE.CONNECTION);
                 }
                 setRole(parseInt(role));
                 localStorage.setItem('token', data.token);
                 onClose();
-                setGlobalSuccessMessage("Connexion admin réussie.");
+                setGlobalSuccessMessage(MESSAGES.SUCCESS.ADMIN_CONNECTION);
             })
             .catch((error) => {
                 console.error(error);
-                setGlobalErrorMessage("Une erreur est survenue lors de la connexion admin.");
+                setGlobalErrorMessage(MESSAGES.ERROR.ADMIN_CONNECTION);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -47,12 +48,12 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     }, [onClose, role, setRole, password, userId, setGlobalSuccessMessage, setGlobalErrorMessage]);
 
     const handleRequestAccess = () => {
-        setLoadingMessage('Demande d’accès en cours...');
+        setLoadingMessage(DATA.ACCESS_REQUEST);
         setIsLoading(true);
         askAccess(userId, role)
             .then((data) => {
                 if (data === 404) {
-                    setMessageError('Une erreur est survenue.');
+                    setMessageError(MESSAGES.ERROR.GLOBAL);
                     return;
                 }
                 setGlobalSuccessMessage(`Demande d’accès ${getRoleName(role)} envoyée avec succès.`);
@@ -60,7 +61,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
             })
             .catch((error) => {
                 console.error(error);
-                setGlobalErrorMessage("Une erreur est survenue lors de la demande d'accès.");
+                setGlobalErrorMessage(MESSAGES.ERROR.REQUEST_ACCESS);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -82,14 +83,14 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
 
     return (
         <Modal
-            title="Connexion admin"
+            title={MODAL.ADMIN_CONNECTION.TITLE}
             open={true}
             onCancel={onClose}
             footer={null} // Supprime les boutons par défaut
         >
             {/* Champ de saisie du mot de passe */}
             <Input.Password
-                placeholder="Mot de passe admin"
+                placeholder={MODAL.ADMIN_CONNECTION.PLACEHOLDER}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 size="large"
@@ -111,7 +112,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
                 size="large"
                 loading={isLoading} // Affiche un spinner si isLoading est true
             >
-                Connexion
+                {MODAL.ADMIN_CONNECTION.BUTTON}
             </Button>
 
             {/* Séparateur "OU" */}
@@ -127,7 +128,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
                 size="large"
                 style={{ marginTop: '0' }} // Réinitialiser la marge supérieure
             >
-                Faire une demande d'accès {getRoleName(role)}
+                {BUTTON.REQUEST_ACCESS} {getRoleName(role)}   
             </Button>
 
             {/* Loader */}

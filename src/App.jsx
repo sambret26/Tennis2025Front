@@ -37,6 +37,10 @@ function App() {
   const [reload, setReload] = useState(false)
   
   const navigate = useNavigate();
+
+  const ADMIN = 2;
+  const STAFF = 1;
+  const VISITOR = 0;
   
   useEffect(() => {
     const connect = () => {
@@ -62,7 +66,7 @@ function App() {
           setGlobalErrorMessage('Aucune compétition n\'est configurée!');
           setError(false);
           setSettingError(true);
-          if (role === 2) navigate('/settings')
+          if (role === ADMIN) navigate('/settings')
           else navigate('/profil');
           return;
         }
@@ -178,7 +182,7 @@ function App() {
   };
 
   return (
-    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole, getRoleName }}>
+    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole, getRoleName, ADMIN, STAFF, VISITOR }}>
       {contextHolder}
       <div className="app-container">
         <Sidebar error={error} settingError={settingError} />

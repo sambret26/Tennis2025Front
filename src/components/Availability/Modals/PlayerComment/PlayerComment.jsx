@@ -2,13 +2,14 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import { GlobalContext } from '../../../../App';
+import { MESSAGES, CONSOLE, DATA } from '../../../../utils/constants';
 import './PlayerComment.css';
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
 const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, ADMIN } = useContext(GlobalContext);
     
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
@@ -42,10 +43,10 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
             if (onCommentChange) {
                 onCommentChange();
             }
-            setGlobalSuccessMessage("Le message a bien été mis à jour.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.PLAYER_COMMENT);
         } catch (error) {
-            console.error('Error saving comment:', error);
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour du message.");
+            console.error(CONSOLE.UPDATE.PLAYERS_COMMENT, error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.PLAYER_COMMENT);
         }
     };
 
@@ -54,7 +55,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
             const data = day.split('-');
             return `${data[2]}/${data[1]}`;
         } catch (error) {
-            console.error('Error formatting day:', error);
+            console.error(CONSOLE.FORMAT_DAY, error);
             return '';
         }
     };
@@ -64,7 +65,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
             <span
                 className={`message-icon ${isLoading ? '' : hasComment ? 'has-comment' : ''}`}
                 onClick={() => setIsModalOpen(true)}
-                title={hasComment ? 'Voir/modifier le message' : 'Ajouter un message'}
+                title={hasComment ? DATA.PLAYER_COMMENT_UPDATE : DATA.PLAYER_COMMENT_ADD}
             >
                 {isLoading ? '' : hasComment ? '💬' : '✉️'}
             </span>
@@ -75,7 +76,7 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={
-                    role === 2 ? (
+                    role === ADMIN ? (
                         <>
                             <Button key="cancel" onClick={handleCancel}>
                                 Annuler
@@ -92,8 +93,8 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
                 <TextArea
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Ajouter un message..."
-                    disabled={role !== 2}
+                    placeholder={DATA.PLAYER_COMMENT_ADD2}
+                    disabled={role !== ADMIN}
                     autoSize={{ minRows: 4, maxRows: 6 }}
                 />
             </Modal>

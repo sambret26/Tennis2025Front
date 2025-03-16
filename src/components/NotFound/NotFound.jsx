@@ -1,6 +1,7 @@
 import React from 'react';
 import { Result, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { MESSAGES, BUTTON } from '../../utils/constants';
 import './NotFound.css'; // Assurez-vous de créer ce fichier CSS pour styliser la page
 const NotFound = () => {
   const navigate = useNavigate();
@@ -15,10 +16,10 @@ const NotFound = () => {
       <Result
         status="404"
         title="404"
-        subTitle="Désolé, cette page n'existe pas."
+        subTitle={MESSAGES.ERROR.NOT_FOUND}
         extra={
           <Button type="primary" onClick={handleRetry}>
-            Retour à la page d'accueil
+            {BUTTON.BACK}
           </Button>
         }
       />

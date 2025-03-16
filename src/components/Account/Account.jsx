@@ -4,6 +4,7 @@ import DetailModal from './Modals/DetailModal';
 import TransactionManagementModal from './Modals/TransactionManagementModal';
 import { getAccountData } from '../../api/accountService';
 import { GlobalContext } from '../../App';
+import { CONSOLE, LOADER, MESSAGES, DATA } from '../../utils/constants';
 import Loader from '../Loader/Loader';
 import TransparentLoader from '../Loader/TransparentLoader';
 import './Account.css';
@@ -33,8 +34,8 @@ const Account = ({ startDate, endDate }) => {
                 setProfit(data.totalPayments);
                 setWithdrawn(data.totalWithdrawal);
             } catch (error) {
-                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des données.")
-                console.error('Error fetching account data:', error);
+                setGlobalErrorMessage(MESSAGES.ERROR.GET.DATA);
+                console.error(CONSOLE.FETCH.ACCOUNT, error);
             } finally {
                 setIsLoading(false);
             }
@@ -50,7 +51,7 @@ const Account = ({ startDate, endDate }) => {
                 }
                 setDays(days);
             } catch (error) {
-                console.error('Error fetching dates:', error);
+                console.error(CONSOLE.FETCH.DATE, error);
             }
         };
 
@@ -83,17 +84,17 @@ const Account = ({ startDate, endDate }) => {
     };
 
     if (isLoading) {
-        return <Loader message="Chargement des données..." />;
+        return <Loader message={LOADER.ACCOUNT} />;
     }
 
     return (
         <div className="account-tab">
             {/* Titre et montants */}
             <Card className="account-card no-bottom-padding">
-                <Title level={2}>Montant dans la caisse : {amountInCash}€</Title>
+                <Title level={2}>{DATA.AMOUNT_IN_CASH} : {amountInCash}€</Title>
                 <div className="account-card-content-top">
-                    <Text strong className="benefit-text">Bénéfice : {profit}€</Text>
-                    <Text strong className="withdrawn-text">Retiré : {withdrawn}€</Text>
+                    <Text strong className="benefit-text">{DATA.BENEFIT} : {profit}€</Text>
+                    <Text strong className="withdrawn-text">{DATA.WITHDRAWN} : {withdrawn}€</Text>
                 </div>
             </Card>
 
@@ -111,12 +112,12 @@ const Account = ({ startDate, endDate }) => {
             {/* Bouton de gestion des transactions */}
             <div className="account-card-content-bottom">
                 <Button type="primary" onClick={handleManageTransactions}>
-                    Gérer les transactions
+                    {DATA.TRANSACTION_MANAGEMENT}
                 </Button>
             </div>
 
             {/* Loaders et modales */}
-            {isTransparentLoaderVisible && <TransparentLoader message="Sauvegarde des données..." />}
+            {isTransparentLoaderVisible && <TransparentLoader message={LOADER.SAVE} />}
             {isDetailModalOpen && <DetailModal days={days} day={selectedDay} onClose={closeDetailModal} />}
             {isTransactionManagementModalOpen && (
                 <TransactionManagementModal

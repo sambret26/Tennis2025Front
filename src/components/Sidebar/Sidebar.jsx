@@ -1,14 +1,15 @@
     import React, { useContext } from 'react';
     import { Link } from 'react-router-dom'; // Importez Link
     import { GlobalContext } from '../../App';
+    import { DATA } from '../../utils/constants';
     import './Sidebar.css';
     
     const Sidebar = ({ error, settingError }) => {
-        const { role } = useContext(GlobalContext);
+        const { role, ADMIN, STAFF } = useContext(GlobalContext);
         
-        const isAdmin = () => role === 2;
+        const isAdmin = () => role === ADMIN;
         
-        const isStaff = () => role === 1;
+        const isStaff = () => role === STAFF;
         
         const isStaffOrAdmin = () => isStaff() || isAdmin();
         
@@ -20,12 +21,12 @@
         
         const getAdminTitle = () => {
             if (isAdmin() || error) return '';
-            return 'Seuls les administrateurs ont accès à cet onglet';
+            return DATA.ADMIN_ONLY;
         };
         
         const getStaffTitle = () => {
             if (isStaffOrAdmin() || error) return '';
-            return 'Seuls les membres du staff ont accès à cet onglet';
+            return DATA.STAFF_ONLY;
         };
         
         return (

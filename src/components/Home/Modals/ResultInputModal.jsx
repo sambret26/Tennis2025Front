@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
+import { DATA, MESSAGES, MODAL, BUTTON } from '../../../utils/constants';
 import './ResultInputModal.css';
 
 const { Text } = Typography;
 
 const ResultInputModal = ({ match, onClose, onSave }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
-    const [displayScore, setDisplayScore] = useState(match.winner ? (match.score ? match.score : '') : 'Sélectionnez un vainqueur');
+    const [displayScore, setDisplayScore] = useState(match.winner ? (match.score ? match.score : '') : DATA.SELECT_WINNER);
     const [score, setScore] = useState(match.score || '');
     const [errorMessage, setErrorMessage] = useState('Error');
     const [errorColor, setErrorColor] = useState('');
@@ -18,7 +19,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     const handleSave = useCallback(() => {
         if (selectedPlayerRef.current) {
             if (!formatScoreOk(scoreRef.current)) {
-                setErrorMessage("Format incorrect");
+                setErrorMessage(MESSAGES.ERROR.INVALID_FORMAT);
                 setErrorColor('red');
                 setTimeout(() => {
                     setErrorColor('');
@@ -26,7 +27,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                 return;
             }
             if (!scoreOk(scoreRef.current)) {
-                setErrorMessage("Score incohérent");
+                setErrorMessage(MESSAGES.ERROR.INVALID_SCORE);
                 setErrorColor('red');
                 setTimeout(() => {
                     setErrorColor('');
@@ -48,7 +49,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     useEffect(() => {
         if (match) {
             setSelectedPlayer(match.winner ? match.winnerId : null);
-            setDisplayScore(match.winner ? (match.score ? match.score : '') : 'Sélectionnez un vainqueur');
+            setDisplayScore(match.winner ? (match.score ? match.score : '') : DATA.SELECT_WINNER);
             setScore(match.score);
         }
 
@@ -80,15 +81,15 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
 
     return (
         <Modal
-            title="Renseigner un résultat"
+            title={MODAL.RESULT.TITLE}
             open={true}
             onCancel={onClose}
             footer={[
                 <Button key="cancel" onClick={onClose}>
-                    Annuler
+                    {BUTTON.CANCEL}
                 </Button>,
                 <Button key="save" type="primary" onClick={handleSave}>
-                    Enregistrer
+                    {BUTTON.SAVE}
                 </Button>,
             ]}
             className="result-input-modal"
@@ -116,7 +117,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                 type="text"
                 value={displayScore}
                 onChange={(e) => setBothScore(e.target.value)}
-                placeholder={selectedPlayer ? "Entrez le score" : "Sélectionnez un vainqueur"}
+                placeholder={selectedPlayer ? MODAL.RESULT.PLACEHOLDER : DATA.SELECT_WINNER}
                 disabled={!selectedPlayer}
                 className="score-input"
             />

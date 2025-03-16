@@ -3,12 +3,13 @@ import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
 import { getLocaleDate } from '../../../../utils/dateUtils.js';
 import { GlobalContext } from '../../../../App';
+import { MODAL, LOADER, MESSAGES, DATA, BUTTON } from '../../../../utils/constants';
 import Loader from '../../../Loader/Loader';
 import ConfirmModal from '../../../ConfirmModal/ConfirmModal';
 import './PaymentDetail.css';
 
 const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate  }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, ADMIN } = useContext(GlobalContext);
     
     const getDefaultDate = () => {
         return getLocaleDate(new Date(defaultDate))
@@ -212,11 +213,11 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             onClose();
             if (updatePromises.length > 0) {
                 await Promise.all(updatePromises);
-                setGlobalSuccessMessage("Les modifications ont bien été sauvegardées.");
+                setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.UPDATE);
             }
         } catch (error) {
             console.error('Error saving changes:', error);
-            setGlobalErrorMessage("Une erreur est survenue lors de la sauvegarde des modifications.");
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.UPDATE);
         } finally {
             setIsSaving(false);
         }
@@ -256,16 +257,16 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         if(payments.length > 0) {
             return (
                 <tr>
-                    <th>Type</th>
-                    <th>Date de paiement</th>
-                    <th>Montant</th>
-                    {(role === 2 && <th></th>)}
+                    <th>{DATA.PAYMENT}</th>
+                    <th>{DATA.DATE_PAYMENT}</th>
+                    <th>{DATA.AMOUNT}</th>
+                    {(role === ADMIN && <th></th>)}
                 </tr>
             )
         }
         return (
             <tr>
-                <th colSpan={4}>Aucun paiement</th>
+                <th colSpan={4}>{DATA.NO_PAYMENT}</th>
             </tr>
         )
     }
@@ -274,42 +275,42 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         if(reductions.some(reduction => reduction.default === 0)) {
             return (
                 <tr>
-                    <th>Motif</th>
-                    <th>Montant de la réduction</th>
-                    {(role === 2 && <th></th>)}
+                    <th>{DATA.REASON}</th>
+                    <th>{DATA.REDUCTION_AMOUNT}</th>
+                    {(role === ADMIN && <th></th>)}
                 </tr>
             )
         }
         return (
             <tr>
-                <th colSpan={3}>Aucune réduction spécifique</th>
+                <th colSpan={3}>{DATA.NO_REDUCTION}</th>
             </tr>
         )
     }
     
     const deletePaymentButton = (index) => {
-        if(role !== 2) return;
+        if(role !== ADMIN) return;
         return (
             <td>
-                <button className="white-button" onClick={() => handleDeletePayment(index)}>Supprimer</button>
+                <button className="white-button" onClick={() => handleDeletePayment(index)}>{BUTTON.DELETE}</button>
             </td>
         )
     }
     
     const deleteReductionButton = (reduction) => {
-        if(role !== 2) return;
+        if(role !== ADMIN) return;
         return (
             <td>
-                <button  className="white-button" onClick={() => handleDeleteReduction(reduction)}>Supprimer</button>
+                <button  className="white-button" onClick={() => handleDeleteReduction(reduction)}>{BUTTON.DELETE}</button>
             </td>
         )
     }
     
     const newPaymentSection = () => {
-        if(role !== 2) return;
+        if(role !== ADMIN) return;
         return (
             <tr>
-                <td className="payment-td">Nouveau paiement</td>
+                <td className="payment-td">{DATA.NEW_PAYMENT}</td>
                 <td className="payment-td">
                     <input
                         type="date"
@@ -333,7 +334,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         onClick={handleAddPayment}
                         disabled={!newPayment.amount}
                     >
-                        Ajouter
+                        {BUTTON.ADD}
                     </button>
                 </td>
             </tr>
@@ -341,7 +342,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
     }
     
     const newReductionSection = () => {
-        if(role !== 2) return;
+        if(role !== ADMIN) return;
         return (
             <tr>
                 <td>
@@ -349,7 +350,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         type="text"
                         value={newReduction.reason}
                         onChange={(e) => setNewReduction({ ...newReduction, reason: e.target.value })}
-                        placeholder="Motif de la réduction"
+                        placeholder={DATA.REDUCTION}
                         className="custom-input"
                 />
                 </td>
@@ -359,7 +360,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         value={newReduction.amount}
                         onChange={(e) => setNewReduction({ ...newReduction, amount: e.target.value })}
                         className="custom-input"
-                        placeholder="Montant"
+                        placeholder={DATA.AMOUNT}
                 />
                 </td>
                 <td>
@@ -368,7 +369,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         onClick={handleAddReduction}
                         disabled={!newReduction.reason || !newReduction.amount}
                     >
-                        Ajouter
+                        {BUTTON.ADD}
                     </button>
                 </td>
             </tr>
@@ -376,11 +377,11 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
     }
     
     const footerSection = () => {
-        if(role !== 2) return;
+        if(role !== ADMIN) return;
         return (
             <div className="modal-footer">
-                <button className="white-button" onClick={handleClose}>Fermer</button>
-                <button className="blue-button" onClick={handleAskSave} disabled={isSaving}>Valider</button>
+                <button className="white-button" onClick={handleClose}>{BUTTON.CANCEL}</button>
+                <button className="blue-button" onClick={handleAskSave} disabled={isSaving}>{BUTTON.VALIDATE}</button>
             </div>
         )
     }
@@ -389,13 +390,13 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         return (
             <div className="details-section">
                 <div className="payment-summary">
-                    <div>Montant initial : {initialAmount}€</div>
-                    <div>Montant final : {finalAmount}€</div>
-                    <div className={redIfNegative()}>Montant restant à payer : {remainingAmount}€</div>
+                    <div>{DATA.INITIAL_AMOUNT} : {initialAmount}€</div>
+                    <div>{DATA.FINAL_AMOUNT} : {finalAmount}€</div>
+                    <div className={redIfNegative()}>{DATA.REMAINING_AMOUNT} : {remainingAmount}€</div>
                 </div>
                 
                 <div className="payments-section">
-                    <h3 className="section-title">Paiements</h3>
+                    <h3 className="section-title">{DATA.PAYMENTS}</h3>
                     <table className="payment-table">
                         <thead>
                             {paymentHeaders()}
@@ -403,7 +404,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         <tbody>
                             {payments.map((payment, index) => (
                                 <tr key={index}>
-                                <td className="payment-td">{payment.isFullPayment ? 'Paiement final' : 'Paiement partiel'}</td>
+                                <td className="payment-td">{payment.isFullPayment ? DATA.PAYMENT_FINAL : DATA.PAYMENT_PARTIAL}</td>
                                 <td className="payment-td">{formatDate(payment.date)}</td>
                                 <td className="payment-td">{payment.amount}€</td>
                                 {deletePaymentButton(index)}
@@ -434,7 +435,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                                                     handleDeleteDefaultReduction(globalReduction);
                                                 }
                                             }}
-                                            disabled={role !== 2}
+                                            disabled={role !== ADMIN}
                                         />
                                         <label className="reduction-label">{globalReduction.reason}</label>
                                     </div>
@@ -464,13 +465,13 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
         )
     }
 
-    if (isLoading) return <Loader message="Chargement en cours..." global={false} />;
+    if (isLoading) return <Loader message={LOADER.LOADING} global={false} />;
 
     return (
         <div className="payment-detail-modal">
             <div className="payment-detail-content">
                 <div className="payment-detail-header">
-                    <h2 className="payment-detail-title">Détail du paiement de {player.lastName} {player.firstName}</h2>
+                    <h2 className="payment-detail-title">{DATA.PAYMENT_DETAIL} {player.lastName} {player.firstName}</h2>
                     <button className="close-button" onClick={handleClose}>✖</button>
                 </div>
                 {detailSection()}
@@ -479,8 +480,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
             
             {showConfirmation && (
                 <ConfirmModal
-                    message="Êtes-vous sûr de vouloir fermer ?"
-                    message2="Toutes les modifications seront perdues."
+                    message={MODAL.CONFIRM.CLOSE_1}
+                    message2={MODAL.CONFIRM.CLOSE_2}
                     onSave={handleConfirmClose}
                     onCancel={() => setShowConfirmation(false)}
                 />
@@ -488,8 +489,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
 
             {showNegativeConfirmation && (
                 <ConfirmModal
-                    message="Êtes-vous sûr de vouloir confirmer ?"
-                    message2="Le montant restant à payer sera négatif."
+                    message={MODAL.CONFIRM.NEGATIVE_1}
+                    message2={MODAL.CONFIRM.NEGATIVE_2}
                     onSave={handleConfirmClose}
                     onCancel={() => setShowNegativeConfirmation(false)}
                 />

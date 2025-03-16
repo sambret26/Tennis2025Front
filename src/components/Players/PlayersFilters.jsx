@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox, Radio, Typography } from 'antd';
+import { FILTER } from '../../utils/constants';
 import './PlayersFilters.css';
 
 const { Title } = Typography;
@@ -13,10 +14,10 @@ const PlayersFilters = ({
 }) => {
   return (
     <div>
-      <Title level={4}>Filtres</Title>
+      <Title level={4}>{FILTER.TITLE}</Title>
 
       <div className="filter-group">
-        <Title level={5}>Classements</Title>
+        <Title level={5}>{FILTER.RANKING}</Title>
         <Checkbox.Group
           options={filters.rankings}
           value={filters.selectedRankings}
@@ -26,7 +27,7 @@ const PlayersFilters = ({
       </div>
 
       <div className="filter-group">
-        <Title level={5}>Catégories</Title>
+        <Title level={5}>{FILTER.CATEGORY}</Title>
         <Checkbox.Group
           options={filters.categories}
           value={filters.selectedCategories}
@@ -36,13 +37,13 @@ const PlayersFilters = ({
       </div>
 
       <div className="filter-group">
-        <Title level={5}>Statut de paiement</Title>
+        <Title level={5}>{FILTER.PAYMENT}</Title>
         <RadioGroup
           options={[
-            { label: 'Tous', value: 'all' },
-            { label: 'Payé', value: 'paid' },
-            { label: 'Partiellement payé', value: 'partiallyPaid' },
-            { label: 'Non payé', value: 'unpaid' },
+            { label: FILTER.LABEL.ALL, value: FILTER.VALUE.ALL },
+            { label: FILTER.LABEL.PAID, value: FILTER.VALUE.PAID },
+            { label: FILTER.LABEL.PARTIALLY_PAID, value: FILTER.VALUE.PARTIALLY_PAID },
+            { label: FILTER.LABEL.UNPAID, value: FILTER.VALUE.UNPAID },
           ]}
           value={filters.paymentStatus}
           onChange={handlePaymentStatusChange}

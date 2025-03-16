@@ -5,12 +5,13 @@ import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
 import { getLocaleDate } from '../../utils/dateUtils';
 import { GlobalContext } from "../../App";
+import { CONSOLE, MESSAGES, DATA } from '../../utils/constants';
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
 import './Availability.css';
 
 const Availability = ({ startDate, endDate }) => {
-    const { role, setGlobalErrorMessage } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage, ADMIN } = useContext(GlobalContext);
 
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
@@ -40,31 +41,31 @@ const Availability = ({ startDate, endDate }) => {
                 else if (today > endDay) setCurrentDate(endDay);
                 else setCurrentDate(today);
             } catch (error) {
-                console.error('Error fetching dates:', error);
+                console.error(CONSOLE.FETCH.DATE, error);
             }
         };
 
         const loadAvailabilities = async () => {
             try { setAllAvailabilities(await getAllAvailabilities()); }
-            catch (error) { console.error('Error fetching availabilities:', error); }
+            catch (error) { console.error(CONSOLE.FETCH.AVAILABILITIES, error); }
         };
 
         const loadPlayers = async () => {
             try { setAllPlayers(await getAllPlayers()); }
-            catch (error) { console.error('Error fetching players:', error); }
+            catch (error) { console.error(CONSOLE.FETCH.PLAYERS, error); }
         };
 
         const loadPlayersAvailabilities = async () => {
             try { setPlayersAvailabilities(await getAllPlayersAvailabilities()); }
-            catch (error) { console.error('Error fetching playersAvailabilities:', error); }
+            catch (error) { console.error(CONSOLE.FETCH.PLAYERS_AVAILABILITIES, error); }
         };
 
         const initializeAll = async () => {
             try {
                 await Promise.all([loadDates(), loadAvailabilities(), loadPlayers(), loadPlayersAvailabilities()]);
             } catch (error) {
-                setGlobalErrorMessage("Une erreur est survenue lors de l'initialisation des données.")
-                console.error('Error initializing all:', error);
+                setGlobalErrorMessage(MESSAGES.ERROR.GET.DATA);
+                console.error(CONSOLE.FETCH.INITIALIZE_ALL, error);
             }
         };
 
@@ -83,8 +84,8 @@ const Availability = ({ startDate, endDate }) => {
                     }, {});
                     setPlayerComments(commentsByPlayer);
                 } catch (error) {
-                    setGlobalErrorMessage("Une erreur est survenue lors de la récupération des commentaires.")
-                    console.error('Error fetching comments:', error);
+                    setGlobalErrorMessage(MESSAGES.ERROR.GET.PLAYERS_COMMENT);
+                    console.error(CONSOLE.FETCH.PLAYERS_COMMENT, error);
                 } finally {
                     setIsLoading(false);
                 }
@@ -229,8 +230,8 @@ const Availability = ({ startDate, endDate }) => {
         try {
             await updatePlayerAvailability(playerId, formattedDate(currentDate), timeSlot, number);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la disponibilité.")
-            console.error('Error updating availability:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.AVAILABILITY);
+            console.error(CONSOLE.UPDATE.AVAILABILITY, error);
         }
     };
 
@@ -240,8 +241,8 @@ const Availability = ({ startDate, endDate }) => {
             for (let i = 0; i < 3; i++) changeAvailability(playerId, i, number); 
             for (let i = 0; i < 3; i++) await updatePlayerAvailability(playerId, formattedDate(currentDate), i, number);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour des disponibilités.")
-            console.error('Error updating availability:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.AVAILABILITY);
+            console.error(CONSOLE.UPDATE.AVAILABILITY, error);
         }
     }
 
@@ -254,8 +255,8 @@ const Availability = ({ startDate, endDate }) => {
             }, {});
             setPlayerComments(commentsByPlayer);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la récupération des commentaires.")
-            console.error('Error refreshing comments:', error);
+            setGlobalErrorMessage(MESSAGES.ERROR.GET.PLAYERS_COMMENT);
+            console.error(CONSOLE.UPDATE.PLAYERS_COMMENT, error);
         }
     };
 
@@ -264,7 +265,7 @@ const Availability = ({ startDate, endDate }) => {
             return (
                 <thead className="availability-header">
                     <tr>
-                        <th colSpan={8} className="full-width">Séléctionnez au moins un joueur pour afficher ses disponibilités</th>
+                        <th colSpan={8} className="full-width">{DATA.SELECT_PLAYERS}</th>
                     </tr>
                 </thead>
             )
@@ -274,10 +275,10 @@ const Availability = ({ startDate, endDate }) => {
                 <thead>
                     <tr className="availability-header">
                         <th colSpan={2}></th>
-                        <th colSpan={role === 2 ? 2 : 1}>Joueur</th>
-                        <th>Matin</th>
-                        <th>Après-midi</th>
-                        <th>Soirée</th>
+                        <th colSpan={role === ADMIN ? 2 : 1}>Joueur</th>
+                        <th>{DATA.MORNING}</th>
+                        <th>{DATA.AFTERNOON}</th>
+                        <th>{DATA.NIGHT}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -287,10 +288,10 @@ const Availability = ({ startDate, endDate }) => {
             <thead>
                 <tr className="header">
                     <th colSpan={2}></th>
-                    <th colSpan={role === 2 ? 2 : 1}>Joueur</th>
-                    <td>18h</td>
-                    <td>19h30</td>
-                    <td>21h</td>
+                    <th colSpan={role === ADMIN ? 2 : 1}>Joueur</th>
+                    <td>{DATA.FIRST_HOUR}</td>
+                    <td>{DATA.SECOND_HOUR}</td>
+                    <td>{DATA.THIRD_HOUR}</td>
                     <td></td>
                 </tr>
             </thead>
@@ -298,7 +299,7 @@ const Availability = ({ startDate, endDate }) => {
     };
 
     const availabilityActions = (playerId) => {
-        if (role !== 2) return <td></td>
+        if (role !== ADMIN) return <td></td>
         return (
             <td className="availability-actions">
                 <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
@@ -310,7 +311,7 @@ const Availability = ({ startDate, endDate }) => {
     return (
         <div>
             <div className="content-header">
-                <h2>Gestion de la disponibilité des joueurs</h2>
+                <h2>{DATA.AVAILABILITY_MANAGEMENT}</h2>
             </div>
 
             <div className="calendar-container-availability">
@@ -366,7 +367,7 @@ const Availability = ({ startDate, endDate }) => {
                                         />
                                     </td>
                                     <td className="player-name-availability">{player ? player.fullName : ''}</td>
-                                    {role === 2 && <PlayerTooltip className="" player={player} table={true} />}
+                                    {role === ADMIN && <PlayerTooltip className="" player={player} table={true} />}
                                     {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                         const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
                                         const playerAvailabilityNumber = playerAvailability ? playerAvailability.available : NO_ANSWER;
@@ -376,7 +377,7 @@ const Availability = ({ startDate, endDate }) => {
                                             <td className="player-availability" key={timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
                                                 <select value={displayValue}
                                                     onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
-                                                    disabled={role !== 2}
+                                                    disabled={role !== ADMIN}
                                                 >
                                                     {allAvailabilities.map((availability) => (
                                                         <option key={availability.number} value={availability.value}>

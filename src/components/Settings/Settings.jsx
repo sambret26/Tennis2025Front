@@ -4,6 +4,7 @@ import { getCompetitions, activeCompetition, deleteCompetitionData, updateCourts
 import { getPredefinedReductions, updatePredefinedReductions} from "../../api/reductionSettingsService";
 import { getSettings, updatePrices, updateBatchsActive, updateMojaSync, updateCalendarSync } from "../../api/settingsService";
 import { GlobalContext } from '../../App';
+import { MESSAGES, CONSOLE, LOADER, MODAL, DATA, COMPETITION, BUTTON } from '../../utils/constants';
 import Loader from "../Loader/Loader";
 import TransparentLoader from "../Loader/TransparentLoader";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
@@ -31,7 +32,7 @@ const Settings = ({ setSettingError, setReload }) => {
   const [hasReductionsChanged, setHasReductionsChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTransparentLoading, setIsTransparentLoading] = useState(false);
-  const [transparentLoaderMessage, setTransparentLoaderMessage] = useState("Sauvegarde des paramètres...");
+  const [transparentLoaderMessage, setTransparentLoaderMessage] = useState(LOADER.SETTINGS_UPDATE);
   const [editingReduction, setEditingReduction] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -64,8 +65,8 @@ const Settings = ({ setSettingError, setReload }) => {
 
         setIsLoading(false);
       } catch (error) {
-        setGlobalErrorMessage("Une erreur est survenue lors du chargement des données.");
-        console.error("Error fetching data:", error);
+        setGlobalErrorMessage(MESSAGES.ERROR.GET.DATA);
+        console.error(CONSOLE.FETCH.DATA, error);
       }
     };
 
@@ -105,7 +106,7 @@ const Settings = ({ setSettingError, setReload }) => {
     );
 
     if (isReasonAlreadyExists) {
-      setGlobalErrorMessage("Une réduction avec ce motif existe déjà.");
+      setGlobalErrorMessage(MESSAGES.ERROR.REDUCTION_ALREADY_EXISTS);
       return;
     }
 
@@ -138,7 +139,7 @@ const Settings = ({ setSettingError, setReload }) => {
   };
 
   const saveSettings = async () => {
-    setTransparentLoaderMessage("Sauvegarde des paramètres...");
+    setTransparentLoaderMessage(LOADER.SETTINGS_UPDATE);
     setIsTransparentLoading(true);
     try {
       if (hasPricesChanged()) {
@@ -154,10 +155,10 @@ const Settings = ({ setSettingError, setReload }) => {
         await updatePredefinedReductions(reductions);
         setHasReductionsChanged(false);
       }
-      setGlobalSuccessMessage("Les modifications ont été enregistrées.");
+      setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.UPDATE);
     } catch (error) {
-      console.error("Error saving settings:", error);
-      setGlobalErrorMessage("Une erreur est survenue lors de l'enregistrement des modifications.");
+      console.error(CONSOLE.UPDATE.SETTINGS, error);
+      setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.SETTINGS);
     } finally {
       setIsTransparentLoading(false);
     }
@@ -166,41 +167,41 @@ const Settings = ({ setSettingError, setReload }) => {
   const saveCompetition = async () => {
     try {
       setShowConfirmation(false);
-      setTransparentLoaderMessage("Activation de la compétition (1/8)...");
+      setTransparentLoaderMessage(COMPETITION.COMPETITON_ACTIVE);
       setIsTransparentLoading(true);
       let batchActive = await activeCompetition(selectedCompetition);
-      setTransparentLoaderMessage("Suppression de toutes les données (2/8)...");
+      setTransparentLoaderMessage(COMPETITION.DELETE_DATA);
       await deleteCompetitionData()
-      setTransparentLoaderMessage("Mise à jour des courts (3/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_COURTS);
       await updateCourts();
-      setTransparentLoaderMessage("Mise à jour des catégories (4/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_CATEGORIES);
       await updateCategories();
-      setTransparentLoaderMessage("Mise à jour des classements (5/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_RANKINGS);
       await updateRankings();
-      setTransparentLoaderMessage("Mise à jour des découpages (6/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_GRIDS);
       await updateGrids();
-      setTransparentLoaderMessage("Mise à jour des joueurs et des équipes (7/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_PLAYERS);
       await updatePlayers();
-      setTransparentLoaderMessage("Mise à jour des matchs (8/8)...");
+      setTransparentLoaderMessage(COMPETITION.UPDATE_MATCHES);
       await updateMatches();
       if (batchActive) {
         await updateBatchsActive("1");
       }
       setInitialCompetition(selectedCompetition);
-      setGlobalSuccessMessage("La compétition a été mise à jour.");
+      setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.COMPETITION);
       setIsTransparentLoading(false);
       setSettingError(false);
       setReload(true);
     } catch (error) {
-      console.error("Error saving competition:", error);
-      setGlobalErrorMessage("Une erreur est survenue lors de l'enregistrement de la compétition.");
+      console.error(CONSOLE.UPDATE.COMPETITION, error);
+      setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.COMPETITION);
     } finally {
       setIsTransparentLoading(false);
     }
   };
 
   const getReductionAmountValue = () => {
-    return newReductionAmount > 0 ? newReductionAmount : 'Montant';
+    return newReductionAmount > 0 ? newReductionAmount : DATA.AMOUNT;
   };
 
   const getInputClassName = () => {
@@ -223,21 +224,21 @@ const Settings = ({ setSettingError, setReload }) => {
 }, [showConfirmation]);
 
   if (isLoading) {
-    return <Loader message="Chargement des paramètres..." />;
+    return <Loader message={LOADER.SETTINGS} />;
   }
 
 
   return (
     <div className="settings-container">
       <Title level={2} className="settings-title">
-        Paramétrage
+        {DATA.SETTING}
       </Title>
 
-      <Card title="Sélection de la compétition">
+      <Card title={DATA.COMPETITION_SELECTION}>
         <Form layout="vertical">
           <Row gutter={16} align="middle">
             <Col span={18}>
-              <Form.Item label="Sélectionnez une compétition :">
+              <Form.Item label={DATA.SELECT_COMPETITION}>
                 <Select
                   value={selectedCompetition}
                   onChange={handleCompetitionChange}
@@ -258,7 +259,7 @@ const Settings = ({ setSettingError, setReload }) => {
                 onClick={() => setShowConfirmation(true)}
                 className="settings-button"
               >
-                Mettre à jour la compétition
+                {BUTTON.UPDATE_COMPETITION}
               </Button>
             </Col>
           </Row>
@@ -268,7 +269,7 @@ const Settings = ({ setSettingError, setReload }) => {
       <Card title="Options">
         <Row gutter={16}>
           <Col span={8}>
-          <Form.Item label="Activer les batchs">
+          <Form.Item label={DATA.ACTIVATION_BATCH}>
             <Switch
               checked={batchsEnabled}
               onChange={handleBatchToggle}
@@ -276,7 +277,7 @@ const Settings = ({ setSettingError, setReload }) => {
           </Form.Item>
           </Col>
           <Col span={8}>
-          <Form.Item label="Synchroniser MOJA">
+          <Form.Item label={DATA.ACTIVATION_MOJA}>
             <Switch
               checked={mojaSyncEnabled}
               onChange={handleMojaSyncToggle}
@@ -284,7 +285,7 @@ const Settings = ({ setSettingError, setReload }) => {
           </Form.Item>
           </Col>
           <Col span={8}>
-          <Form.Item label="Synchroniser le calendrier">
+          <Form.Item label={DATA.ACTIVATION_CALENDAR}>
             <Switch
               checked={calendarSyncEnabled}
               onChange={handleCalendarSyncToggle}
@@ -294,10 +295,10 @@ const Settings = ({ setSettingError, setReload }) => {
         </Row>
       </Card>
 
-      <Card title="Paramétrage des prix">
+      <Card title={DATA.PRICE_SETTINGS}>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item label="Prix Simple :">
+            <Form.Item label={DATA.PRICE_SIMPLE}>
               <InputNumber
                 value={simplePrice}
                 onChange={handleSimplePriceChange}
@@ -306,7 +307,7 @@ const Settings = ({ setSettingError, setReload }) => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Prix Double :">
+            <Form.Item label={DATA.PRICE_DOUBLE}>
               <InputNumber
                 value={doublePrice}
                 onChange={handleDoublePriceChange}
@@ -317,7 +318,7 @@ const Settings = ({ setSettingError, setReload }) => {
         </Row>
       </Card>
 
-      <Card title="Gestion des réductions">
+      <Card title={DATA.REDUCTION_SETTINGS}>
         <Space direction="vertical" className="settings-space">
           {reductions.map((reduction) => (
             <Row key={reduction.key} gutter={16} align="middle">
@@ -359,7 +360,7 @@ const Settings = ({ setSettingError, setReload }) => {
                   danger
                   onClick={() => handleDeleteReduction(reduction.reason)}
                 >
-                  Supprimer
+                  {BUTTON.DELETE}
                 </Button>
               </Col>
             </Row>
@@ -382,7 +383,7 @@ const Settings = ({ setSettingError, setReload }) => {
             </Col>
             <Col span={4}>
               <Button type="primary" onClick={handleAddReduction} className="add-reduction-button">
-                Ajouter
+                {BUTTON.ADD}
               </Button>
             </Col>
           </Row>
@@ -395,15 +396,15 @@ const Settings = ({ setSettingError, setReload }) => {
         onClick={saveSettings}
         className="settings-button save-settings-button"
       >
-        Enregistrer les paramètres
+        {BUTTON.SAVE_SETTINGS}
       </Button>
 
       {/* Loader */}
       {isTransparentLoading && <TransparentLoader message={transparentLoaderMessage} />}
       {showConfirmation && (
         <ConfirmModal
-            message="Êtes-vous sûr de vouloir mettre à jour la compétition ?"
-            message2="Toutes les données propre à la compétition active seront perdues."
+            message={MODAL.CONFIRM.SETTINGS_1}
+            message2={MODAL.CONFIRM.SETTINGS_2}
             onSave={saveCompetition}
             onCancel={() => setShowConfirmation(false)}
         />

@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { connectUser, createAccount } from '../../api/userService';
 import { jwtDecode } from 'jwt-decode';
 import { GlobalContext } from '../../App';import UserLogin from './UserLogin';
+import { MESSAGES, LOADER } from '../../utils/constants';
 import CreateAccount from './CreateAccount';
 import UserData from './UserData';
 import TransparentLoader from '../Loader/TransparentLoader';
@@ -21,15 +22,15 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
 
     const checkDatas = (min6) => {
         if (userNameValue === '') {
-            setMessage("Veuillez rentrer un nom d'utilisateur.");
+            setMessage(MESSAGES.ERROR.PUT_USERNAME);
             return false;
         }
         if (password === '') {
-            setMessage("Veuillez rentrer un mot de passe.");
+            setMessage(MESSAGES.ERROR.PUT_PASSWORD);
             return false;
         }
         if (min6 && password.length < 6) {
-            setMessage("Le mot de passe doit contenir au moins 6 caractères.");
+            setMessage(MESSAGES.MIN_PASSWORD);
             return false;
         }
         return true;
@@ -49,17 +50,17 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
         setIsLoading(true);
         connectUser(userNameValue, password).then(data => {
             if(data === 401 || data === 404) {
-                setMessage("Le nom d'utilisateur ou le mot de passe est incorrect.");
+                setMessage(MESSAGES.ERROR.INVALID);
                 return;
             }
             if(data.token) {
                 localStorage.setItem('token', data.token);
                 login(data.token)
             }
-            setGlobalSuccessMessage("Connexion réussie.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.CONNECTION);
         }).catch(error => {
             console.error(error);
-            setGlobalErrorMessage("Une erreur est survenue lors de la connexion.");
+            setGlobalErrorMessage(MESSAGES.ERROR.CONNECTION);
         }).finally(() => {
             setIsLoading(false);
         });
@@ -71,7 +72,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
         setIsLoading(true);
         createAccount(userNameValue, password).then(data => {
             if(data === 409) {
-                setMessage("Le nom d'utilisateur est déjà utilisé.");
+                setMessage(MESSAGES.ERROR.USERNAME_ALREADY_EXISTS);
                 return;
             }
             if(data.token) {
@@ -111,7 +112,7 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
     };
 
     const renderComponent = () => {
-        if(isLoading) return <TransparentLoader message="Chargement du profil..." />
+        if(isLoading) return <TransparentLoader message={LOADER.PROFIL} />
         if(isLoggedIn) return <UserData userName={username} userId={userId} role={role} setRole={setRole} handleLogout={handleLogout} profils={profils}/>;
         if(tryToCreateAccount) return <CreateAccount userName={userNameValue} setUserName={setUserNameValue} password={password} setPassword={setPassword} password2={password2} setPassword2={setPassword2} handleCreateAccount={handleCreateAccount} message={message} setMessage={setMessage} gotoLogin={gotoLogin} />;
         return <UserLogin userName={userNameValue} setUserName={setUserNameValue} password={password} setPassword={setPassword} handleLogin={handleLogin} message={message} gotoCreateAccount={gotoCreateAccount} />;

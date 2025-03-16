@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useContext } from 'react';
 import { getAccountDataForADay } from '../../../api/accountService';
 import { GlobalContext } from '../../../App';
+import { MESSAGES, CONSOLE, COUNT } from '../../../utils/constants';
 import './DetailModal.css';
 
 const DetailModal = ({ days, day, onClose }) => {
@@ -49,8 +50,8 @@ const DetailModal = ({ days, day, onClose }) => {
                 setDifference(data.amountDayBefore + totalPayments - data.withdraws);
                 setInputValuesToZero();
             } catch (error) {
-                setGlobalErrorMessage("Une erreur est survenue lors de la récupération des données.")
-                console.error("Error fetching account data:", error);
+                setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.DATA);
+                console.error(CONSOLE.FETCH.DATA, error);
             } finally {
                 if (currentDateRef.current !== selectedDay) return;
                 setIsLoading(false);
@@ -84,11 +85,11 @@ const DetailModal = ({ days, day, onClose }) => {
         try {
             const data = dateString.split('/');
             if (data.length !== 3) {
-                console.error("Error parsing date :", dateString);
+                console.error(CONSOLE.PARSE_DATE, dateString);
             } 
         return data[2] + '-' + data[1] + '-' + data[0];
         } catch (error) {
-            console.error("Error parsing date :", error);
+            console.error(CONSOLE.PARSE_DATE, error);
         }
     };
 
@@ -154,7 +155,7 @@ const DetailModal = ({ days, day, onClose }) => {
         let message = '';
         let className = '';
         if(!difference){
-            message = "Le compte est bon !!";
+            message = MESSAGES.SUCCESS.COUNT;
             className = 'green-label';
         }
         if(difference > 0){
@@ -172,39 +173,39 @@ const DetailModal = ({ days, day, onClose }) => {
         return (
         <div className="count-registration-section">
             <div>
-                <label className="count-registration-label">Montant des chèques : </label>
+                <label className="count-registration-label">{COUNT.CHEQUE_AMOUNT}</label>
                 <input type="number"className="count-input" name="chequeAmount" value={inputValues.chequeAmount || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Billets de 50€ : </label>
+                <label className="count-registration-label">{COUNT.FIFTY_EURO_BILLS}</label>
                 <input type="number" className="count-input" name="fiftyEuroBills" value={inputValues.fiftyEuroBills || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Billets de 20€ : </label>
+                <label className="count-registration-label">{COUNT.TWENTY_EURO_BILLS}</label>
                 <input type="number" className="count-input" name="twentyEuroBills" value={inputValues.twentyEuroBills || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Billets de 10€ : </label>
+                <label className="count-registration-label">{COUNT.TEN_EURO_BILLS}</label>
                 <input type="number" className="count-input" name="tenEuroBills" value={inputValues.tenEuroBills || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Billets de 5€ : </label>
+                <label className="count-registration-label">{COUNT.FIVE_EURO_BILLS}</label>
                 <input type="number" className="count-input" name="fiveEuroBills" value={inputValues.fiveEuroBills || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Pièces de 2€ : </label>
+                <label className="count-registration-label">{COUNT.TWO_EURO_COINS}</label>
                 <input type="number" className="count-input" name="twoEuroCoins" value={inputValues.twoEuroCoins || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Pièces de 1€ : </label>
+                <label className="count-registration-label">{COUNT.ONE_EURO_COINS}</label>
                 <input type="number" className="count-input" name="oneEuroCoins" value={inputValues.oneEuroCoins || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-label">Montant autre pièces : </label>
+                <label className="count-registration-label">{COUNT.OTHER_AMOUNT}</label>
                 <input type="number" className="count-input" name="otherAmount" value={inputValues.otherAmount || ''} onChange={handleInputChange}></input>
             </div>
             <div>
-                <label className="count-registration-total-label">Total : {total}€</label>
+                <label className="count-registration-total-label">{COUNT.TOTAL} {total}€</label>
                 {showDifference()}
             </div>
 
@@ -216,18 +217,18 @@ const DetailModal = ({ days, day, onClose }) => {
         if (payments.length === 0) {
             return (
                 <div className="detail-payments-section">
-                    <h3 className="detail-subtitle">Aucun paiment le {selectedDay}</h3>
+                    <h3 className="detail-subtitle">{COUNT.NO_PAYMENT} {selectedDay}</h3>
                 </div>
             );
         };
         return (
             <div className="detail-payments-section">
-                <h3 className="detail-subtitle">Liste des paiements :</h3>
+                <h3 className="detail-subtitle">{COUNT.PAYMENT_LIST}</h3>
                 <table className="detail-table">
                     <thead>
                         <tr>
-                            <th className="detail-th">Joueur</th>
-                            <th className="detail-th">Montant</th>
+                            <th className="detail-th">{COUNT.PLAYER}</th>
+                            <th className="detail-th">{COUNT.AMOUNT}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -260,27 +261,27 @@ const DetailModal = ({ days, day, onClose }) => {
                 </div>
                 {isLoading ? (
                     <div className="detail-summary">
-                        <div>Chargement des données du jour...</div>
+                        <div>{COUNT.LOADING}</div>
                     </div>
                 ) : (
                     <>
                         <div className="detail-summary">
                             <span className="flex-row">
-                                <p>Montant de la veille : {amountDayBefore}€</p>
-                                <p>Montant du soir : {amountDay}€</p>
+                                <p>{COUNT.AMOUNT_DAY_BEFORE} : {amountDayBefore}€</p>
+                                <p>{COUNT.AMOUNT_DAY} : {amountDay}€</p>
                             </span>
                             <span className="flex-row">
-                                <p>Retraits : {amountWithdrawn}€</p>
-                                <p>Bénéfice : {profit}€</p>
+                                <p>{COUNT.WITHDRAWAL} : {amountWithdrawn}€</p>
+                                <p>{COUNT.PROFIT} : {profit}€</p>
                             </span>
                         </div>
                         <div className="switch-container-detail">
-                            <span className="switch-label-before-detail">Afficher les paiements</span>
+                            <span className="switch-label-before-detail">{COUNT.DISPLAY_PAYMENTS}</span>
                             <label className="switch-detail">
                                 <input type="checkbox" checked={countRegister} onChange={() => setCountRegister(!countRegister)} />
                                 <span className="slider-detail round-detail"></span>
                             </label>
-                            <span className="switch-label-after-detail">Compter la caisse</span>
+                            <span className="switch-label-after-detail">{COUNT.COUNT_CASH}</span>
                         </div>
                     </>
                 )}

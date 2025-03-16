@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { updateToken } from '../../../../api/settingsService';
 import { GlobalContext } from '../../../../App';
+import { MESSAGES, LOADER, MODAL } from '../../../../utils/constants';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import './TokenModal.css';
 
@@ -17,18 +18,18 @@ const TokenModal = ({ onClose }) => {
     const changeToken = useCallback(() => {
         setMessageError('');
         if (token === '') {
-            setMessageError('Merci de rentrer votre nouveau token.');
+            setMessageError(MESSAGES.ERROR.TOKEN);
             return;
         }
         setIsLoading(true);
         updateToken(token)
             .then(() => {
-                setGlobalSuccessMessage('Token changé avec succès.');
+                setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.TOKEN);
                 onClose();
             })
             .catch((error) => {
                 console.error(error);
-                setGlobalErrorMessage("Une erreur est survenue lors du changement du token.");
+                setGlobalErrorMessage(MESSAGES.ERROR.CHANGE_TOKEN);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -50,14 +51,14 @@ const TokenModal = ({ onClose }) => {
 
     return (
         <Modal
-            title="Changer le token"
+            title={MODAL.TOKEN.TITLE}
             open={true}
             onCancel={onClose}
             footer={null} // Supprime les boutons par défaut
         >
             {/* Champ de saisie du token */}
             <Input
-                placeholder="Token"
+                placeholder={MODAL.TOKEN.PLACEHOLDER}
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 size="large"
@@ -79,10 +80,10 @@ const TokenModal = ({ onClose }) => {
                 size="large"
                 loading={isLoading}
             >
-                Changer le token
+                {MODAL.TOKEN.BUTTON}
             </Button>
 
-            {isLoading && <TransparentLoader message="Changement du token en cours..." />}
+            {isLoading && <TransparentLoader message={LOADER.CHANGE_TOKEN} />}
         </Modal>
     );
 };

@@ -4,6 +4,7 @@ import { LogoutOutlined, KeyOutlined, SyncOutlined, UserOutlined } from '@ant-de
 import { updateRole } from '../../api/userService';
 import { updateCompetitions, updateMatches } from '../../api/competitionService';
 import { GlobalContext } from '../../App';
+import { LOADER, MESSAGES, CONSOLE, MODAL, BUTTON } from '../../utils/constants';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
 import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
 import UsersModal from './Modals/UsersModal/UsersModal';
@@ -14,7 +15,7 @@ import ConfirmModal from '../ConfirmModal/ConfirmModal';
 const { Option } = Select;
 
 const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, setGlobalLoadingMessage } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, setGlobalLoadingMessage, ADMIN } = useContext(GlobalContext);
     
     const [newRole, setNewRole] = useState(role);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -35,14 +36,14 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
                 setShowAdminModal(true);
                 return;
             }
-            if (!response.token) throw new Error('Failed to connect user');
+            if (!response.token) throw new Error(CONSOLE.CONNECTION);
             
             setRole(newRole);
             localStorage.setItem('token', response.token);
-            setGlobalSuccessMessage("Le rôle a bien été modifié.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.ROLE);
         } catch (error) {
             console.error(error);
-            setGlobalErrorMessage("Une erreur est survenue lors de la modification du rôle.");
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.ROLE);
         } finally {
             setIsLoading(false);
         }
@@ -70,22 +71,22 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
     }, [showConfirm]);
 
     const handleUpdateCompetitions = async () => {
-        setGlobalLoadingMessage("La mise à jour des compétitions a démarrée.");
+        setGlobalLoadingMessage(LOADER.COMPETITIONS);
         try {
             await updateCompetitions();
-            setGlobalSuccessMessage("La liste des compétitions a bien été mise à jour.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.COMPETITIONS);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour de la liste des compétitions.");
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.COMPETITIONS);
         }
     }
 
     const handleUpdateMatches = async () => {
-        setGlobalLoadingMessage("La mise à jour des matchs a démarrée (cette opération peut prendre plusieurs minutes).");
+        setGlobalLoadingMessage(LOADER.MATCHES);
         try {
             await updateMatches();
-            setGlobalSuccessMessage("Les matchs ont bien été mis à jour.");
+            setGlobalSuccessMessage(MESSAGES.SUCCESS.UPDATE.MATCHES);
         } catch (error) {
-            setGlobalErrorMessage("Une erreur est survenue lors de la mise à jour des matchs.");
+            setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.MATCHES);
         }
     }
     
@@ -122,27 +123,27 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         </Card>
         
         {/* Section des actions administrateur */}
-        {role === 2 && (
+        {role === ADMIN && (
             <Card className="admin-actions-section">
             <Space>
             <Button icon={<SyncOutlined />} onClick={handleUpdateCompetitions}>
-            Mettre à jour la liste des compétitions
+            {BUTTON.UPDATE_COMPETITIONS}
             </Button>
             <Button icon={<SyncOutlined />} onClick={handleUpdateMatches}>
-            Mettre à jour les matchs
+            {BUTTON.UPDATE_MATCHES}
             </Button>
             </Space>
             </Card>
         )}
 
-        {role === 2 && (
+        {role === ADMIN && (
             <Card className="admin-actions-section">
             <Space>
             <Button icon={<UserOutlined  />} onClick={() => setShowUsersModal(true)}>
-            Gérer les utilisateurs
+            {BUTTON.MANAGE_USERS}
             </Button>
             <Button icon={<KeyOutlined  />} onClick={() => setShowTokenModal(true)}>
-            Changer le token de connexion
+            {BUTTON.CHANGE_TOKEN}
             </Button>
             </Space>
             </Card>
@@ -160,8 +161,8 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
 
         {showConfirm && (
             <ConfirmModal
-                title="Confirmation de déconnexion"
-                message="Voulez-vous vraiment vous déconnecter ?"
+                title={MODAL.CONFIRM.DISCONNECTION_TITLE}
+                message={MODAL.CONFIRM.DISCONNECTION}
                 onSave={confirmLogout}
                 onCancel={() => setShowConfirm(false)}
                 className="not-center-modal"
@@ -189,7 +190,7 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         )}
         
         {/* Loader */}
-        {isLoading && <TransparentLoader message="Sauvegarde du rôle..." />}
+        {isLoading && <TransparentLoader message={LOADER.ROLE} />}
         </div>
         </>
     );

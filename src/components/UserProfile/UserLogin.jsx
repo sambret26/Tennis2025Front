@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Input, Button, Space, Typography } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { DATA } from '../../utils/constants';
 
 const { Text } = Typography;
 
@@ -42,7 +43,7 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
                 <Space direction="vertical" size="middle">
                     {/* Nom d'utilisateur */}
                     <Input
-                        placeholder="Nom d'utilisateur"
+                        placeholder={DATA.USERNAME}
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
                         size="large"
@@ -51,7 +52,7 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
                     {/* Mot de passe */}
                     <Input
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Mot de passe"
+                        placeholder={DATA.PASSWORD}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         size="large"
@@ -74,9 +75,9 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
 
                     {/* Lien vers la page de création de compte */}
                     <Text className="link-text">
-                        Pas de compte ?{' '}
+                        {DATA.NO_ACCOUNT}{' '}
                         <button className="link-button" onClick={gotoCreateAccount}>
-                            Créez-en un.
+                            {DATA.CREATE_ACCOUNT}
                         </button>
                     </Text>
                 </Space>
