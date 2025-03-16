@@ -4,6 +4,7 @@ import { GlobalContext } from '../../../App';
 import { getLocaleDate } from '../../../utils/dateUtils';
 import { DATA, MESSAGES, CONSOLE, MODAL, LOADER, BUTTON } from '../../../utils/constants';
 import ConfirmModal from '../../ConfirmModal/ConfirmModal';
+import PropTypes from 'prop-types';
 import './TransactionManagementModal.css';
 
 const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderVisible }) => {
@@ -227,3 +228,9 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
 };
 
 export default TransactionManagementModal;
+
+TransactionManagementModal.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    setIsTransparentLoaderVisible: PropTypes.func.isRequired
+};

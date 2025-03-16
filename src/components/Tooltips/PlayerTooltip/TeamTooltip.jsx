@@ -1,7 +1,8 @@
 import React from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import './PlayerTooltip.css';
 import { DATA } from '../../../utils/constants';
+import PropTypes from 'prop-types';
+import './PlayerTooltip.css';
 
 const infoCircle = (className, table) => {
     if (table) {
@@ -49,3 +50,9 @@ const TeamTooltip = ({ className, team, table }) => {
 }
 
 export default TeamTooltip;
+
+TeamTooltip.propTypes = {
+    className: PropTypes.string.isRequired,
+    team: PropTypes.object.isRequired,
+    table: PropTypes.bool.isRequired
+};

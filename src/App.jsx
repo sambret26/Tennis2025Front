@@ -1,5 +1,10 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useMemo } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Ajoutez useNavigate
+import { getStartAndEndDate } from './api/competitionService';
+import { getProfils } from './api/profilsService';
+import { jwtDecode } from 'jwt-decode';
+import { message } from 'antd';
+import { ADMIN } from './utils/constants';
 import Sidebar from './components/Sidebar/Sidebar';
 import UserProfile from './components/UserProfile/UserProfile';
 import Home from './components/Home/Home';
@@ -10,12 +15,9 @@ import Account from './components/Account/Account';
 import Settings from './components/Settings/Settings';
 import Error from './components/Error/Error';
 import NotFound from './components/NotFound/NotFound';
-import { getStartAndEndDate } from './api/competitionService';
-import { getProfils } from './api/profilsService';
-import { jwtDecode } from 'jwt-decode';
-import './App.css';
 import Loader from './components/Loader/Loader';
-import { message } from 'antd';
+import './App.css';
+
 
 export const GlobalContext = createContext();
 
@@ -37,10 +39,6 @@ function App() {
   const [reload, setReload] = useState(false)
   
   const navigate = useNavigate();
-
-  const ADMIN = 2;
-  const STAFF = 1;
-  const VISITOR = 0;
   
   useEffect(() => {
     const connect = () => {
@@ -137,18 +135,31 @@ function App() {
     }
   }, [globalLoadingMessage, messageApi]);
 
-  const getRoleName = (role) => {
-    switch (role) {
-      case 0:
-        return 'Visiteur';
-      case 1:
-        return 'Staff';
-      case 2:
-        return 'Admin';
-      default:
-        return 'Inconnu';
+  const value = useMemo(() => {
+
+    const getRoleName = (role) => {
+      switch (role) {
+        case 0:
+          return 'Visiteur';
+        case 1:
+          return 'Staff';
+        case 2:
+          return 'Admin';
+        default:
+          return 'Inconnu';
+      }
+    };
+
+    return {
+      setGlobalErrorMessage,
+      setGlobalSuccessMessage,
+      setGlobalLoadingMessage,
+      role,
+      setRole,
+      getRoleName
     }
-  };
+  }, [setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole]);
+
 
   const getAppRouter = () => {
     if (isLoading) {
@@ -182,7 +193,7 @@ function App() {
   };
 
   return (
-    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole, getRoleName, ADMIN, STAFF, VISITOR }}>
+    <GlobalContext.Provider value={value}>
       {contextHolder}
       <div className="app-container">
         <Sidebar error={error} settingError={settingError} />

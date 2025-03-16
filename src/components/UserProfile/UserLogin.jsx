@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Input, Button, Space, Typography } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { DATA } from '../../utils/constants';
+import PropTypes from 'prop-types';
 
 const { Text } = Typography;
 
@@ -87,3 +88,13 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
 };
 
 export default UserLogin;
+
+UserLogin.propTypes = {
+    userName: PropTypes.string.isRequired,
+    setUserName: PropTypes.func.isRequired,
+    password: PropTypes.string.isRequired,
+    setPassword: PropTypes.func.isRequired,
+    handleLogin: PropTypes.func.isRequired,
+    message: PropTypes.string.isRequired,
+    gotoCreateAccount: PropTypes.func.isRequired
+};

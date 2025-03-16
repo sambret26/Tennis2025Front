@@ -208,7 +208,7 @@ export const LOADER = {
     TRANSACTION: "Chargement des transactions...",
     SETTINGS: "Chargement des paramètres...",
     USERS: "Chargement des utilisateurs...",
-    PLANNING: "Chargement du planning...",
+    PLANNING: "Chargement du planning du",
     FILTERS: "Chargement des filtres...",
     ACCOUNT: "Chargement des données...",
     PLAYERS: "Chargement des joueurs...",
@@ -301,3 +301,7 @@ export const BUTTON = {
     CLOSE: "Fermer",
     ADD: "Ajouter",
 }
+
+export const ADMIN = 2;
+export const STAFF = 1;
+export const VISITOR = 0;

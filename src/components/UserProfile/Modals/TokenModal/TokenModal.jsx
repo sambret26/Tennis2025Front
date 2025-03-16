@@ -4,6 +4,7 @@ import { updateToken } from '../../../../api/settingsService';
 import { GlobalContext } from '../../../../App';
 import { MESSAGES, LOADER, MODAL } from '../../../../utils/constants';
 import TransparentLoader from '../../../Loader/TransparentLoader';
+import PropTypes from 'prop-types';
 import './TokenModal.css';
 
 const { Text } = Typography;
@@ -89,3 +90,7 @@ const TokenModal = ({ onClose }) => {
 };
 
 export default TokenModal;
+
+TokenModal.propTypes = {
+    onClose: PropTypes.func.isRequired
+};

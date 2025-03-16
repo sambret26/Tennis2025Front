@@ -1,11 +1,13 @@
 import { ENV } from '../config.js';
 
-let API_URL;
+let URL;
 
 if (ENV === 'development') {
-    API_URL = 'http://localhost:5000';
+    URL = 'http://localhost:5000';
 } else {
-    API_URL = 'https://web-production-309e.up.railway.app';
+    URL = 'https://web-production-309e.up.railway.app';
 }
+
+const API_URL = URL;
 
 export { API_URL };

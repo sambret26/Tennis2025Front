@@ -6,6 +6,7 @@ import { MESSAGES, LOADER } from '../../utils/constants';
 import CreateAccount from './CreateAccount';
 import UserData from './UserData';
 import TransparentLoader from '../Loader/TransparentLoader';
+import PropTypes from 'prop-types';
 
 import './UserProfile.css';
 
@@ -127,3 +128,11 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
 };
 
 export default UserProfile;
+
+UserProfile.propTypes = {
+    username: PropTypes.string.isRequired,
+    setUsername: PropTypes.func.isRequired,
+    userId: PropTypes.number.isRequired,
+    setUserId: PropTypes.func.isRequired,
+    profils: PropTypes.array.isRequired
+};

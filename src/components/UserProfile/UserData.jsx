@@ -4,18 +4,19 @@ import { LogoutOutlined, KeyOutlined, SyncOutlined, UserOutlined } from '@ant-de
 import { updateRole } from '../../api/userService';
 import { updateCompetitions, updateMatches } from '../../api/competitionService';
 import { GlobalContext } from '../../App';
-import { LOADER, MESSAGES, CONSOLE, MODAL, BUTTON } from '../../utils/constants';
+import { LOADER, MESSAGES, CONSOLE, MODAL, BUTTON, ADMIN } from '../../utils/constants';
 import AdminConnectionModal from './Modals/AdminConnectionModal/AdminConnectionModal';
 import ChangePasswordModal from './Modals/ChangePasswordModal/ChangePasswordModal';
 import UsersModal from './Modals/UsersModal/UsersModal';
 import TokenModal from './Modals/TokenModal/TokenModal';
 import TransparentLoader from '../Loader/TransparentLoader';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import PropTypes from 'prop-types';
 
 const { Option } = Select;
 
 const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, setGlobalLoadingMessage, ADMIN } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, setGlobalLoadingMessage } = useContext(GlobalContext);
     
     const [newRole, setNewRole] = useState(role);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -197,3 +198,12 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
 };
 
 export default UserData;
+
+UserData.propTypes = {
+    userName: PropTypes.string.isRequired,
+    userId: PropTypes.number.isRequired,
+    role: PropTypes.number.isRequired,
+    setRole: PropTypes.func.isRequired,
+    handleLogout: PropTypes.func.isRequired,
+    profils: PropTypes.array.isRequired
+};

@@ -4,6 +4,7 @@ import { connectAdmin, askAccess } from '../../../../api/userService';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import { GlobalContext } from '../../../../App';
 import { MESSAGES, CONSOLE, LOADER, MODAL, DATA, BUTTON } from '../../../../utils/constants';
+import PropTypes from 'prop-types';
 import './AdminConnectionModal.css';
 
 const { Text } = Typography;
@@ -138,3 +139,10 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
 };
 
 export default AdminConnectionModal;
+
+AdminConnectionModal.propTypes = {
+    role: PropTypes.number.isRequired,
+    setRole: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    userId: PropTypes.number.isRequired
+};

@@ -3,7 +3,6 @@
 .tooltip-mail-content {
     display: flex;
     align-items: center;
-    max-width: none;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

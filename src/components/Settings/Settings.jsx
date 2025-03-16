@@ -8,6 +8,7 @@ import { MESSAGES, CONSOLE, LOADER, MODAL, DATA, COMPETITION, BUTTON } from '../
 import Loader from "../Loader/Loader";
 import TransparentLoader from "../Loader/TransparentLoader";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import PropTypes from 'prop-types';
 import './Settings.css';
 
 const { Title } = Typography;
@@ -414,3 +415,7 @@ const Settings = ({ setSettingError, setReload }) => {
 };
 
 export default Settings;
+
+Settings.propTypes = {
+  setReload: PropTypes.func.isRequired
+};

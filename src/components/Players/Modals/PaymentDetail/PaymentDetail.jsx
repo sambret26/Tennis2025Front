@@ -3,13 +3,14 @@ import { updatePlayerReductions } from '../../../../api/reductionService';
 import { updatePlayerPayments } from '../../../../api/paymentsService';
 import { getLocaleDate } from '../../../../utils/dateUtils.js';
 import { GlobalContext } from '../../../../App';
-import { MODAL, LOADER, MESSAGES, DATA, BUTTON } from '../../../../utils/constants';
+import { MODAL, LOADER, MESSAGES, DATA, BUTTON, ADMIN } from '../../../../utils/constants';
 import Loader from '../../../Loader/Loader';
 import ConfirmModal from '../../../ConfirmModal/ConfirmModal';
+import PropTypes from 'prop-types';
 import './PaymentDetail.css';
 
 const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, defaultDate  }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, ADMIN } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
     
     const getDefaultDate = () => {
         return getLocaleDate(new Date(defaultDate))
@@ -501,3 +502,12 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
 };
 
 export default PaymentDetail;
+
+PaymentDetail.propTypes = {
+    player: PropTypes.object.isRequired,
+    onClose: PropTypes.func.isRequired,
+    globalReductions: PropTypes.array.isRequired,
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired,
+    defaultDate: PropTypes.string.isRequired
+};

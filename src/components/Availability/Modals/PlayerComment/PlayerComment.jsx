@@ -2,14 +2,15 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { createOrUpdateComment } from '../../../../api/playerAvailabilityCommentService';
 import { GlobalContext } from '../../../../App';
-import { MESSAGES, CONSOLE, DATA } from '../../../../utils/constants';
+import { MESSAGES, CONSOLE, DATA, ADMIN } from '../../../../utils/constants';
+import PropTypes from 'prop-types';
 import './PlayerComment.css';
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
 const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, ADMIN } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
     
     const [commentText, setCommentText] = useState(comment?.comments || '');
     const hasComment = comment?.comments && comment.comments.trim() !== '';
@@ -103,3 +104,14 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
 };
 
 export default PlayerComment;
+
+PlayerComment.propTypes = {
+    playerId: PropTypes.string.isRequired,
+    day: PropTypes.string.isRequired,
+    comment: PropTypes.object,
+    playerName: PropTypes.string.isRequired,
+    onCommentChange: PropTypes.func,
+    isModalOpen: PropTypes.bool.isRequired,
+    setIsModalOpen: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool.isRequired
+};

@@ -4,6 +4,7 @@ import { changeUserPassword } from '../../../../api/userService';
 import { GlobalContext } from '../../../../App';
 import { MESSAGES, LOADER, MODAL } from '../../../../utils/constants';
 import TransparentLoader from '../../../Loader/TransparentLoader';
+import PropTypes from 'prop-types';
 import './ChangePasswordModal.css';
 
 const { Text } = Typography;
@@ -140,3 +141,8 @@ const ChangePasswordModal = ({ onClose, userId }) => {
 };
 
 export default ChangePasswordModal;
+
+ChangePasswordModal.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    userId: PropTypes.number.isRequired
+};

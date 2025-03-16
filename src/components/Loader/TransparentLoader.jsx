@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Loader.css';
 
 const TransparentLoader = ({ message }) => {
@@ -11,3 +12,7 @@ const TransparentLoader = ({ message }) => {
 };
 
 export default TransparentLoader;
+
+TransparentLoader.propTypes = {
+    message: PropTypes.string.isRequired
+};

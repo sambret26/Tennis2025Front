@@ -87,6 +87,5 @@
     align-items: center; /* Aligne les éléments verticalement au centre */
     width: 100%;
     flex-direction: column;
-    align-items: center;
     margin-top: 20px;
 }

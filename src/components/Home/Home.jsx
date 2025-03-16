@@ -4,15 +4,16 @@ import { getMatches, updateMatchResult, updatePlayerAvailability } from '../../a
 import { getAllPlayersAvailabilitiesForDay } from '../../api/playerAvailabilityService';
 import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
-import { DATA, MESSAGES, CONSOLE, LOADER } from '../../utils/constants';
+import { DATA, MESSAGES, CONSOLE, LOADER, ADMIN, STAFF, VISITOR } from '../../utils/constants';
 import PlayerTooltip from '../Tooltips/PlayerTooltip/PlayerTooltip';
 import TeamTooltip from '../Tooltips/PlayerTooltip/TeamTooltip';
 import AvailableTooltip from '../Tooltips/AvailableTooltip/AvailableTooltip';
+import PropTypes from 'prop-types';
 
 import './Home.css'; 
 
 const Home = ({ startDate, endDate, defaultDate }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, getRoleName, ADMIN, STAFF, VISITOR } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, role, getRoleName } = useContext(GlobalContext);
 
     const NO_ANSWER = 0;
     const UNAVAILABLE = 1;
@@ -54,7 +55,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         }
     }, [currentDate]);
 
-    useEffect(() => {
+    useEffect(() => async () => {
 
         const loadAvailabilities = async () => {
             try { return await getAllPlayersAvailabilitiesForDay(currentDate); }
@@ -78,7 +79,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         
         if (currentDate !== previousDate) {
             try {
-                initializeAll();
+                await initializeAll();
             } catch (error) {
                 setGlobalErrorMessage(MESSAGES.ERROR.GET.AVAILABILITIES);
                 console.error(CONSOLE.FETCH.AVAILABILITIES, error);
@@ -98,7 +99,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         if (role === VISITOR) return date <= defaultDate;
         if (role === STAFF) return date <= getNextDay(defaultDate);
         return true;
-    }, [role, defaultDate, STAFF, VISITOR]);
+    }, [role, defaultDate]);
     
     const handlePrevDay = useCallback(() => {
         const newDate = new Date(currentDate);
@@ -289,7 +290,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return (
             <div className="switch-container">
                 <label className="switch">
-                    <input type="checkbox" checked={viewProfile > VISITOR } onChange={() => switchViewProfile(!viewProfile)} />
+                    <input type="checkbox" checked={viewProfile > VISITOR } onChange={() => switchViewProfile()} />
                     <span className="slider round"></span>
                 </label>
                 <span className="switch-label">{getRoleName(viewProfile)}</span>
@@ -416,3 +417,9 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 };
 
 export default Home;
+
+Home.propTypes = {
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired,
+    defaultDate: PropTypes.string.isRequired
+};

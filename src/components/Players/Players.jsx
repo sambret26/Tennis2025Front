@@ -5,18 +5,19 @@ import { getPredefinedReductions } from '../../api/reductionSettingsService';
 import { updatePlayerPayments } from '../../api/paymentsService';
 import { getLocaleDate } from '../../utils/dateUtils.js';
 import { GlobalContext } from '../../App';
-import { MESSAGES, DATA, CONSOLE, LOADER, TABLE } from '../../utils/constants';
+import { MESSAGES, DATA, CONSOLE, LOADER, TABLE, ADMIN } from '../../utils/constants';
 import PaymentDetail from './Modals/PaymentDetail/PaymentDetail';
 import PlayersFilters from './PlayersFilters';
 import Loader from '../Loader/Loader';
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
+import PropTypes from 'prop-types';
 import './Players.css';
 
 const { Title } = Typography;
 const { Sider, Content } = Layout;
 
 const Players = ({ startDate, endDate, defaultDate }) => {
-    const { role, setGlobalErrorMessage, setGlobalSuccessMessage, ADMIN } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage, setGlobalSuccessMessage } = useContext(GlobalContext);
     
     const [players, setPlayers] = useState([]);
     const [filters, setFilters] = useState({
@@ -309,3 +310,9 @@ const Players = ({ startDate, endDate, defaultDate }) => {
 };
 
 export default Players;
+
+Players.propTypes = {
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired,
+    defaultDate: PropTypes.string.isRequired
+};

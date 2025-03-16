@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Modal, Input, Button, Typography } from 'antd';
 import { DATA, MESSAGES, MODAL, BUTTON } from '../../../utils/constants';
+import PropTypes from 'prop-types';
 import './ResultInputModal.css';
 
 const { Text } = Typography;
@@ -185,4 +186,10 @@ const checkScore = (score, last=false) => {
     }
     if (scoreSet[0] < '0' || scoreSet[0] > '5') return 0;
     return 2;
+};
+
+ResultInputModal.propTypes = {
+    match: PropTypes.object.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };

@@ -5,13 +5,14 @@ import { getAllPlayersAvailabilities, updatePlayerAvailability } from "../../api
 import { getAllCommentsForDay } from "../../api/playerAvailabilityCommentService";
 import { getLocaleDate } from '../../utils/dateUtils';
 import { GlobalContext } from "../../App";
-import { CONSOLE, MESSAGES, DATA } from '../../utils/constants';
+import { CONSOLE, MESSAGES, DATA, ADMIN } from '../../utils/constants';
 import PlayerComment from "./Modals/PlayerComment/PlayerComment";
 import PlayerTooltip from "../Tooltips/PlayerTooltip/PlayerTooltip";
+import PropTypes from 'prop-types';
 import './Availability.css';
 
 const Availability = ({ startDate, endDate }) => {
-    const { role, setGlobalErrorMessage, ADMIN } = useContext(GlobalContext);
+    const { role, setGlobalErrorMessage } = useContext(GlobalContext);
 
     const AVAILABLE = 0;
     const NO_ANSWER = 2;
@@ -400,3 +401,8 @@ const Availability = ({ startDate, endDate }) => {
 };
 
 export default Availability;
+
+Availability.propTypes = {
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired
+};

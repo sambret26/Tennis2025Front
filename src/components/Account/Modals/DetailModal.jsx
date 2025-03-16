@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState, useContext } from 'rea
 import { getAccountDataForADay } from '../../../api/accountService';
 import { GlobalContext } from '../../../App';
 import { MESSAGES, CONSOLE, COUNT } from '../../../utils/constants';
+import PropTypes from 'prop-types';
 import './DetailModal.css';
 
 const DetailModal = ({ days, day, onClose }) => {
@@ -53,8 +54,9 @@ const DetailModal = ({ days, day, onClose }) => {
                 setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.DATA);
                 console.error(CONSOLE.FETCH.DATA, error);
             } finally {
-                if (currentDateRef.current !== selectedDay) return;
-                setIsLoading(false);
+                if (currentDateRef.current === selectedDay) {
+                    setIsLoading(false);
+                };
             }
         };
 
@@ -293,3 +295,9 @@ const DetailModal = ({ days, day, onClose }) => {
 };
 
 export default DetailModal;
+
+DetailModal.propTypes = {
+    days: PropTypes.array.isRequired,
+    day: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired
+};

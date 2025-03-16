@@ -4,6 +4,7 @@ import { getUsers, updateUsers } from '../../../../api/userService';
 import { GlobalContext } from '../../../../App';
 import { MODAL, CONSOLE, MESSAGES, LOADER, DATA, TABLE } from '../../../../utils/constants';
 import Loader from '../../../../components/Loader/Loader';
+import PropTypes from 'prop-types';
 import './UsersModal.css';
 
 const { Option } = Select;
@@ -144,3 +145,8 @@ const UsersModal = ({ profils, onClose }) => {
 };
 
 export default UsersModal;
+
+UsersModal.propTypes = {
+    profils: PropTypes.array.isRequired,
+    onClose: PropTypes.func.isRequired
+};

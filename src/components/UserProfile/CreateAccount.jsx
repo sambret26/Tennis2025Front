@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Input, Button, Space, Typography } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 const { Text } = Typography;
 
@@ -128,3 +129,16 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
 };
 
 export default CreateAccount;
+
+CreateAccount.propTypes = {
+    userName: PropTypes.string.isRequired,
+    setUserName: PropTypes.func.isRequired,
+    password: PropTypes.string.isRequired,
+    setPassword: PropTypes.func.isRequired,
+    password2: PropTypes.string.isRequired,
+    setPassword2: PropTypes.func.isRequired,
+    handleCreateAccount: PropTypes.func.isRequired,
+    message: PropTypes.string.isRequired,
+    setMessage: PropTypes.func.isRequired,
+    gotoLogin: PropTypes.func.isRequired
+};

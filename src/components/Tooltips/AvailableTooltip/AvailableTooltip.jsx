@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import './AvailableTooltip.css';
 
 const AvailableTooltip = ({className, match, handlePlayerAvailability, AVAILABLE, UNAVAILABLE, NO_ANSWER}) => {
@@ -40,3 +41,12 @@ const AvailableTooltip = ({className, match, handlePlayerAvailability, AVAILABLE
 };
 
 export default AvailableTooltip;
+
+AvailableTooltip.propTypes = {
+    className: PropTypes.string.isRequired,
+    match: PropTypes.object.isRequired,
+    handlePlayerAvailability: PropTypes.func.isRequired,
+    AVAILABLE: PropTypes.string.isRequired,
+    UNAVAILABLE: PropTypes.string.isRequired,
+    NO_ANSWER: PropTypes.string.isRequired
+};

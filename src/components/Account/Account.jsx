@@ -7,6 +7,7 @@ import { GlobalContext } from '../../App';
 import { CONSOLE, LOADER, MESSAGES, DATA } from '../../utils/constants';
 import Loader from '../Loader/Loader';
 import TransparentLoader from '../Loader/TransparentLoader';
+import PropTypes from 'prop-types';
 import './Account.css';
 
 const { Title, Text } = Typography;
@@ -102,9 +103,9 @@ const Account = ({ startDate, endDate }) => {
             <Card className="account-card no-top-padding">
                 <div className="days-grid" style={{ gridTemplateColumns: `repeat(${getNumberOfColumns()}, 1fr)` }}>
                     {days.map((day, index) => (
-                        <div key={index} className="day-item" onClick={() => handleDayClick(day)}>
+                        <button key={index} className="day-item" onClick={() => handleDayClick(day)}>
                             {day}
-                        </div>
+                        </button>
                     ))}
                 </div>
             </Card>
@@ -131,3 +132,8 @@ const Account = ({ startDate, endDate }) => {
 };
 
 export default Account;
+
+Account.propTypes = {
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired
+};
