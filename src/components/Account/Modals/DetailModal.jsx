@@ -234,8 +234,8 @@ const DetailModal = ({ days, day, onClose }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {payments.map((payment, index) => (
-                            <tr key={index}>
+                        {payments.map((payment) => (
+                            <tr key={payment}>
                                 <td className="detail-td">{payment.playerFullName}</td>
                                 <td className="detail-td">{payment.amount}€</td>
                             </tr>

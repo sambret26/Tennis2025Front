@@ -387,7 +387,7 @@ const Availability = ({ startDate, endDate }) => {
                                         const availability = playerAvailabilityNumber ? allAvailabilities.find(availability => availability.number === playerAvailabilityNumber) : '';
                                         const displayValue = availability ? availability.value : '';
                                         return (
-                                            <td className="player-availability" key={timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
+                                            <td className="player-availability" id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
                                                 <select value={displayValue}
                                                     onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
                                                     disabled={role !== ADMIN}

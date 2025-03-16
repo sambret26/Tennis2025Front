@@ -356,8 +356,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             <table className="schedule-table">
                 {scheduleHeaders()}
                 <tbody>
-                    {schedule.map((match, index) => (
-                        <tr className={getMatchClassName(match)} key={index}>
+                    {schedule.map((match) => (
+                        <tr className={getMatchClassName(match)} key={match}>
                             <td className="schedule-col-hour">{match.hour}</td>
                             {getCourt(match.court)}
                             <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{match.player1.fullName} ({match.player1.ranking})</td>
