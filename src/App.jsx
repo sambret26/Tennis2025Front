@@ -133,6 +133,19 @@ function App() {
     }
   }, [globalLoadingMessage, messageApi]);
 
+  const getRoleName = (role) => {
+    switch (role) {
+      case 0:
+        return 'Visiteur';
+      case 1:
+        return 'Staff';
+      case 2:
+        return 'Admin';
+      default:
+        return 'Inconnu';
+    }
+  };
+
   const getAppRouter = () => {
     if (isLoading) {
       return <Loader message="Chargement de l'application..." />;
@@ -165,7 +178,7 @@ function App() {
   };
 
   return (
-    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole }}>
+    <GlobalContext.Provider value={{ setGlobalErrorMessage, setGlobalSuccessMessage, setGlobalLoadingMessage, role, setRole, getRoleName }}>
       {contextHolder}
       <div className="app-container">
         <Sidebar error={error} settingError={settingError} />

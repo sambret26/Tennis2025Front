@@ -73,32 +73,44 @@
     width: 13%
 }
 
-.schedule-col-court {
+.schedule-col-court-0 {
+    width: 0%
+}
+
+.schedule-col-court-8 {
     width: 8%
 }
 
-.schedule-actions {
-    width: 1%;
-}
-
-.schedule-col-player-admin {
-    /*text-align: left !important;*/
+.schedule-col-player-19 {
     padding-left: 10px !important;
     width: 19%
 }
 
-.schedule-col-player-no-admin {
+.schedule-col-player-22 {
+    padding-left: 10px !important;
+    width: 22%
+}
+
+.schedule-col-player-28 {
     /*text-align: left !important;*/
     padding-left: 10px !important;
-    width: 26%
+    width: 28%
 }
 
 .info-circle {
     width: 2%
 }
 
-.schedule-col-result {
+.schedule-actions {
+    width: 1%;
+}
+
+.schedule-col-result-25 {
     width: 25%
+}
+
+.schedule-col-result-31 {
+    width: 31%
 }
 
 .schedule-col-edit {

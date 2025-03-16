@@ -8,25 +8,12 @@ import './AdminConnectionModal.css';
 const { Text } = Typography;
 
 const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
-    const { setGlobalSuccessMessage, setGlobalErrorMessage } = useContext(GlobalContext);
+    const { setGlobalSuccessMessage, setGlobalErrorMessage, getRoleName } = useContext(GlobalContext);
 
     const [messageError, setMessageError] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState('');
-
-    const getRoleName = (role) => {
-        switch (role) {
-            case 0:
-                return 'Visiteur';
-            case 1:
-                return 'Staff';
-            case 2:
-                return 'Admin';
-            default:
-                return 'Inconnu';
-        }
-    };
 
     const adminConnection = useCallback(() => {
         setMessageError('');
