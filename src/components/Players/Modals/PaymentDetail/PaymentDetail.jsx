@@ -404,7 +404,7 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         </thead>
                         <tbody>
                             {payments.map((payment, index) => (
-                                <tr key={index}>
+                                <tr key={payment}>
                                 <td className="payment-td">{payment.isFullPayment ? DATA.PAYMENT_FINAL : DATA.PAYMENT_PARTIAL}</td>
                                 <td className="payment-td">{formatDate(payment.date)}</td>
                                 <td className="payment-td">{payment.amount}€</td>
@@ -451,8 +451,8 @@ const PaymentDetail = ({ player, onClose, globalReductions, startDate, endDate, 
                         <tbody>
                             {reductions
                                 .filter(reduction => reduction.default === 0)
-                                .map((reduction, index) => (
-                                <tr key={index}>
+                                .map((reduction) => (
+                                <tr key={reduction}>
                                     <td>{reduction.reason}</td>
                                     <td>{reduction.amount}€</td>
                                 {deleteReductionButton(reduction)}

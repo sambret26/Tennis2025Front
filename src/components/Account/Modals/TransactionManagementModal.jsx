@@ -145,7 +145,7 @@ const TransactionManagementModal = ({ onClose, onChange, setIsTransparentLoaderV
                 </thead>
                 <tbody>
                     {transactions.map((transaction, index) => (
-                        <tr key={index}>
+                        <tr key={transaction}>
                             <td className="transaction-td">{transaction.type === 1 ? DATA.DEPOSIT : DATA.WITHDRAWAL}</td>
                             <td className="transaction-td">{formatDate(transaction.date)}</td>
                             <td className="transaction-td">{transaction.amount}€</td>
