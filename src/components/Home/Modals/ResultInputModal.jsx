@@ -151,40 +151,43 @@ const scoreOk = (score) => {
     return checkScore(sets[2], true) !== 0;
 };
 
-const checkScore = (score, last=false) => {
-    let scoreSet;
-    let tieBreak;
-    if (score.includes('(')) {
-        scoreSet = score.split('(')[0].split('/');
-        tieBreak = true;
-    } else {
-        scoreSet = score.split('/');
-        tieBreak = false;
-    }
-    if (last && (parseInt(scoreSet[0]) >= 10 || parseInt(scoreSet[1]) >= 10)) return 1
-    if (scoreSet[0] === '7') {
-        if (scoreSet[1] === '5') {
-            if (tieBreak) return 0;
-            return 1;
-        }
-        if (scoreSet[1] === '6') return 1;
-        return 0;
-    }
-    if (scoreSet[1] === '7') {
-        if (scoreSet[0] === '5') {
-            if (tieBreak) return 0;
-            return 2;
-        }
-        if (scoreSet[0] === '6') return 2;
-        return 0;
-    }
+const parseScore = (score) => {
+    const tieBreak = score.includes('(');
+    const scoreSet = tieBreak ? score.split('(')[0].split('/') : score.split('/');
+    return { scoreSet, tieBreak };
+};
+
+const isValidScore = (score) => {
+    return score >= 0 && score <= 7;
+};
+
+const checkWinningConditions = (scoreSet, tieBreak, last) => {
+    if (last && (parseInt(scoreSet[0]) >= 10 || parseInt(scoreSet[1]) >= 10)) return 1;
+
+    if (scoreSet[0] === '7' && scoreSet[1] === '5') return tieBreak ? 0 : 1;
+    if (scoreSet[0] === '7' && scoreSet[1] === '6') return 1;
+    if (scoreSet[1] === '7' && scoreSet[0] === '5') return tieBreak ? 0 : 2;
+    if (scoreSet[1] === '7' && scoreSet[0] === '6') return 2;
+
+    return null; // No winner yet
+};
+
+const checkScore = (score, last = false) => {
+    const { scoreSet, tieBreak } = parseScore(score);
+
+    const winningCondition = checkWinningConditions(scoreSet, tieBreak, last);
+    if (winningCondition !== null) return winningCondition;
+
     if (tieBreak) return 0;
+
     if (scoreSet[0] !== '6' && scoreSet[1] !== '6') return 0;
+
     if (scoreSet[0] === '6') {
-        if (scoreSet[1] < '0' || scoreSet[1] > '5') return 0;
+        if (!isValidScore(scoreSet[1])) return 0;
         return 1;
     }
-    if (scoreSet[0] < '0' || scoreSet[0] > '5') return 0;
+
+    if (!isValidScore(scoreSet[0])) return 0;
     return 2;
 };
 

@@ -214,11 +214,20 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         if (timeSlot === undefined || timeSlot === null) return 'black-row';
         for (const availability of allAvailabilities) {
             if (availability.playerId === playerId && availability.timeSlot === timeSlot) {
-                if (availability.available === 0) return 'violet-row'; //Available
-                if (availability.available === 1) return 'blue-row'; // Probably available
-                if (availability.available === 2) return 'black-row'; // No answer
-                if (availability.available === 3) return 'yellow-row'; // Probably unavailable
-                if (availability.available === 4) return 'orange-row'; // Unavailable
+                switch (availability.available) {
+                    case 0:
+                        return 'violet-row'; //Available
+                    case 1:
+                        return 'blue-row'; // Probably available
+                    case 2:
+                        return 'black-row'; // No answer
+                    case 3:
+                        return 'yellow-row'; // Probably unavailable
+                    case 4:
+                        return 'orange-row'; // Unavailable
+                    default:
+                        break;
+                }
             }
         }
         return 'black-row';
