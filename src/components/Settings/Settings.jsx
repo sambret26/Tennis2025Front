@@ -417,5 +417,6 @@ const Settings = ({ setSettingError, setReload }) => {
 export default Settings;
 
 Settings.propTypes = {
+  setSettingError: PropTypes.func.isRequired,
   setReload: PropTypes.func.isRequired
 };

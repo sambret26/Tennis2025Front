@@ -105,7 +105,13 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
                         onChange={(e) => setPassword2(e.target.value)}
                         size="large"
                         suffix={
-                            <span onClick={() => setShowPassword2(!showPassword2)} className="password-toggle">
+                            <span
+                                onClick={() => setShowPassword2(!showPassword2)}
+                                className="password-toggle"
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter') setShowPassword2(!showPassword2) }}
+                            >
                                 {showPassword2 ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             </span>
                         }
