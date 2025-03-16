@@ -92,7 +92,6 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
     }
     
     return (
-        <>
         <div className="user-profile-container">
         {/* En-tête */}
         <Card className="user-profile-header">
@@ -193,7 +192,6 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         {/* Loader */}
         {isLoading && <TransparentLoader message={LOADER.ROLE} />}
         </div>
-        </>
     );
 };
 

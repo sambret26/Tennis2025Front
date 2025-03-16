@@ -30,27 +30,21 @@ const AvailableTooltip = ({className, match, handlePlayerAvailability, AVAILABLE
             placement="top"
             overlay={
                 <Tooltip id="tooltip">
-                    <span 
-                        className="schedule-available-player" 
+                    <button 
+                        className="schedule-available-player not-a-button" 
                         onClick={() => handlePlayerAvailability(match, AVAILABLE)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, AVAILABLE) }}
-                    >&#10003;</span>
-                    <span 
-                        className="schedule-question-player" 
+                    >&#10003;
+                    </button>
+                    <button 
+                        className="schedule-question-player not-a-button" 
                         onClick={() => handlePlayerAvailability(match, NO_ANSWER)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, NO_ANSWER) }}
-                    >&#63;</span>
-                    <span 
-                        className="schedule-unavailable-player" 
+                    >&#63;
+                    </button>
+                    <button 
+                        className="schedule-unavailable-player not-a-button" 
                         onClick={() => handlePlayerAvailability(match, UNAVAILABLE)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, UNAVAILABLE) }}
-                    >&#10060;</span>
+                    >&#10060;
+                    </button>
                 </Tooltip>}
           >
             <td className={`bi bi-check-circle schedule-actions ${className}`} onClick={toogleTooltip} ref={buttonRef}></td>

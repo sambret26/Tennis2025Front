@@ -9,7 +9,7 @@ import './PlayerComment.css';
 const { TextArea } = Input;
 const { Text } = Typography;
 
-const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, isModalOpen, setIsModalOpen, isLoading }) => {
+const PlayerComment = ({ player, day, comment, onCommentChange, isModalOpen, isLoading, setSelectedPlayerId }) => {
     const { setGlobalSuccessMessage, setGlobalErrorMessage, role } = useContext(GlobalContext);
     
     const [commentText, setCommentText] = useState(comment?.comments || '');
@@ -17,8 +17,8 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
 
     const handleCancel = useCallback(() => {
         setCommentText(comment?.comments || '');
-        setIsModalOpen(false);
-    }, [comment?.comments, setIsModalOpen]);
+        setSelectedPlayerId(null);
+    }, [comment?.comments, setSelectedPlayerId]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -35,9 +35,9 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
 
     const handleSave = async () => {
         try {
-            setIsModalOpen(false);
+            setSelectedPlayerId(null);
             await createOrUpdateComment({
-                playerId,
+                playerId: player.id,
                 day,
                 comments: commentText.trim(),
             });
@@ -61,22 +61,28 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
         }
     };
 
+    const getClassName = () => {
+        if (isLoading) return 'message-icon not-a-button';
+        return `message-icon not-a-button ${hasComment ? 'has-comment' : ''}`;
+    };
+
+    const getValue = () => {
+        if (isLoading) return '';
+        return hasComment ? '💬' : '✉️';
+    };
+
     return (
         <>
-            <span
-                className={`message-icon ${isLoading ? '' : hasComment ? 'has-comment' : ''}`}
-                onClick={() => setIsModalOpen(true)}
+            <button
+                className={getClassName()}
+                onClick={() => setSelectedPlayerId(player.id)}
                 title={hasComment ? DATA.PLAYER_COMMENT_UPDATE : DATA.PLAYER_COMMENT_ADD}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter') setIsModalOpen(true) }}
             >
-                {isLoading ? '' : hasComment ? '💬' : '✉️'}
-            </span>
+                {getValue()}
+            </button>
 
-            {/*TODO : Passage en confirmationModal (/!\ Sauvegarder et non confirmer)*/}
             <Modal
-                title={<Text >Message pour {playerName} le {getFormattedDay()}</Text>}
+                title={<Text >Message pour {player.fullName} le {getFormattedDay()}</Text>}
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={
@@ -109,12 +115,11 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
 export default PlayerComment;
 
 PlayerComment.propTypes = {
-    playerId: PropTypes.string.isRequired,
+    player: PropTypes.object.isRequired,
     day: PropTypes.string.isRequired,
     comment: PropTypes.object,
-    playerName: PropTypes.string.isRequired,
     onCommentChange: PropTypes.func,
     isModalOpen: PropTypes.bool.isRequired,
-    setIsModalOpen: PropTypes.func.isRequired,
-    isLoading: PropTypes.bool.isRequired
+    isLoading: PropTypes.bool.isRequired,
+    setSelectedPlayerId: PropTypes.func.isRequired
 };

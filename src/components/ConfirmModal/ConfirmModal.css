@@ -8,7 +8,7 @@
     border-bottom: 1px solid #d9d9d9; /* Bordure inférieure */
 }
 
-.ant-typography {
+.ant-modal .ant-typography {
     text-align: center;
     font-weight: bold; /* Titre en gras */
     font-size: 1.5rem; /* Taille du titre */

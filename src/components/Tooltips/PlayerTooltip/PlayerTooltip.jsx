@@ -19,15 +19,15 @@ const PlayerTooltip = ({ className, player, table }) => {
                 <Tooltip>
                     <div className="tooltip-club-content">
                         <div className="bi bi-house tooltip-icon"></div>
-                        <div>{player && player.club ? player.club : DATA.NC}</div>
+                        <div>{player?.club || DATA.NC}</div>
                     </div>
                     <div className="tooltip-phone-content">
                         <div className="bi bi-telephone tooltip-icon"></div>
-                        <div>{player && player.phoneNumber ? player.phoneNumber : DATA.NC}</div>
+                        <div>{player?.phoneNumber || DATA.NC}</div>
                     </div>
                     <div className="tooltip-mail-content">
                         <div className="bi bi-envelope tooltip-icon"></div>
-                        <div>{player && player.email ? player.email : DATA.NC}</div>
+                        <div>{player?.email || DATA.NC}</div>
                     </div>
                 </Tooltip>
             }

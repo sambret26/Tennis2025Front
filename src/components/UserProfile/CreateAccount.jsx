@@ -85,15 +85,12 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
                         onChange={(e) => setPassword(e.target.value)}
                         size="large"
                         suffix={
-                            <span 
+                            <button 
                                 onClick={() => setShowPassword(!showPassword)} 
-                                className="password-toggle"
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter') setShowPassword(!showPassword) }}
+                                className="password-toggle not-a-button"
                             >
                                 {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                            </span>
+                            </button>
                         }
                     />
 
@@ -105,15 +102,12 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
                         onChange={(e) => setPassword2(e.target.value)}
                         size="large"
                         suffix={
-                            <span
+                            <button
                                 onClick={() => setShowPassword2(!showPassword2)}
-                                className="password-toggle"
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter') setShowPassword2(!showPassword2) }}
+                                className="password-toggle not-a-button"
                             >
                                 {showPassword2 ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                            </span>
+                            </button>
                         }
                     />
 

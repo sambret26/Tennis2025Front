@@ -19,8 +19,8 @@ const Account = ({ startDate, endDate }) => {
     const [amountInCash, setAmountInCash] = useState(0);
     const [profit, setProfit] = useState(0);
     const [withdrawn, setWithdrawn] = useState(0);
-    const [isDetailModalOpen, setDetailModalOpen] = useState(false);
-    const [isTransactionManagementModalOpen, setTransactionManagementModalOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isTransactionManagementModalOpen, setIsTransactionManagementModalOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState('');
     const [reload, setReload] = useState(false);
     const [days, setDays] = useState([]);
@@ -68,15 +68,15 @@ const Account = ({ startDate, endDate }) => {
 
     const handleDayClick = (day) => {
         setSelectedDay(day);
-        setDetailModalOpen(true);
+        setIsDetailModalOpen(true);
     };
 
     const handleManageTransactions = () => {
-        setTransactionManagementModalOpen(true);
+        setIsTransactionManagementModalOpen(true);
     };
 
-    const closeDetailModal = () => setDetailModalOpen(false);
-    const closeTransactionManagementModal = () => setTransactionManagementModalOpen(false);
+    const closeDetailModal = () => setIsDetailModalOpen(false);
+    const closeTransactionManagementModal = () => setIsTransactionManagementModalOpen(false);
 
     // Calcul du nombre de colonnes nécessaires
     const getNumberOfColumns = () => {

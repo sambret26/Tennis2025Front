@@ -57,12 +57,14 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     useEffect(() => {
         const loadAvailabilities = async () => {
-            try { return await getAllPlayersAvailabilitiesForDay(currentDate); }
+            const formattedDate = getLocaleDate(currentDate);
+            try { return await getAllPlayersAvailabilitiesForDay(formattedDate); }
             catch (error) { console.error(CONSOLE.FETCH.AVAILABILITIES, error); }
         };
 
         const fetchMatches = async () => {
-            try { return await getMatches(currentDate); }
+            const formattedDate = getLocaleDate(currentDate);
+            try { return await getMatches(formattedDate); }
             catch (error) { console.error(CONSOLE.FETCH.MATCHES, error); }
         };
 

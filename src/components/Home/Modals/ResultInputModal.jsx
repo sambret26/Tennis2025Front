@@ -7,8 +7,16 @@ import './ResultInputModal.css';
 const { Text } = Typography;
 
 const ResultInputModal = ({ match, onClose, onSave }) => {
+
+    const getDisplayScore = useCallback(() => {
+        if (match.winner) {
+            return match.score ? match.score : '';
+        }
+        return DATA.SELECT_WINNER;
+    }, [match]);
+
     const [selectedPlayer, setSelectedPlayer] = useState(match.winner ? match.winnerId : null);
-    const [displayScore, setDisplayScore] = useState(match.winner ? (match.score ? match.score : '') : DATA.SELECT_WINNER);
+    const [displayScore, setDisplayScore] = useState(getDisplayScore());
     const [score, setScore] = useState(match.score || '');
     const [errorMessage, setErrorMessage] = useState('Error');
     const [errorColor, setErrorColor] = useState('');
@@ -50,7 +58,7 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
     useEffect(() => {
         if (match) {
             setSelectedPlayer(match.winner ? match.winnerId : null);
-            setDisplayScore(match.winner ? (match.score ? match.score : '') : DATA.SELECT_WINNER);
+            setDisplayScore(getDisplayScore());
             setScore(match.score);
         }
 
@@ -64,11 +72,16 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [match, handleSave]);
+    }, [match, handleSave, getDisplayScore]);
 
     const handleRadioChange = (playerId) => {
-        setSelectedPlayer(selectedPlayer === playerId ? null : playerId);
-        setDisplayScore(selectedPlayer === playerId ? '' : score ? score : '')
+        if (selectedPlayer === playerId) {
+            setSelectedPlayer(null);
+            setDisplayScore('');
+            return;
+        }
+        setSelectedPlayer(playerId);
+        setDisplayScore(score || '');
     };
 
     const setBothScore = (value) => {
@@ -145,8 +158,7 @@ const scoreOk = (score) => {
     let winnerSet2 = checkScore(sets[1]);
     if (!winnerSet2) return false;
     if (winnerSet1 === winnerSet2) {
-        if (sets.length === 2) return true;
-        return false;
+        return sets.length === 2;
     }
     if (sets.length !== 3) return false;
     return checkScore(sets[2], true) !== 0;

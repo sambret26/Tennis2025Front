@@ -18,7 +18,7 @@ const Availability = ({ startDate, endDate }) => {
     const NO_ANSWER = 2;
     const UNAVAILABLE = 4;
 
-    const [tournamentDates, setTournamentDate] = useState({});
+    const [tournamentDates, setTournamentDates] = useState({});
     const [currentDate, setCurrentDate] = useState(null);
     const [allAvailabilities, setAllAvailabilities] = useState([]);
     const [allPlayers, setAllPlayers] = useState([]);
@@ -27,8 +27,8 @@ const Availability = ({ startDate, endDate }) => {
     const [isWeekend, setIsWeekend] = useState(false);
     const [playerInput, setPlayerInput] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
+    const [selectedPlayerId, setSelectedPlayerId] = useState(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [isPlayerCommentModalOpen, setPlayerCommentModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -37,7 +37,7 @@ const Availability = ({ startDate, endDate }) => {
                 const startDay = noHourDate(startDate);
                 const endDay = noHourDate(endDate);
                 const today = noHourDate();
-                setTournamentDate({'startDate' : startDay, 'endDate' : endDay});
+                setTournamentDates({'startDate' : startDay, 'endDate' : endDay});
                 if(today < startDay) setCurrentDate(startDay);
                 else if (today > endDay) setCurrentDate(endDay);
                 else setCurrentDate(today);
@@ -133,23 +133,23 @@ const Availability = ({ startDate, endDate }) => {
 
     useEffect(() => {
         const handlekeyPress = (event) => {
-            if(event.key === 'ArrowLeft' && !isPlayerCommentModalOpen) handlePrevDay();
-            else if (event.key === 'ArrowRight' && !isPlayerCommentModalOpen) handleNextDay();
+            if(event.key === 'ArrowLeft' && !selectedPlayerId) handlePrevDay();
+            else if (event.key === 'ArrowRight' && !selectedPlayerId) handleNextDay();
         };
         window.addEventListener('keydown', handlekeyPress);
         return () => {
             window.removeEventListener('keydown', handlekeyPress);
         };
-    }, [handleNextDay, handlePrevDay, isPlayerCommentModalOpen]);
+    }, [handleNextDay, handlePrevDay, selectedPlayerId]);
 
     const handleInputChange = (e) => {
         setPlayerInput(e.target.value);
     };
 
-    const handleSelectPlayer = (player) => {
+    const handleSelectPlayer = (playerId) => {
         setPlayerInput('');
-        if(!selectedPlayers.includes(player.id)) {
-            setSelectedPlayers([...selectedPlayers, player.id]);
+        if(!selectedPlayers.includes(playerId)) {
+            setSelectedPlayers([...selectedPlayers, playerId]);
         }
     }
 
@@ -173,16 +173,12 @@ const Availability = ({ startDate, endDate }) => {
             return 0;
         });
         return (
-            <div id="suggestionList" className="suggestion-list">
+            <div id="suggestionList" className="suggestion-list" >
                 {filteredPlayers.map(player => (
-                    <div 
-                        key={player.id} 
-                        onClick={() => handleSelectPlayer(player)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleSelectPlayer(player) }}
-                    >
-                        {player.fullName}
+                    <div key={player.id}>
+                        <button className="not-a-button" onClick={() => handleSelectPlayer(player.id)}>
+                            {player.fullName}
+                        </button>
                     </div>
                 ))}
             </div>
@@ -365,21 +361,20 @@ const Availability = ({ startDate, endDate }) => {
                                 availability.day === formattedDate(currentDate)
                             );
                             return (
-                                <tr key={playerId}>
+                                <tr key={player.id}>
                                     <td className="player-remove" onClick={() => handleRemovePlayer(playerId)}>&#10060;</td>
                                     <td className="player-comment">
                                         <PlayerComment
-                                            playerId={playerId}
+                                            player={player}
                                             day={formattedDate(currentDate)}
                                             comment={playerComments[playerId]}
                                             onCommentChange={handleCommentChange}
-                                            playerName={player ? player.fullName : ''}
-                                            isModalOpen={isPlayerCommentModalOpen}
-                                            setIsModalOpen={setPlayerCommentModalOpen}
+                                            isModalOpen={playerId === selectedPlayerId}
                                             isLoading={isLoading}
+                                            setSelectedPlayerId={setSelectedPlayerId}
                                         />
                                     </td>
-                                    <td className="player-name-availability">{player ? player.fullName : ''}</td>
+                                    <td className="player-name-availability">{player?.fullName || ''}</td>
                                     {role === ADMIN && <PlayerTooltip className="" player={player} table={true} />}
                                     {Array.from({length: 3}).map((_, timeSlotIndex) => {
                                         const playerAvailability = playerAvailabilities.find(availability => availability.timeSlot === timeSlotIndex);
@@ -387,7 +382,7 @@ const Availability = ({ startDate, endDate }) => {
                                         const availability = playerAvailabilityNumber ? allAvailabilities.find(availability => availability.number === playerAvailabilityNumber) : '';
                                         const displayValue = availability ? availability.value : '';
                                         return (
-                                            <td className="player-availability" id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
+                                            <td className="player-availability" key={player?.id+timeSlotIndex} id={`availability-${playerId}-${formattedDate(currentDate)}-${timeSlotIndex}`}>
                                                 <select value={displayValue}
                                                     onChange={(e) => handleAvailability(playerId, timeSlotIndex, e.target.value)}
                                                     disabled={role !== ADMIN}
