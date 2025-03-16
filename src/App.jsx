@@ -13,7 +13,7 @@ import Availability from './components/Availability/Availability';
 import Players from './components/Players/Players';
 import Account from './components/Account/Account';
 import Settings from './components/Settings/Settings';
-import Error from './components/Error/Error';
+import ErrorPage from './components/Error/Error';
 import NotFound from './components/NotFound/NotFound';
 import Loader from './components/Loader/Loader';
 import './App.css';
@@ -166,7 +166,7 @@ function App() {
       return <Loader message="Chargement de l'application..." />;
     }
     if (error) {
-      return <Error />;
+      return <ErrorPage />;
     }
     if (settingError) {
       return (
@@ -186,7 +186,7 @@ function App() {
         <Route path="/players" element={<Players startDate={startDate} endDate={endDate} defaultDate={defaultDate} />} />
         <Route path="/account" element={<Account startDate={startDate} endDate={endDate} />} />
         <Route path="/settings" element={<Settings setSettingError={setSettingError} setReload={setReload} />} />
-        <Route path="/error" element={<Error />} />
+        <Route path="/error" element={<ErrorPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     )

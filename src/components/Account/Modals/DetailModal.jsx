@@ -56,7 +56,7 @@ const DetailModal = ({ days, day, onClose }) => {
             } finally {
                 if (currentDateRef.current === selectedDay) {
                     setIsLoading(false);
-                };
+                }
             }
         };
 
@@ -282,6 +282,7 @@ const DetailModal = ({ days, day, onClose }) => {
                             <label className="switch-detail">
                                 <input type="checkbox" checked={countRegister} onChange={() => setCountRegister(!countRegister)} />
                                 <span className="slider-detail round-detail"></span>
+                                <span className="visually-hidden">" "</span>
                             </label>
                             <span className="switch-label-after-detail">{COUNT.COUNT_CASH}</span>
                         </div>

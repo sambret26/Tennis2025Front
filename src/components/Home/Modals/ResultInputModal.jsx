@@ -104,7 +104,8 @@ const ResultInputModal = ({ match, onClose, onSave }) => {
                     onClick={() => handleRadioChange(match.player1Id)}
                     onChange={()=> {}}
                 />
-                <label>VS</label>
+                <label htmlFor="vs">{DATA.VS}</label>
+                <input className='visually-hidden' id="vs" type="radio" />
                 <input
                     type="radio"
                     id={`player2-${match.id}`}

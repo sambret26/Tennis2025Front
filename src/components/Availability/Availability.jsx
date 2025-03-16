@@ -175,7 +175,13 @@ const Availability = ({ startDate, endDate }) => {
         return (
             <div id="suggestionList" className="suggestion-list">
                 {filteredPlayers.map(player => (
-                    <div key={player.id} onClick={() => handleSelectPlayer(player)}>
+                    <div 
+                        key={player.id} 
+                        onClick={() => handleSelectPlayer(player)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSelectPlayer(player) }}
+                    >
                         {player.fullName}
                     </div>
                 ))}
@@ -303,8 +309,14 @@ const Availability = ({ startDate, endDate }) => {
         if (role !== ADMIN) return <td></td>
         return (
             <td className="availability-actions">
-                <span className="available-player" onClick={() => handleDayAvailability(playerId, AVAILABLE)}>&#10003;</span>
-                <span className="unavailable-player" onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}>&#10060;</span>
+                <button 
+                    className="available-player not-a-button" 
+                    onClick={() => handleDayAvailability(playerId, AVAILABLE)}
+                >&#10003;</button>
+                <button 
+                    className="unavailable-player not-a-button" 
+                    onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}
+                >&#10060;</button>
             </td>
         )
     }

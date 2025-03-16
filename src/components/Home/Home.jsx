@@ -55,8 +55,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         }
     }, [currentDate]);
 
-    useEffect(() => async () => {
-
+    useEffect(() => {
         const loadAvailabilities = async () => {
             try { return await getAllPlayersAvailabilitiesForDay(currentDate); }
             catch (error) { console.error(CONSOLE.FETCH.AVAILABILITIES, error); }
@@ -78,12 +77,11 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         };
         
         if (currentDate !== previousDate) {
-            try {
-                await initializeAll();
-            } catch (error) {
-                setGlobalErrorMessage(MESSAGES.ERROR.GET.AVAILABILITIES);
-                console.error(CONSOLE.FETCH.AVAILABILITIES, error);
-            }
+            initializeAll()
+                .catch(error => {
+                    setGlobalErrorMessage(MESSAGES.ERROR.GET.AVAILABILITIES);
+                    console.error(CONSOLE.FETCH.AVAILABILITIES, error);
+                });
             setPreviousDate(currentDate);
             currentDateRef.current = currentDate;
         }
@@ -301,6 +299,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 <label className="switch">
                     <input type="checkbox" checked={viewProfile > VISITOR } onChange={() => switchViewProfile()} />
                     <span className="slider round"></span>
+                    <span className="visually-hidden">""</span>
                 </label>
                 <span className="switch-label">{getRoleName(viewProfile)}</span>
             </div>

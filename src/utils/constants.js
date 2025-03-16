@@ -155,6 +155,7 @@ export const DATA = {
     REASON: "Motif",
     BENEFIT: "Bénéfice",
     WITHDRAWN: "Retiré",
+    VS: "VS",
     NC: "NC"
 }
 

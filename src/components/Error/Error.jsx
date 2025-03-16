@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MESSAGES, BUTTON } from '../../utils/constants';
 import './Error.css'; // Assurez-vous de créer ce fichier CSS pour styliser la page
 
-const Error = () => {
+const ErrorPage = () => {
   const navigate = useNavigate();
 
   const handleRetry = () => {
@@ -28,4 +28,4 @@ const Error = () => {
   );
 };
 
-export default Error;
+export default ErrorPage;

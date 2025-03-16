@@ -67,6 +67,9 @@ const PlayerComment = ({ playerId, day, comment, onCommentChange, playerName, is
                 className={`message-icon ${isLoading ? '' : hasComment ? 'has-comment' : ''}`}
                 onClick={() => setIsModalOpen(true)}
                 title={hasComment ? DATA.PLAYER_COMMENT_UPDATE : DATA.PLAYER_COMMENT_ADD}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') setIsModalOpen(true) }}
             >
                 {isLoading ? '' : hasComment ? '💬' : '✉️'}
             </span>

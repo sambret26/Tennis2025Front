@@ -30,9 +30,27 @@ const AvailableTooltip = ({className, match, handlePlayerAvailability, AVAILABLE
             placement="top"
             overlay={
                 <Tooltip id="tooltip">
-                    <span className="schedule-available-player" onClick={() => handlePlayerAvailability(match, AVAILABLE)}>&#10003;</span>
-                    <span className="schedule-question-player" onClick={() => handlePlayerAvailability(match, NO_ANSWER)}>&#63;</span>
-                    <span className="schedule-unavailable-player" onClick={() => handlePlayerAvailability(match, UNAVAILABLE)}>&#10060;</span>
+                    <span 
+                        className="schedule-available-player" 
+                        onClick={() => handlePlayerAvailability(match, AVAILABLE)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, AVAILABLE) }}
+                    >&#10003;</span>
+                    <span 
+                        className="schedule-question-player" 
+                        onClick={() => handlePlayerAvailability(match, NO_ANSWER)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, NO_ANSWER) }}
+                    >&#63;</span>
+                    <span 
+                        className="schedule-unavailable-player" 
+                        onClick={() => handlePlayerAvailability(match, UNAVAILABLE)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handlePlayerAvailability(match, UNAVAILABLE) }}
+                    >&#10060;</span>
                 </Tooltip>}
           >
             <td className={`bi bi-check-circle schedule-actions ${className}`} onClick={toogleTooltip} ref={buttonRef}></td>

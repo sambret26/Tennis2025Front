@@ -47,7 +47,7 @@ const Account = ({ startDate, endDate }) => {
                 const startDay = noHourDate(startDate);
                 const endDay = noHourDate(endDate);
                 const days = [];
-                for (let dt = startDay; dt <= endDay; dt.setDate(dt.getDate() + 1)) {
+                for (let dt = new Date(startDay); dt <= new Date(endDay); dt.setDate(dt.getDate() + 1)) {
                     days.push(new Date(dt).toLocaleDateString());
                 }
                 setDays(days);
@@ -102,8 +102,8 @@ const Account = ({ startDate, endDate }) => {
             {/* Liste des jours */}
             <Card className="account-card no-top-padding">
                 <div className="days-grid" style={{ gridTemplateColumns: `repeat(${getNumberOfColumns()}, 1fr)` }}>
-                    {days.map((day, index) => (
-                        <button key={index} className="day-item" onClick={() => handleDayClick(day)}>
+                    {days.map((day) => (
+                        <button key={day} className="day-item" onClick={() => handleDayClick(day)}>
                             {day}
                         </button>
                     ))}

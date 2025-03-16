@@ -99,3 +99,28 @@
     cursor: not-allowed; /* Change le curseur pour indiquer que l'élément est désactivé */
     opacity: 0.6; /* Réduit l'opacité pour un effet de grisage */
 }
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap; /* Added for good measure */
+}
+
+.not-a-button {
+    background: none; /* Supprime le fond */
+    border: none; /* Supprime la bordure */
+    padding: 0; /* Supprime le remplissage */
+    margin: 0; /* Supprime la marge */
+    color: inherit; /* Hérite de la couleur du texte parent */
+    cursor: pointer; /* Change le curseur pour indiquer que c'est cliquable */
+}
+
+.not-a-button:focus {
+    outline: none; /* Supprime le contour de focus */
+}

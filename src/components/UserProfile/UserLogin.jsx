@@ -58,7 +58,13 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
                         onChange={(e) => setPassword(e.target.value)}
                         size="large"
                         suffix={
-                            <span onClick={() => setShowPassword(!showPassword)} className="password-toggle">
+                            <span 
+                                onClick={() => setShowPassword(!showPassword)} 
+                                className="password-toggle"
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter') setShowPassword(!showPassword) }}
+                            >
                                 {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             </span>
                         }
