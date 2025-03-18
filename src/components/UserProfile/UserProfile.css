@@ -5,10 +5,6 @@ body {
     margin: 0;
 }
 
-.password-toggle {
-    cursor: pointer;
-}
-
 .custom-card .ant-space{
     width: 40%; /* Telephone ??? */
 }

@@ -20,20 +20,7 @@ const PlayerComment = ({ player, day, comment, onCommentChange, isModalOpen, isL
         setSelectedPlayerId(null);
     }, [comment?.comments, setSelectedPlayerId]);
 
-    useEffect(() => {
-        const handleKeyPress = (event) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                handleCancel();
-            }
-        };
-        window.addEventListener('keydown', handleKeyPress);
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [handleCancel]);
-
-    const handleSave = async () => {
+    const handleSave = useCallback(async () => {
         try {
             setSelectedPlayerId(null);
             await createOrUpdateComment({
@@ -49,7 +36,27 @@ const PlayerComment = ({ player, day, comment, onCommentChange, isModalOpen, isL
             console.error(CONSOLE.UPDATE.PLAYERS_COMMENT, error);
             setGlobalErrorMessage(MESSAGES.ERROR.UPDATE.PLAYER_COMMENT);
         }
-    };
+    }, [player, day, commentText, onCommentChange, setSelectedPlayerId, setGlobalSuccessMessage, setGlobalErrorMessage]);
+
+    useEffect(() => {
+        setCommentText(comment?.comments || '');
+    }, [comment]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCancel();
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                handleSave();
+            }
+        };
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleCancel, handleSave]);
 
     const getFormattedDay = () => {
         try {

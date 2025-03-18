@@ -60,7 +60,7 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
                         suffix={
                             <button 
                                 onClick={() => setShowPassword(!showPassword)} 
-                                className="password-toggle not-a-button"
+                                className="not-a-button"
                             >
                                 {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             </button>
@@ -74,7 +74,7 @@ const UserLogin = ({ userName, setUserName, password, setPassword, handleLogin, 
 
                     {/* Bouton de connexion */}
                     <Button type="primary" onClick={handleLogin} block size="large">
-                        Se connecter
+                        {DATA.TO_LOGIN}
                     </Button>
 
                     {/* Lien vers la page de création de compte */}

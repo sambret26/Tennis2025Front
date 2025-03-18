@@ -114,10 +114,10 @@ const UserData = ({ userName, userId, role, setRole, handleLogout, profils }) =>
         ))}
         </Select>
         <Button icon={<KeyOutlined />} onClick={handleChangePassword}>
-        Changer le mot de passe
+            {BUTTON.CHANGE_PASSWORD}
         </Button>
         <Button icon={<LogoutOutlined />} danger onClick={askLogout}>
-        Déconnexion
+            {BUTTON.DISCONNECTION}
         </Button>
         </Space>
         </Card>

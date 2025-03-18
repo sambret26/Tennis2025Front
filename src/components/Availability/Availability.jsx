@@ -308,11 +308,13 @@ const Availability = ({ startDate, endDate }) => {
                 <button 
                     className="available-player not-a-button" 
                     onClick={() => handleDayAvailability(playerId, AVAILABLE)}
-                >&#10003;</button>
+                >&#10003;
+                </button>
                 <button 
                     className="unavailable-player not-a-button" 
                     onClick={() => handleDayAvailability(playerId, UNAVAILABLE)}
-                >&#10060;</button>
+                >&#10060;
+                </button>
             </td>
         )
     }

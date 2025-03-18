@@ -3,7 +3,7 @@ import { Modal, Input, Button, Typography } from 'antd';
 import { connectAdmin, askAccess } from '../../../../api/userService';
 import TransparentLoader from '../../../Loader/TransparentLoader';
 import { GlobalContext } from '../../../../App';
-import { MESSAGES, CONSOLE, LOADER, MODAL, DATA, BUTTON } from '../../../../utils/constants';
+import { MESSAGES, CONSOLE, LOADER, MODAL, BUTTON } from '../../../../utils/constants';
 import PropTypes from 'prop-types';
 import './AdminConnectionModal.css';
 
@@ -49,7 +49,7 @@ const AdminConnectionModal = ({ role, setRole, onClose, userId }) => {
     }, [onClose, role, setRole, password, userId, setGlobalSuccessMessage, setGlobalErrorMessage]);
 
     const handleRequestAccess = () => {
-        setLoadingMessage(DATA.ACCESS_REQUEST);
+        setLoadingMessage(LOADER.ACCESS_REQUEST);
         setIsLoading(true);
         askAccess(userId, role)
             .then((data) => {

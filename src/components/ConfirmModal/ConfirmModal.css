@@ -34,8 +34,13 @@
     border-color: #1677ff; /* Couleur de la bordure du bouton primaire */
 }
 
-.ant-btn-primary:hover {
+.ant-btn-primary:not(:disabled):hover {
     background-color: #40a9ff; /* Couleur au survol du bouton primaire */
+}
+
+.ant-btn-primary:disabled:hover {
+    background-color: #d9d9d9; /* Couleur du bouton primaire désactivé */
+    border-color: #d9d9d9; /* Couleur de la bordure du bouton primaire désactivé */
 }
 
 .ant-btn {

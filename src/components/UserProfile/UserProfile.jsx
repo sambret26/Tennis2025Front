@@ -99,17 +99,20 @@ const UserProfile = ({username, setUsername, userId, setUserId, profils}) => {
         setTryToCreateAccount(false);
         setUserNameValue('');
         setPassword('');
+        setPassword2('');
         setMessage('');
     }
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        setTryToCreateAccount(false);
         setUsername(null);
         setIsLoggedIn(false);
         setUserId(null);
         setRole(0);
         setUserNameValue('');
         setPassword('');
+        setPassword2('');
     };
 
     const renderComponent = () => {

@@ -117,7 +117,6 @@
     border: none; /* Supprime la bordure */
     padding: 0; /* Supprime le remplissage */
     margin: 0; /* Supprime la marge */
-    color: inherit; /* Hérite de la couleur du texte parent */
     cursor: pointer; /* Change le curseur pour indiquer que c'est cliquable */
 }
 

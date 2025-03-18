@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Input, Button, Space, Typography } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { DATA } from '../../utils/constants';
 import PropTypes from 'prop-types';
 
 const { Text } = Typography;
@@ -63,7 +64,7 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
         <div className="user-profile-container">
             {/* Titre */}
             <Card className="custom-card">
-                <h1>Créez votre compte</h1>
+                <h1>{DATA.CREATE_YOUR_ACCOUNT}</h1>
             </Card>
 
             {/* Formulaire de création de compte */}
@@ -87,7 +88,7 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
                         suffix={
                             <button 
                                 onClick={() => setShowPassword(!showPassword)} 
-                                className="password-toggle not-a-button"
+                                className="not-a-button"
                             >
                                 {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             </button>
@@ -104,7 +105,7 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
                         suffix={
                             <button
                                 onClick={() => setShowPassword2(!showPassword2)}
-                                className="password-toggle not-a-button"
+                                className="not-a-button"
                             >
                                 {showPassword2 ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                             </button>
@@ -118,14 +119,14 @@ const CreateAccount = ({ userName, setUserName, password, setPassword, password2
 
                     {/* Bouton de création de compte */}
                     <Button type="primary" onClick={checkDatas} block size="large">
-                        Créez votre compte
+                        {DATA.CREATE_YOUR_ACCOUNT}
                     </Button>
 
                     {/* Lien vers la page de connexion */}
                     <Text className="link-text">
-                        Vous avez déjà un compte ?{' '}
+                        {DATA.ALREADY_HAVE_AN_ACCOUNT}
                         <button onClick={gotoLogin} className="link-button">
-                            Connectez-vous.
+                            {DATA.LOGIN}
                         </button>
                     </Text>
                 </Space>
