@@ -280,18 +280,39 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const putAvailableTooltip = (match, handlePlayerAvailability, player) => {
+        let voidResult = (<td className="schedule-actions"></td>);
         if(viewProfile !== ADMIN) return;
-        if (match.finish) return (<td className="schedule-actions"></td>);
-        if(player === 1) return (<AvailableTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
-        return (<AvailableTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2?.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+        if (match.finish) return voidResult;
+        if(player === 1) {
+            if (match.player1) return (<AvailableTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+            return voidResult;
+        }
+        if (match.player2) return (<AvailableTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} match={match} handlePlayerAvailability={handlePlayerAvailability} AVAILABLE={AVAILABLE} UNAVAILABLE={UNAVAILABLE} NO_ANSWER={NO_ANSWER}/>);
+        return voidResult;
     }
 
     const putPlayerTooltip = (match, player) => {
         if(viewProfile !== ADMIN) return;
-        if(match.double && player === 1) return (<TeamTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} team={match.player1} table={true} />);
-        if(match.double && player === 2) return (<TeamTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} team={match.player2} table={true} />);
-        if(player === 1) return (<PlayerTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
-        return (<PlayerTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2?.id, match.hour)} player={match.player2} table={true} />);
+        if(match.double && player === 1 && match.player1) return (<TeamTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1?.id, match.hour)} team={match.player1} table={true} />);
+        if(match.double && player === 2 && match.player2) return (<TeamTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2?.id, match.hour)} team={match.player2} table={true} />);
+        if(player === 1 && match.player1) return (<PlayerTooltip className={getColorClassName(match.finish, match.player1Availability, match.player1.id, match.hour)} player={match.player1} table={true} />);
+        if(player === 2 && match.player2) return (<PlayerTooltip className={getColorClassName(match.finish, match.player2Availability, match.player2.id, match.hour)} player={match.player2} table={true} />);
+        return (<td className="schedule-actions"></td>);
+    }
+
+    const displayPlayer = (player, futurPlayer) => {
+        if (player) {
+            let display = player.fullName;
+            if (player.ranking){
+                display += " (" + player.ranking + ")"
+            }
+            return display
+        }
+        if(futurPlayer) {
+            if (futurPlayer === "QE") return futurPlayer
+            if (futurPlayer.includes("SD")) return "Vainqueure du " + futurPlayer;
+            return "Vainqueur du " + futurPlayer;
+        }
     }
 
     const showSwitch = () => {
@@ -328,7 +349,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const scheduleHeaders = () => {
-        if(schedule.length > 0) {
+        if(schedule?.length > 0) {
             return (
                 <thead className="header">
                     <tr>
@@ -358,14 +379,14 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             <table className="schedule-table">
                 {scheduleHeaders()}
                 <tbody>
-                    {schedule.map((match) => (
+                    {schedule?.map((match) => (
                         <tr className={getMatchClassName(match)} key={match}>
                             <td className="schedule-col-hour">{match.hour}</td>
                             {getCourt(match.court)}
-                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1?.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{match.player1?.fullName} ({match.player1?.ranking})</td>
+                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1?.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{displayPlayer(match.player1, match.futurPlayer1)}</td>
                             {putAvailableTooltip(match, handlePlayer1Availability, 1)}
                             {putPlayerTooltip(match, 1)}
-                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player2Availability, match.player2?.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{match.player2?.fullName} ({match.player2?.ranking})</td>
+                            <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player2Availability, match.player2?.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{displayPlayer(match.player2, match.futurPlayer2)}</td>
                             {putAvailableTooltip(match, handlePlayer2Availability, 2)}
                             {putPlayerTooltip(match, 2)}
                             {matchResult(match)}
