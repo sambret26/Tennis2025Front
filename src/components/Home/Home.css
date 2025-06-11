@@ -45,6 +45,10 @@
     border: 1px solid #ccc;
 }
 
+.with-border {
+  border-left: 1px solid #ddd;
+}
+
 .schedule-table {
     width: 100%;
     border-collapse: collapse;
@@ -94,6 +98,11 @@
 .schedule-col-player-28 {
     padding-left: 10px !important;
     width: 28%
+}
+
+.schedule-col-player-43 {
+    padding-left: 10px !important;
+    width: 43.5%
 }
 
 .info-circle {

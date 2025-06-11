@@ -30,6 +30,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [viewProfile, setViewProfile] = useState(role);
     const [isWeekend, setIsWeekend] = useState(false);
+    const [noResult, setNoResult] = useState(false);
     const currentDateRef = useRef(currentDate);
     
     const formatDate = useCallback((date) => {
@@ -76,6 +77,13 @@ const Home = ({ startDate, endDate, defaultDate }) => {
             setSchedule(matches);
             setAllAvailabilities(availabilities);
             setIsLoading(false);
+            let result = false;
+            matches.forEach(match =>{
+                if (match.winner || (match.score && match.score !== "")){
+                    result = true;
+                }
+            })
+            setNoResult(!result);
         };
         
         if (currentDate !== previousDate) {
@@ -137,6 +145,9 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const handleSaveResult = async (matchId, playerId, score) => {
         if (!playerId) {
             score = null;
+        }
+        if (playerId || (score && score !== "")){
+            setNoResult(false);
         }
         let finish = 0;
         let double = false;
@@ -234,7 +245,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     }
 
     const getPlayerClassName = () => {
-        if (viewProfile === VISITOR) return 'schedule-col-player-28';
+        if (viewProfile === VISITOR && noResult) return 'schedule-col-player-43 with-border';
+        if (viewProfile === VISITOR) return 'schedule-col-player-28 with-border';
         if (viewProfile === STAFF) return 'schedule-col-player-22';
         return 'schedule-col-player-19';
     }
@@ -251,6 +263,11 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const getCourt = (court) => {
         if (viewProfile === VISITOR) return <td className="schedule-col-court-0"></td>;
         return <td className="schedule-col-court-8">{court ? court.number : ''}</td>;
+    }
+
+    const getContainerClassName = () => {
+        if (viewProfile === VISITOR && noResult) return "schedule-table-container";
+        return "schedule-table-container"
     }
 
     const handlePlayer1Availability = async (match, available) => {
@@ -331,7 +348,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const matchResult = (match) => {
         if(match.winner) {
-            if (viewProfile === VISITOR) return (<td className="schedule-col-result-31">{getResultValue(match)}</td>);
+            if (viewProfile === VISITOR) return (<td className="schedule-col-result-31 with-border">{getResultValue(match)}</td>);
             return (
                 <>
                     <td className="schedule-col-result-25">{getResultValue(match)}</td>
@@ -339,7 +356,8 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 </>
             )
         }
-        if (viewProfile === VISITOR) return (<td className="schedule-col-result-31"></td>);
+        if (viewProfile === VISITOR && noResult) return (<td></td>);
+        if (viewProfile === VISITOR) return (<td className="schedule-col-result-31 with-border"></td>);
         return (
             <>
                 <td className="schedule-col-result-25"><button className="gray-button" onClick={() => handleEditResult(match)}>Renseigner un résultat</button></td>
@@ -354,12 +372,13 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 <thead className="header">
                     <tr>
                         <th>{DATA.HOURS}</th>
-                        {viewProfile !== VISITOR && <th>Court </th>}
+                        {viewProfile !== VISITOR && <th className="with-border">Court </th>}
                         {viewProfile === VISITOR && <th></th>}
-                        <th colSpan={3}>{DATA.PLAYER_1}</th>
-                        <th colSpan={3}>{DATA.PLAYER_2}</th>
-                        <th>{DATA.RESULT}</th>
-                        <th></th>
+                        <th colSpan={3}  className="with-border">{DATA.PLAYER_1}</th>
+                        <th colSpan={3}  className="with-border">{DATA.PLAYER_2}</th>
+                        {(viewProfile !== VISITOR || !noResult) && <th  className="with-border">{DATA.RESULT}</th>}
+                        {viewProfile === VISITOR && noResult && <th></th>}
+                        <th className="with-border"></th>
                     </tr>
                 </thead>
             );
@@ -375,7 +394,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
 
     const scheduleList = () => {
         return (
-        <div className="schedule-table-container">
+        <div className={getContainerClassName()}>
             <table className="schedule-table">
                 {scheduleHeaders()}
                 <tbody>
