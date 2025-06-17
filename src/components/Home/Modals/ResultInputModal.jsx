@@ -171,7 +171,7 @@ const parseScore = (score) => {
 };
 
 const isValidScore = (score) => {
-    return score >= 0 && score <= 7;
+    return score >= 0 && score <= 4;
 };
 
 const checkWinningConditions = (scoreSet, tieBreak, last) => {
