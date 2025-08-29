@@ -434,6 +434,20 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         )
     }
 
+    const changeDateOnPicker = (e) => {
+        let date = new Date(e.target.value)
+        if (canViewDate(date)){
+            setCurrentDate(date);
+        }
+    }
+
+    const getMaxDate = () => {
+        let maxDate = endDate ? getLocaleDate(endDate) : undefined;
+        if (role === VISITOR) maxDate = getLocaleDate(defaultDate);
+        if (role === STAFF) maxDate = getLocaleDate(getNextDay(defaultDate));
+        return maxDate;
+    }
+
     return (
         <div>
             {showSwitch()}
@@ -444,9 +458,9 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                 >&#8249;</button>
                 <input type="date" id="datePicker" 
                     value={currentDate ? getLocaleDate(currentDate) : ''} // Affiche rien tant que currentDate est null
-                    onChange={(e) => setCurrentDate(new Date(e.target.value))} 
+                    onChange={(e) => changeDateOnPicker(e)} 
                     min={startDate ? getLocaleDate(startDate) : undefined}
-                    max={endDate ? getLocaleDate(endDate) : undefined}
+                    max={getMaxDate()}
                 />
                 <button id="nextDay" className="arrow-button" 
                     onClick={handleNextDay}
