@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'; // Importez Link
 import { GlobalContext } from '../../App';
-import { DATA, ADMIN, STAFF } from '../../utils/constants';
+import { DATA, ADMIN } from '../../utils/constants';
 import PropTypes from 'prop-types';
 import './Sidebar.css';
 
@@ -10,25 +10,25 @@ const Sidebar = ({ error, settingError }) => {
         
     const isAdmin = () => role === ADMIN;
         
-    const isStaff = () => role === STAFF;
+    //const isStaff = () => role === STAFF;
         
-    const isStaffOrAdmin = () => isStaff() || isAdmin();
+    //const isStaffOrAdmin = () => isStaff() || isAdmin();
         
     const isNotAdmin = () => !isAdmin() || error || settingError;
 
     const isNotAdminSettings = () => !isAdmin() || (error && !settingError);
         
-    const isNotStaffOrAdmin = () => !isStaffOrAdmin() || error || settingError;
+    //const isNotStaffOrAdmin = () => !isStaffOrAdmin() || error || settingError;
         
     const getAdminTitle = () => {
         if (isAdmin() || error) return '';
         return DATA.ADMIN_ONLY;
     };
         
-    const getStaffTitle = () => {
-        if (isStaffOrAdmin() || error) return '';
-        return DATA.STAFF_ONLY;
-    };
+    // const getStaffTitle = () => {
+    //     if (isStaffOrAdmin() || error) return '';
+    //     return DATA.STAFF_ONLY;
+    // };
         
     return (
         <div className="side-menu">
@@ -57,16 +57,16 @@ const Sidebar = ({ error, settingError }) => {
         </button>
         </Link>
         
-        {/* Bouton Disponibilités (Staff ou Admin) */}
+        {/* Bouton Disponibilités (Admin uniquement) */}
         <Link to="/availability">
-        <button disabled={isNotStaffOrAdmin()} title={getStaffTitle()}>
+        <button disabled={isNotAdmin()} title={getAdminTitle()}>
         <i className="bi bi-person-lines-fill"></i>
         </button>
         </Link>
         
-        {/* Bouton Joueurs (Staff ou Admin) */}
+        {/* Bouton Joueurs (Admin uniquement) */}
         <Link to="/players">
-        <button disabled={isNotStaffOrAdmin()} title={getStaffTitle()}>
+        <button disabled={isNotAdmin()} title={getAdminTitle()}>
         <i className="bi bi-people"></i>
         </button>
         </Link>
