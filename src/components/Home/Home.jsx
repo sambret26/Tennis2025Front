@@ -251,6 +251,11 @@ const Home = ({ startDate, endDate, defaultDate }) => {
         return 'schedule-col-player-19';
     }
 
+    const getCategoryClassName = () => {
+        if (viewProfile === VISITOR) return 'schedule-col-cat with-border';
+        if (viewProfile === STAFF) return 'schedule-col-cat';
+    }
+
     const getColorClassName = (finish, playerAvailability, playerId, hour) => {
         if (viewProfile !== 2) return 'black-row';
         if (finish) return 'black-row'; //Match terminé, pas de couleur
@@ -263,6 +268,16 @@ const Home = ({ startDate, endDate, defaultDate }) => {
     const getCourt = (court) => {
         if (viewProfile === VISITOR) return <td className="schedule-col-court-0"></td>;
         return <td className="schedule-col-court-8">{court ? court.number : ''}</td>;
+    }
+
+    const getCategory = (category) => {
+        if (category === "Simple Messieurs Senior") return "SM Senior";
+        if (category === "Simple Messieurs 35 ans") return "SM 35+";
+        if (category === "Simple Dames Senior") return "SD Senior";
+        if (category === "Consolante Simple Dames Senior") return "Conso. D";
+        if (category === "Consolante Simple Messieurs Senior") return "Conso. M";
+        if (category === "Consolante Simple Messieurs 35 ans") return "Conso. 35+M";
+        return category;
     }
 
     const getContainerClassName = () => {
@@ -374,6 +389,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                         <th>{DATA.HOURS}</th>
                         {viewProfile !== VISITOR && <th className="with-border">Court </th>}
                         {viewProfile === VISITOR && <th></th>}
+                        <th className="with-border">{DATA.CATEGORY}</th>
                         <th colSpan={3}  className="with-border">{DATA.PLAYER_1}</th>
                         <th colSpan={3}  className="with-border">{DATA.PLAYER_2}</th>
                         {(viewProfile !== VISITOR || !noResult) && <th  className="with-border">{DATA.RESULT}</th>}
@@ -402,6 +418,7 @@ const Home = ({ startDate, endDate, defaultDate }) => {
                         <tr className={getMatchClassName(match)} key={match}>
                             <td className="schedule-col-hour">{match.hour}</td>
                             {getCourt(match.court)}
+                            <td className={getCategoryClassName()}>{getCategory(match.categoryLabel)}</td>
                             <td className={`${getPlayerClassName()} ${getColorClassName(match.finish, match.player1Availability, match.player1?.id, match.hour)}`} colSpan={viewProfile === ADMIN ? 1 : 3}>{displayPlayer(match.player1, match.futurPlayer1)}</td>
                             {putAvailableTooltip(match, handlePlayer1Availability, 1)}
                             {putPlayerTooltip(match, 1)}

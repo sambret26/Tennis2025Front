@@ -142,6 +142,7 @@ export const DATA = {
     SETTING: "Paramétrage",
     WITHDRAWAL: "retrait",
     PAYMENTS: "Paiements",
+    CATEGORY: "Catégorie",
     PLAYER_1: "Joueur 1",
     PLAYER_2: "Joueur 2",
     SECOND_HOUR: "19h30",

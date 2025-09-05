@@ -77,6 +77,10 @@
     width: 13%
 }
 
+.schedule-col-cat {
+    width: 10%;
+}
+
 .schedule-col-court-0 {
     width: 0%
 }
@@ -87,22 +91,22 @@
 
 .schedule-col-player-19 {
     padding-left: 10px !important;
-    width: 19%
+    width: 14%
 }
 
 .schedule-col-player-22 {
     padding-left: 10px !important;
-    width: 22%
+    width: 17%
 }
 
 .schedule-col-player-28 {
     padding-left: 10px !important;
-    width: 28%
+    width: 23%
 }
 
 .schedule-col-player-43 {
     padding-left: 10px !important;
-    width: 43.5%
+    width: 38.5%
 }
 
 .info-circle {
